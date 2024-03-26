@@ -2764,6 +2764,7 @@ type Query {
   all_country(where: CountryWhereInput, orderBy: [CountryOrderByWithRelationInput!], cursor: CountryWhereUniqueInput, take: Int, skip: Int, distinct: [CountryScalarFieldEnum!]): [Country!]!
   one_country(where: CountryWhereInput, orderBy: [CountryOrderByWithRelationInput!], cursor: CountryWhereUniqueInput, take: Int, skip: Int, distinct: [CountryScalarFieldEnum!]): Country!
   all_user(where: UserWhereInput, orderBy: [UserOrderByWithRelationInput!], cursor: UserWhereUniqueInput, take: Int, skip: Int, distinct: [UserScalarFieldEnum!]): [UserOnly!]!
+  me: UserOnly!
   all_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
   one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
   all_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!]): [Post!]!
