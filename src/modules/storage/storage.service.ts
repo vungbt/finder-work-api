@@ -1,4 +1,4 @@
-import { FileType } from '@/typeS';
+import { FileType } from '@/types';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
