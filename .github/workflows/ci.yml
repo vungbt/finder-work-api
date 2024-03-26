@@ -36,7 +36,7 @@ jobs:
       - name: Lint code
         run: yarn lint
 
-      - name: Format code
+      - name: Prisma code gen
         run: yarn gen:prisma
       
       - name: Build project
