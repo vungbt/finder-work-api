@@ -1,9 +1,10 @@
 import { Country, File, FindManyUserArgs } from '@/prisma/graphql';
 import { TakeLimit } from '@/utils/pipes/take-limit.decorator';
 import { Args, Context, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { AuthRoles } from '../auth/passport/jwt/jwt.decorator';
+import { IDataloaders } from '../common/dataloader/dataloader.type';
 import { UserService } from './user.service';
 import { UserOnly } from './user.type';
-import { IDataloaders } from '../common/dataloader/dataloader.type';
 
 @Resolver(() => UserOnly)
 export class UserResolver {
@@ -12,6 +13,13 @@ export class UserResolver {
   @Query(() => [UserOnly], { name: 'all_user' })
   all(@Args(new TakeLimit()) args: FindManyUserArgs) {
     return this.userService.findMany(args);
+  }
+
+  @Query(() => UserOnly, { name: 'me' })
+  @AuthRoles()
+  me(@Context() context) {
+    const currentUser = context.req.user;
+    return this.userService.me({ userId: currentUser.id });
   }
 
   @ResolveField(() => File)

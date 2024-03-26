@@ -2,6 +2,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { BaseService } from '@/utils/base/base.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { MeArgs } from './user.type';
 
 @Injectable()
 export class UserService implements BaseService {
@@ -33,5 +34,9 @@ export class UserService implements BaseService {
 
   delete(args: Prisma.UserDeleteArgs) {
     return this.prismaService.user.delete(args);
+  }
+
+  me(args: MeArgs) {
+    return this.prismaService.user.findFirst({ where: { id: args.userId } });
   }
 }
