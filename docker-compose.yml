@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    networks:
+      - finder-work-api
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: finder_work
+    volumes:
+      - finder-work-postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis
+    networks:
+      - finder-work-api
+    ports:
+      - 6380:6379
+networks:
+  finder-work-api:
+
+
+volumes:
+  finder-work-postgres:

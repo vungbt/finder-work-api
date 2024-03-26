@@ -1,0 +1,13 @@
+{
+  "username_or_password_invalid": "Tên đăng nhập hoặc mật khẩu không hợp lệ",
+  "entry_not_found": "Không tìm thấy mục nhập",
+  "input_valid_error": "Nhập không hợp lệ",
+  "not_found": "Không tồn tại",
+  "token_invalid": "thẻ không hợp lệ",
+  "unauthorized": "Không được phép",
+  "forbidden": "Cấm",
+  "valid_error": "Lỗi không tồn tại",
+  "user_conflict": "Xung đột người dùng",
+  "server_error": "Lỗi máy chủ",
+  "common": "Lỗi"
+}

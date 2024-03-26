@@ -1,0 +1,852 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator nestgraphql {
+  provider    = "prisma-nestjs-graphql"
+  output      = "../prisma/graphql"
+  purgeOutput = true
+  emitSingle  = true
+}
+
+model User {
+  id String @id @default(uuid())
+
+  avatarUrl String? // valid when login sso
+  avatarId  String?
+  avatar    File?   @relation(fields: [avatarId], references: [id])
+
+  firstName       String
+  lastName        String
+  email           String          @unique
+  emailVerified   Boolean         @default(false)
+  password        String
+  phoneNumber     String?
+  countryId       Int?
+  country         Country?        @relation(fields: [countryId], references: [id])
+  workingPosition WorkPosition?
+  status          UserStatus      @default(active)
+  signInProvider  SignInProvider?
+  color           String?
+  role            UserRole        @default(employee)
+  addressDetail   String?
+  social          Social[]
+  verifyCode      String?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  resumes         Resume[]
+  workExperiences WorkExperience[]
+  educations      Education[]
+  projects        Project[]
+  applications    Application[]
+  posts           Post[]
+  likes           LikePost[]
+  dislikes        DislikePost[]
+  comments        Comment[]
+  bookmarks       BookmarkPost[]
+  saveJobs        SaveJob[]
+  payments        Payment[]
+  address         UsersOnCity[]
+  companies       Company[]
+}
+
+model File {
+  id               String             @id @default(uuid())
+  url              String
+  storageId        String             @unique()
+  provider         FileProvider?      @default(cloudinary)
+  metadata         Json?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deletedAt        DateTime?
+  users            User[]
+  companies        Company[]
+  companyPhotos    CompaniesOnFiles[]
+  resume           Resume[]
+  projects         Project[]
+  certificate      Certificate?       @relation(fields: [certificateId], references: [id])
+  certificateId    String?
+  resumeTemplate   ResumeTemplate?    @relation(fields: [resumeTemplateId], references: [id])
+  resumeTemplateId String?            @unique
+  posts            Post[]
+}
+
+model Skill {
+  id               String             @id @default(uuid())
+  content          String
+  jobs             JobsInSkills[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deletedAt        DateTime?
+  resume           Resume?            @relation(fields: [resumeId], references: [id])
+  resumeId         String?
+  resumesInSkills  ResumesInSkills[]
+  skillsOnProjects SkillsOnProjects[]
+}
+
+model Company {
+  id              String                     @id @default(uuid())
+  name            String
+  slug            String
+  avatarId        String?
+  avatar          File?                      @relation(fields: [avatarId], references: [id])
+  type            CompanyType?               @relation(fields: [companyTypeId], references: [id])
+  companyTypeId   String?
+  size            CompanySize?               @relation(fields: [companySizeId], references: [id])
+  companySizeId   String?
+  photos          CompaniesOnFiles[]
+  address         City                       @relation(fields: [cityId], references: [id])
+  addressDetail   String
+  cityId          Int
+  industries      CompaniesOnJobCategories[]
+  social          Social[]
+  description     String?
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+  deletedAt       DateTime?
+  jobs            Job[]
+  workExperiences WorkExperience[]
+  projects        Project[]
+  references      Reference[]
+  userId          String?
+  user            User?                      @relation(fields: [userId], references: [id])
+}
+
+model CompanySize {
+  id        String    @id @default(uuid())
+  key       String    @unique
+  value     String    @unique
+  companies Company[]
+  isDefault Boolean?  @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model CompanyType {
+  id        String    @id @default(uuid())
+  key       String    @unique
+  value     String    @unique
+  companies Company[]
+  isDefault Boolean?  @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model CompaniesOnJobCategories {
+  industry   JobCategory @relation(fields: [industryId], references: [id])
+  industryId String
+  company    Company     @relation(fields: [companyId], references: [id])
+  companyId  String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
+
+  @@id([industryId, companyId])
+}
+
+model CompaniesOnFiles {
+  files     File      @relation(fields: [fileId], references: [id])
+  fileId    String
+  company   Company   @relation(fields: [companyId], references: [id])
+  companyId String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@id([fileId, companyId])
+}
+
+model Social {
+  id        String      @id @default(uuid())
+  type      SocialType? @default(website)
+  url       String
+  company   Company?    @relation(fields: [companyId], references: [id])
+  companyId String?
+  user      User?       @relation(fields: [userId], references: [id])
+  userId    String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  deletedAt DateTime?
+  resume    Resume?     @relation(fields: [resumeId], references: [id])
+  resumeId  String?
+}
+
+model Job {
+  id                  String         @id @default(uuid())
+  type                JobType
+  level               JobLevel
+  slug                String
+  address             City           @relation(fields: [cityId], references: [id])
+  addressDetail       String?
+  jobTitle            JobTitle       @relation(fields: [jobTitleId], references: [id])
+  jobTitleId          String
+  jobCategory         JobCategory    @relation(fields: [jobCategoryId], references: [id])
+  jobCategoryId       String
+  company             Company        @relation(fields: [companyId], references: [id])
+  companyId           String
+  cityId              Int
+  salary              JobSalary      @default(discuss)
+  salaryMetadata      Json?
+  description         String
+  tags                JobsInTags[]
+  skills              JobsInSkills[]
+  isBoot              Boolean?       @default(false)
+  numberOfRecruits    Int            @default(1)
+  applicationDeadline DateTime       @default(now())
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  deletedAt           DateTime?
+  applications        Application[]
+  saveJobs            SaveJob[]
+}
+
+model Application {
+  id        String             @id @default(uuid())
+  resume    Resume             @relation(fields: [resumeId], references: [id])
+  createdAt DateTime           @default(now())
+  job       Job                @relation(fields: [jobId], references: [id])
+  candidate User               @relation(fields: [userId], references: [id])
+  status    ApplicationStatus? @default(need_to_review)
+  type      ApplicationType    @default(online_cv)
+  updatedAt DateTime           @updatedAt
+  deletedAt DateTime?
+  resumeId  String
+  jobId     String
+  userId    String
+}
+
+model Resume {
+  id            String   @id @default(uuid())
+  name          String
+  user          User     @relation(fields: [userId], references: [id])
+  avatar        File?    @relation(fields: [fileId], references: [id])
+  fullName      String?
+  email         String?
+  address       City?    @relation(fields: [cityId], references: [id])
+  addressDetail String?
+  description   String
+  isSummary     Boolean? @default(false)
+
+  language        Language?         @relation(fields: [languageId], references: [id])
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+  languageId      String
+  jobTitle        JobTitle          @relation(fields: [jobTitleId], references: [id])
+  jobTitleId      String
+  applications    Application[]
+  workExperiences WorkExperience[]
+  educations      Education[]
+  skills          Skill[]
+  userId          String
+  fileId          String?
+  cityId          Int?
+  resumesInSkills ResumesInSkills[]
+  projects        Project[]
+  socials         Social[]
+  languageSkills  LanguageSkill[]
+  activities      Activity[]
+}
+
+model Reference {
+  id          String    @id @default(uuid())
+  fullName    String
+  company     Company   @relation(fields: [companyId], references: [id])
+  email       String
+  phoneNumber String?
+  phoneCode   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  companyId   String
+}
+
+model ResumeTemplate {
+  id        String      @id @default(uuid())
+  raw       String
+  file      File?
+  status    UserStatus? @default(active)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  deletedAt DateTime?
+}
+
+model Certificate {
+  id        String    @id @default(uuid())
+  name      String
+  files     File[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Project {
+  id          String             @id @default(uuid())
+  title       String
+  description String
+  teamSize    Int
+  role        String[]
+  techStacks  SkillsOnProjects[]
+  startAt     DateTime
+  endAt       DateTime?
+  company     Company            @relation(fields: [companyId], references: [id])
+  refeUrls    String[]           @default([])
+  thumbnail   File?              @relation(fields: [thumbnailId], references: [id])
+  thumbnailId String?
+  companyId   String
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  deletedAt   DateTime?
+  user        User               @relation(fields: [userId], references: [id])
+  userId      String
+  Resume      Resume?            @relation(fields: [resumeId], references: [id])
+  resumeId    String?
+}
+
+model SkillsOnProjects {
+  skill     Skill     @relation(fields: [skillId], references: [id])
+  skillId   String
+  project   Project   @relation(fields: [projectId], references: [id])
+  projectId String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@id([projectId, skillId])
+}
+
+model ResumesInSkills {
+  resume    Resume    @relation(fields: [resumeId], references: [id])
+  resumeId  String
+  skill     Skill     @relation(fields: [skillId], references: [id])
+  skillId   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@id([resumeId, skillId])
+}
+
+model WorkExperience {
+  id           String    @id @default(uuid())
+  jobTitle     JobTitle  @relation(fields: [jobTitleId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+  company      Company?  @relation(fields: [companyId], references: [id])
+  isFreelancer Boolean?  @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+  jobTitleId   String
+  userId       String
+  resume       Resume?   @relation(fields: [resumeId], references: [id])
+  resumeId     String?
+  companyId    String?
+  address      City?     @relation(fields: [cityId], references: [id])
+  cityId       Int?
+  startAt      DateTime
+  endAt        DateTime?
+  description  String
+}
+
+model Education {
+  id                  String        @id @default(uuid())
+  type                EducationType @default(university)
+  major               String
+  degree              Degree        @default(other)
+  graduationAt        DateTime?
+  gpa                 Int?
+  awards              String[]
+  relevantCourseworks String[]
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  deletedAt           DateTime?
+  resume              Resume?       @relation(fields: [resumeId], references: [id])
+  user                User          @relation(fields: [userId], references: [id])
+  resumeId            String?
+  userId              String
+}
+
+model Language {
+  id            String          @id @default(uuid())
+  name          String
+  locale        String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?
+  resumes       Resume[]
+  languageSkill LanguageSkill[]
+}
+
+model LanguageSkill {
+  id               String           @id @default(uuid())
+  name             String
+  locale           String
+  proficiencyLevel ProficiencyLevel
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  deletedAt        DateTime?
+  language         Language         @relation(fields: [languageId], references: [id])
+  languageId       String
+  resume           Resume?          @relation(fields: [resumeId], references: [id])
+  resumeId         String?
+}
+
+model Activity {
+  id          String    @id @default(uuid())
+  name        String
+  startAt     DateTime
+  endAt       DateTime?
+  descriotion String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  resume      Resume?   @relation(fields: [resumeId], references: [id])
+  resumeId    String?
+}
+
+model JobTitle {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  isFeature       Boolean?         @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  jobs            Job[]
+  resumes         Resume[]
+  workExperiences WorkExperience[]
+  posts           Post[]
+}
+
+model JobCategory {
+  id        String                     @id @default(uuid())
+  name      String                     @unique
+  slug      String                     @unique
+  isFeature Boolean?                   @default(false)
+  isTheFive Boolean?                   @default(false)
+  isDefault Boolean?                   @default(false)
+  createdAt DateTime                   @default(now())
+  updatedAt DateTime                   @updatedAt
+  deletedAt DateTime?
+  jobs      Job[]
+  companies CompaniesOnJobCategories[]
+}
+
+model Tag {
+  id            String        @id @default(uuid())
+  type          TagType?      @default(job)
+  name          String        @unique
+  color         String?
+  isPostDefault Boolean?      @default(false)
+  isJobDefault  Boolean?      @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+  jobs          JobsInTags[]
+  posts         PostsInTags[]
+}
+
+model JobsInTags {
+  job       Job       @relation(fields: [jobId], references: [id])
+  jobId     String
+  tag       Tag       @relation(fields: [tagId], references: [id])
+  tagId     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@id([jobId, tagId])
+}
+
+model PostsInTags {
+  post      Post      @relation(fields: [postId], references: [id])
+  postId    String
+  tag       Tag       @relation(fields: [tagId], references: [id])
+  tagId     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@id([postId, tagId])
+}
+
+model JobsInSkills {
+  job       Job       @relation(fields: [jobId], references: [id])
+  jobId     String
+  skill     Skill     @relation(fields: [skillId], references: [id])
+  skillId   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@id([jobId, skillId])
+}
+
+model Country {
+  id             Int     @id @default(autoincrement())
+  name           String
+  iso3           String
+  iso2           String
+  numericCode    String
+  phoneCode      String
+  capital        String
+  currency       String
+  currencyName   String
+  currencySymbol String
+  tld            String
+  native         String?
+  region         String?
+  regionId       String?
+  subregion      String?
+  subregionId    String?
+  nationality    String
+  timezones      Json
+  translations   Json
+  latitude       String
+  longitude      String
+  emoji          String
+  emojiU         String
+  svg            String?
+  states         State[]
+  cities         City[]
+  users          User[]
+
+  @@index([name], type: SpGist)
+}
+
+model State {
+  id          Int      @id @default(autoincrement())
+  name        String
+  country     Country? @relation(fields: [countryId], references: [id])
+  countryCode String?
+  countryName String?
+  stateCode   String?
+  type        String?
+  latitude    String?
+  longitude   String?
+  countryId   Int?
+  cities      City[]
+
+  @@index([name], type: SpGist)
+}
+
+model UsersOnCity {
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  city      City      @relation(fields: [cityId], references: [id])
+  cityId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@id([userId, cityId])
+}
+
+model City {
+  id              Int              @id @default(autoincrement())
+  name            String
+  state           State?           @relation(fields: [stateId], references: [id])
+  stateCode       String?
+  stateName       String?
+  country         Country?         @relation(fields: [countryId], references: [id])
+  countryCode     String?
+  countryName     String?
+  latitude        String?
+  longitude       String?
+  wikiDataId      String
+  stateId         Int?
+  countryId       Int?
+  users           UsersOnCity[]
+  companies       Company[]
+  jobs            Job[]
+  resumes         Resume[]
+  workExperiences WorkExperience[]
+
+  @@index([name], type: SpGist)
+}
+
+model Setting {
+  key   String @id
+  value Json
+}
+
+model PostCategory {
+  id        String              @id @default(uuid())
+  name      String              @unique()
+  slug      String              @unique()
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  deletedAt DateTime?
+  posts     CategoriesOnPosts[]
+}
+
+model Post {
+  id       String    @id @default(uuid())
+  title    String
+  content  String
+  shareUrl String
+  metadata Json?
+  slug     String
+  minRead  Int?      @default(0)
+  jobTitle JobTitle? @relation(fields: [jobTitleId], references: [id])
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  thumbnail   File?               @relation(fields: [thumbnailId], references: [id])
+  thumbnailId String?
+  categories  CategoriesOnPosts[]
+
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  deletedAt  DateTime?
+  tags       PostsInTags[]
+  jobTitleId String
+  likes      LikePost[]
+  dislikes   DislikePost[]
+  comments   Comment[]
+  bookmarks  BookmarkPost[]
+}
+
+model LikePost {
+  id        String    @id @default(uuid())
+  user      User?     @relation(fields: [userId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id])
+  comment   Comment?  @relation(fields: [commentId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  userId    String?
+  postId    String
+  commentId String?
+}
+
+model DislikePost {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  user      User?     @relation(fields: [userId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id])
+  comment   Comment?  @relation(fields: [commentId], references: [id])
+  userId    String?
+  postId    String
+  commentId String?
+}
+
+model BookmarkPost {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id])
+  userId    String
+  postId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model SaveJob {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  job       Job       @relation(fields: [jobId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  jobId     String
+}
+
+model Comment {
+  id            String        @id @default(uuid())
+  post          Post          @relation(fields: [postId], references: [id])
+  user          User?         @relation(fields: [userId], references: [id])
+  userId        String?
+  conent        String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+  postId        String
+  isAnonymously Boolean?      @default(false)
+  parent        Comment?      @relation(name: "RepliesTreeRelationComment", fields: [parentId], references: [id])
+  replies       Comment[]     @relation(name: "RepliesTreeRelationComment")
+  parentId      String?
+  likes         LikePost[]
+  dislikes      DislikePost[]
+}
+
+model Payment {
+  id        String            @id @default(uuid())
+  amount    Int
+  currency  String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  deletedAt DateTime?
+  checkouts CheckoutSession[]
+  invoices  Invoice[]
+  user      User              @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model CheckoutSession {
+  id        Int      @id @default(autoincrement())
+  sessionId String
+  paymentId String
+  payment   Payment  @relation(fields: [paymentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice {
+  id         Int      @id @default(autoincrement())
+  customerId String
+  paymentId  String
+  payment    Payment  @relation(fields: [paymentId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model CategoriesOnPosts {
+  post       Post         @relation(fields: [postId], references: [id])
+  postId     String
+  category   PostCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  deletedAt  DateTime?
+
+  @@id([postId, categoryId])
+}
+
+enum EducationType {
+  school
+  institution
+  college
+  university
+  other
+}
+
+enum UserStatus {
+  active
+  inactive
+}
+
+enum UserRole {
+  employee
+  employer
+  admin
+}
+
+enum WorkPosition {
+  staff
+  team_leader
+  vice_of_department
+  head_of_epartment
+  vice_director
+  director
+  general_director
+}
+
+enum SocialType {
+  website
+  linkedIn
+  facebook
+  github
+  gitlab
+  pinterest
+  behance
+  dribbble
+  youtube
+  instagram
+  glosbe
+  other
+}
+
+enum JobType {
+  full_time
+  part_time
+  internship
+  contract
+  freelancer
+  seasonal
+}
+
+enum JobLevel {
+  entry
+  junior
+  middle
+  senior
+  lead
+  manager
+  director
+  vp
+}
+
+enum JobSalary {
+  discuss
+  range
+  peak
+  begin
+}
+
+enum FileProvider {
+  s3
+  cloudinary
+}
+
+enum TagType {
+  job
+  post
+  skill
+}
+
+enum Degree {
+  high_school_diploma
+  vocational
+  technical_training
+  associate
+  bachelor
+  master
+  doctoral
+  other
+}
+
+enum ProficiencyLevel {
+  beginner
+  intermediate
+  fluent
+  professional
+  native
+}
+
+enum ApplicationStatus {
+  need_to_review
+  save_for_later
+  canceled
+  contacted
+}
+
+enum ApplicationType {
+  online_cv
+  upload_cv
+  work_profile
+}
+
+enum PaymentProvider {
+  stripe
+  paypal
+}
+
+enum SignInProvider {
+  google
+}

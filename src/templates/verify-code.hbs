@@ -1,0 +1,219 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Verify Code</title>
+  </head>
+  <body
+    style="font-family: 'Inter', 'Roboto', sans-serif; font-stretch: normal; 
+        margin: 0;
+        padding: 0;
+        color: #0d0d0d;"
+  >
+    <div
+      style='max-width: 600px;
+        padding: 32px;
+        box-sizing: border-box;
+        background: #f9f9fb;'
+    >
+
+      {{! header }}
+      <div>
+        {{! logo }}
+        <a
+          href='{{domainUrl}}'
+          target='_blank'
+          style='display: flex;
+        align-items: center;
+        background: #0d0d0d;
+        color: #ffffff;
+        width: fit-content;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+        padding: 3px 10px;
+        gap: 10px;
+        font-size: 20px;
+        align-items: center;
+        margin-bottom: 24px;'
+        >
+          <img
+            height='40'
+            src='https://res.cloudinary.com/dgxciqlts/image/upload/v1711082976/unnamed_bwvkph.png'
+          />
+        </a>
+      </div>
+
+      {{! line }}
+      <div
+        style='height: 1px;
+        width: 100%;
+        background: #e0e6eb;
+        margin-bottom: 24px;'
+      ></div>
+
+      {{! title }}
+      <p
+        style='text-align: center;
+        padding: 0;
+        margin: 0;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 32px;
+        width: 480px;
+        max-width: 100%;
+        margin: auto;
+        margin-bottom: 24px;
+        color: #0d0d0d;'
+      >Just a step left and start to find your dream job with {{iconName}}</p>
+
+      {{! description }}
+      <p
+        style='color: #8c949d;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        margin: 0;
+        margin-bottom: 24px;'
+      >
+        Thank you for signing up with
+        <b style='color: #0d0d0d;'>{{iconName}}</b>! To ensure the security of your account and
+        provide you with a seamless experience, we need to verify your email address.
+      </p>
+
+      {{! verify code }}
+      <p
+        style='color: #8c949d;
+          padding: 0;
+        margin: 0;
+        text-align: center;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        margin: 0;
+        margin-bottom: 24px;'
+      >Your verification code is:</p>
+
+      <p
+        style='text-align: center;
+          padding: 0;
+        margin: 0;
+        font-size: 32px;
+        font-style: normal;
+        font-weight: 600;
+        margin: 0;
+        line-height: 48px;
+        color: #0d0d0d;
+        margin-bottom: 24px;'
+      >{{code}}</p>
+
+      {{! help }}
+      <div style='margin-bottom: 24px;'>
+        <p
+          style="color: #8c949d;
+            padding: 0;
+        margin: 0;
+        text-align: center;
+        font-feature-settings: 'clig' off, 'liga' off;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        display: block;
+        margin: 0;"
+        >If you need help, don’t worry — we’ll walk you through every step. </p>
+        <p
+          style="color: #8c949d;
+            padding: 0;
+        margin: 0;
+        text-align: center;
+        font-feature-settings: 'clig' off, 'liga' off;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        display: block;
+        margin: 0;"
+        >Just reach out to our team for additional support.</p>
+      </div>
+
+      {{! line }}
+      <div
+        style=' height: 1px;
+        width: 100%;
+        background: #e0e6eb;
+        margin-bottom: 24px;'
+      ></div>
+
+      {{! footer }}
+      <table width='100%' cellspacing='0' cellpadding='0' border='0'>
+        <tr>
+          <td style='font-size: 0;'>
+            <table width='100%' cellspacing='0' cellpadding='0' border='0'>
+              <tr>
+                <td
+                  style='font-size: 12px; color: #8c949d; padding: 0; margin: 0; text-align: start;'
+                >Ⓒ 2024 {{iconName}}</td>
+              </tr>
+              <tr>
+                <td
+                  style='font-size: 12px; color: #8c949d; padding: 0; margin: 0; text-align: start;'
+                >Step into Success: Your Ideal Job Awaits</td>
+              </tr>
+            </table>
+          </td>
+          <td style='font-size: 0;'>
+            <table width='100%' cellspacing='0' cellpadding='0' border='0'>
+              <tr>
+                <td style='font-size: 0; text-align: end;'>
+                  <a href='{{social.facebook}}' target='_blank'><img
+                      src='https://res.cloudinary.com/dgxciqlts/image/upload/v1711348118/Icons/ic_baseline-facebook_mebgrs.png'
+                      width='32'
+                      height='32'
+                      style='margin-top: 3px;'
+                    /></a>
+                </td>
+                <td style='font-size: 0; text-align: end;'>
+                  <a href='{{social.instagram}}' target='_blank'><img
+                      src='https://res.cloudinary.com/dgxciqlts/image/upload/v1711348118/Icons/lets-icons_insta_qwgbdf.png'
+                      width='32'
+                      height='32'
+                      style='margin-top: 3px;'
+                    /></a>
+                </td>
+
+                <td style='font-size: 0; text-align: end;'>
+                  <a href='{{social.tiktok}}' target='_blank'><img
+                      src='https://res.cloudinary.com/dgxciqlts/image/upload/v1711348119/Icons/mage_tiktok-circle_ifyycs.png'
+                      width='32'
+                      height='32'
+                      style='margin-top: 3px;'
+                    /></a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
+{{! 
+  params: {
+    domainUrl,
+    code,
+    iconName
+    social: {
+      facebook,
+      instagram,
+      tiktok
+    }
+  }
+ }}

@@ -1,0 +1,7 @@
+{
+  "invalid": "{label} invalid",
+  "valid": "{label} valid",
+  "password_invalid": "Password must have both upper, lower and at least one special character",
+  "conflict": "{label} conflict",
+  "incorrect": "{label} incorrect"
+}

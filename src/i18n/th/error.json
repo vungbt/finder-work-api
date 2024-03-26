@@ -1,0 +1,13 @@
+{
+  "username_or_password_invalid": "TH Username or password invalid",
+  "entry_not_found": "TH Entry not found",
+  "input_valid_error": "TH Input valid error",
+  "not_found": "TH not_found",
+  "token_invalid": "TH Token invalid",
+  "unauthorized": "TH Unauthorized",
+  "forbidden": "TH Forbidden",
+  "valid_error": "TH Valid error",
+  "user_conflict": "TH User conflict",
+  "server_error": "TH Server error",
+  "common": "TH Error"
+}

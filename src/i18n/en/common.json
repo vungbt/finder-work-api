@@ -1,0 +1,14 @@
+{
+  "hello": "Hello api.",
+  "user": {
+    "title": "User"
+  },
+  "email_template": {
+    "subject": {
+      "verify_code": "Verify your account"
+    }
+  },
+  "password": {
+    "title": "Password"
+  }
+}

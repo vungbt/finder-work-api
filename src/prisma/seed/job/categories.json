@@ -1,0 +1,124 @@
+[
+  {
+    "value": "Business & Sales",
+    "isTheFive": true
+  },
+  {
+    "value": "Advertising, Marketing & Public Relations",
+    "isTheFive": true
+  },
+  {
+    "value": "Information Technology Services",
+    "isTheFive": true
+  },
+  {
+    "value": "Software Development",
+    "isTheFive": true
+  },
+  {
+    "value": "Customer Service",
+    "isTheFive": true
+  },
+  {
+    "value": "Accounting & Auditing",
+    "isFeature": true
+  },
+
+  {
+    "value": "Administration",
+    "isFeature": true
+  },
+  {
+    "value": "Architecture, Interior Design & Construction",
+    "isFeature": true
+  },
+  {
+    "value": "Printing & Publishing",
+    "isFeature": true
+  },
+  {
+    "value": "Banking & Financial Services",
+    "isFeature": true
+  },
+  {
+    "value": "Carriage Service (Airlines, Rail & Bus)",
+    "isFeature": true
+  },
+
+  {
+    "value": "Consulting & Strategy",
+    "isFeature": true
+  },
+  {
+    "value": "Design & Creative",
+    "isFeature": true
+  },
+  {
+    "value": "Education & Training",
+    "isFeature": true
+  },
+  {
+    "value": "Engineering",
+    "isFeature": true
+  },
+  {
+    "value": "Executive Leadership & Management",
+    "isFeature": true
+  },
+  {
+    "value": "Human Resources & Recruitment",
+    "isFeature": true
+  },
+  {
+    "value": "Insurance & Risk Management",
+    "isFeature": true
+  },
+  {
+    "value": "Legal Services",
+    "isFeature": true
+  },
+  {
+    "value": "Logistics & Supply Chain",
+    "isFeature": true
+  },
+  {
+    "value": "Medical, Health & Wellness",
+    "isFeature": true
+  },
+  {
+    "value": "Pharmaceuticals",
+    "isFeature": true
+  },
+  {
+    "value": "Production & Manufacturing",
+    "isFeature": true
+  },
+  {
+    "value": "Real Estate & Property Management",
+    "isFeature": true
+  },
+  {
+    "value": "Research & Science",
+    "isFeature": true
+  },
+  {
+    "value": "Retail & Consumer Goods",
+    "isFeature": true
+  },
+  {
+    "value": "Technical & Maintenance",
+    "isFeature": true
+  },
+  {
+    "value": "Tourism, Hospitality & Food Services",
+    "isFeature": true
+  },
+  {
+    "value": "Translation & Interpretation",
+    "isFeature": true
+  },
+  {
+    "value": "Other",
+    "isFeature": true
+  }
+]
