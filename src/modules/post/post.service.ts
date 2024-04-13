@@ -2,6 +2,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { BaseService } from '@/utils/base/base.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { AllPostArgs } from './post.type';
+import { FindManyPostArgs } from '@/prisma/graphql';
+import { responseHelper } from '@/utils/helpers';
 
 @Injectable()
 export class PostService implements BaseService {
@@ -13,8 +16,16 @@ export class PostService implements BaseService {
   findFirst(args: Prisma.PostFindFirstArgs) {
     return this.prismaService.post.findFirst(args);
   }
-  findMany(args: Prisma.PostFindManyArgs) {
-    return this.prismaService.post.findMany(args);
+  async findMany(args: AllPostArgs) {
+    const { pagination, ...reset } = args;
+    const queries: FindManyPostArgs = {};
+
+    const data = this.prismaService.post.findMany({
+      ...queries,
+      ...reset
+    });
+    const total = await this.count(queries);
+    return responseHelper(data, { total, ...pagination });
   }
   count(args: Prisma.PostCountArgs) {
     return this.prismaService.post.count(args);

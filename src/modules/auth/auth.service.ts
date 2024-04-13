@@ -279,9 +279,7 @@ export class AuthService {
           where: { id: newCompany.id },
           data: {
             industries: {
-              createMany: {
-                data: industryIds.map((item) => ({ industryId: item }))
-              }
+              connect: industryIds.map((item) => ({ id: item }))
             },
             user: {
               connect: { id: newUser.id }
