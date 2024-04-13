@@ -61,65 +61,64 @@ model User {
 }
 
 model File {
-  id               String             @id @default(uuid())
+  id               String          @id @default(uuid())
   url              String
-  storageId        String             @unique()
-  provider         FileProvider?      @default(cloudinary)
+  storageId        String          @unique()
+  provider         FileProvider?   @default(cloudinary)
   metadata         Json?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   deletedAt        DateTime?
   users            User[]
-  companies        Company[]
-  companyPhotos    CompaniesOnFiles[]
+  companies        Company[]       @relation("CompanyPhotos")
   resume           Resume[]
   projects         Project[]
-  certificate      Certificate?       @relation(fields: [certificateId], references: [id])
+  certificate      Certificate?    @relation(fields: [certificateId], references: [id])
   certificateId    String?
-  resumeTemplate   ResumeTemplate?    @relation(fields: [resumeTemplateId], references: [id])
-  resumeTemplateId String?            @unique
+  resumeTemplate   ResumeTemplate? @relation(fields: [resumeTemplateId], references: [id])
+  resumeTemplateId String?         @unique
   posts            Post[]
+  company          Company[]
 }
 
 model Skill {
-  id               String             @id @default(uuid())
-  content          String
-  jobs             JobsInSkills[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  deletedAt        DateTime?
-  resume           Resume?            @relation(fields: [resumeId], references: [id])
-  resumeId         String?
-  resumesInSkills  ResumesInSkills[]
-  skillsOnProjects SkillsOnProjects[]
+  id        String    @id @default(uuid())
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  resume    Resume?   @relation(fields: [resumeId], references: [id])
+  resumeId  String?
+  projects  Project[]
+  jobs      Job[]
 }
 
 model Company {
-  id              String                     @id @default(uuid())
+  id              String           @id @default(uuid())
   name            String
   slug            String
   avatarId        String?
-  avatar          File?                      @relation(fields: [avatarId], references: [id])
-  type            CompanyType?               @relation(fields: [companyTypeId], references: [id])
+  avatar          File?            @relation(fields: [avatarId], references: [id])
+  type            CompanyType?     @relation(fields: [companyTypeId], references: [id])
   companyTypeId   String?
-  size            CompanySize?               @relation(fields: [companySizeId], references: [id])
+  size            CompanySize?     @relation(fields: [companySizeId], references: [id])
   companySizeId   String?
-  photos          CompaniesOnFiles[]
-  address         City                       @relation(fields: [cityId], references: [id])
+  photos          File[]           @relation("CompanyPhotos")
+  address         City             @relation(fields: [cityId], references: [id])
   addressDetail   String
   cityId          Int
-  industries      CompaniesOnJobCategories[]
+  industries      JobCategory[]
   social          Social[]
   description     String?
-  createdAt       DateTime                   @default(now())
-  updatedAt       DateTime                   @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
   jobs            Job[]
   workExperiences WorkExperience[]
   projects        Project[]
   references      Reference[]
   userId          String?
-  user            User?                      @relation(fields: [userId], references: [id])
+  user            User?            @relation(fields: [userId], references: [id])
 }
 
 model CompanySize {
@@ -144,30 +143,6 @@ model CompanyType {
   deletedAt DateTime?
 }
 
-model CompaniesOnJobCategories {
-  industry   JobCategory @relation(fields: [industryId], references: [id])
-  industryId String
-  company    Company     @relation(fields: [companyId], references: [id])
-  companyId  String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  deletedAt  DateTime?
-
-  @@id([industryId, companyId])
-}
-
-model CompaniesOnFiles {
-  files     File      @relation(fields: [fileId], references: [id])
-  fileId    String
-  company   Company   @relation(fields: [companyId], references: [id])
-  companyId String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@id([fileId, companyId])
-}
-
 model Social {
   id        String      @id @default(uuid())
   type      SocialType? @default(website)
@@ -184,29 +159,29 @@ model Social {
 }
 
 model Job {
-  id                  String         @id @default(uuid())
+  id                  String        @id @default(uuid())
   type                JobType
   level               JobLevel
   slug                String
-  address             City           @relation(fields: [cityId], references: [id])
+  address             City          @relation(fields: [cityId], references: [id])
   addressDetail       String?
-  jobTitle            JobTitle       @relation(fields: [jobTitleId], references: [id])
+  jobTitle            JobTitle      @relation(fields: [jobTitleId], references: [id])
   jobTitleId          String
-  jobCategory         JobCategory    @relation(fields: [jobCategoryId], references: [id])
+  jobCategory         JobCategory   @relation(fields: [jobCategoryId], references: [id])
   jobCategoryId       String
-  company             Company        @relation(fields: [companyId], references: [id])
+  company             Company       @relation(fields: [companyId], references: [id])
   companyId           String
   cityId              Int
-  salary              JobSalary      @default(discuss)
+  salary              JobSalary     @default(discuss)
   salaryMetadata      Json?
   description         String
-  tags                JobsInTags[]
-  skills              JobsInSkills[]
-  isBoot              Boolean?       @default(false)
-  numberOfRecruits    Int            @default(1)
-  applicationDeadline DateTime       @default(now())
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
+  tags                Tag[]
+  skills              Skill[]
+  isBoot              Boolean?      @default(false)
+  numberOfRecruits    Int           @default(1)
+  applicationDeadline DateTime      @default(now())
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
   deletedAt           DateTime?
   applications        Application[]
   saveJobs            SaveJob[]
@@ -239,12 +214,12 @@ model Resume {
   description   String
   isSummary     Boolean? @default(false)
 
-  language        Language?         @relation(fields: [languageId], references: [id])
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  language        Language?        @relation(fields: [languageId], references: [id])
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
   languageId      String
-  jobTitle        JobTitle          @relation(fields: [jobTitleId], references: [id])
+  jobTitle        JobTitle         @relation(fields: [jobTitleId], references: [id])
   jobTitleId      String
   applications    Application[]
   workExperiences WorkExperience[]
@@ -253,7 +228,6 @@ model Resume {
   userId          String
   fileId          String?
   cityId          Int?
-  resumesInSkills ResumesInSkills[]
   projects        Project[]
   socials         Social[]
   languageSkills  LanguageSkill[]
@@ -293,50 +267,26 @@ model Certificate {
 }
 
 model Project {
-  id          String             @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   description String
   teamSize    Int
   role        String[]
-  techStacks  SkillsOnProjects[]
+  techStacks  Skill[]
   startAt     DateTime
   endAt       DateTime?
-  company     Company            @relation(fields: [companyId], references: [id])
-  refeUrls    String[]           @default([])
-  thumbnail   File?              @relation(fields: [thumbnailId], references: [id])
+  company     Company   @relation(fields: [companyId], references: [id])
+  refeUrls    String[]  @default([])
+  thumbnail   File?     @relation(fields: [thumbnailId], references: [id])
   thumbnailId String?
   companyId   String
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
-  user        User               @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
   userId      String
-  Resume      Resume?            @relation(fields: [resumeId], references: [id])
+  Resume      Resume?   @relation(fields: [resumeId], references: [id])
   resumeId    String?
-}
-
-model SkillsOnProjects {
-  skill     Skill     @relation(fields: [skillId], references: [id])
-  skillId   String
-  project   Project   @relation(fields: [projectId], references: [id])
-  projectId String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@id([projectId, skillId])
-}
-
-model ResumesInSkills {
-  resume    Resume    @relation(fields: [resumeId], references: [id])
-  resumeId  String
-  skill     Skill     @relation(fields: [skillId], references: [id])
-  skillId   String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@id([resumeId, skillId])
 }
 
 model WorkExperience {
@@ -430,67 +380,31 @@ model JobTitle {
 }
 
 model JobCategory {
-  id        String                     @id @default(uuid())
-  name      String                     @unique
-  slug      String                     @unique
-  isFeature Boolean?                   @default(false)
-  isTheFive Boolean?                   @default(false)
-  isDefault Boolean?                   @default(false)
-  createdAt DateTime                   @default(now())
-  updatedAt DateTime                   @updatedAt
+  id        String    @id @default(uuid())
+  name      String    @unique
+  slug      String    @unique
+  isFeature Boolean?  @default(false)
+  isTheFive Boolean?  @default(false)
+  isDefault Boolean?  @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   jobs      Job[]
-  companies CompaniesOnJobCategories[]
+  companies Company[]
 }
 
 model Tag {
-  id            String        @id @default(uuid())
-  type          TagType?      @default(job)
-  name          String        @unique
+  id            String    @id @default(uuid())
+  type          TagType?  @default(job)
+  name          String    @unique
   color         String?
-  isPostDefault Boolean?      @default(false)
-  isJobDefault  Boolean?      @default(false)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  isPostDefault Boolean?  @default(false)
+  isJobDefault  Boolean?  @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
-  jobs          JobsInTags[]
-  posts         PostsInTags[]
-}
-
-model JobsInTags {
-  job       Job       @relation(fields: [jobId], references: [id])
-  jobId     String
-  tag       Tag       @relation(fields: [tagId], references: [id])
-  tagId     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@id([jobId, tagId])
-}
-
-model PostsInTags {
-  post      Post      @relation(fields: [postId], references: [id])
-  postId    String
-  tag       Tag       @relation(fields: [tagId], references: [id])
-  tagId     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@id([postId, tagId])
-}
-
-model JobsInSkills {
-  job       Job       @relation(fields: [jobId], references: [id])
-  jobId     String
-  skill     Skill     @relation(fields: [skillId], references: [id])
-  skillId   String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@id([jobId, skillId])
+  jobs          Job[]
+  posts         Post[]
 }
 
 model Country {
@@ -582,13 +496,13 @@ model Setting {
 }
 
 model PostCategory {
-  id        String              @id @default(uuid())
-  name      String              @unique()
-  slug      String              @unique()
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
+  id        String    @id @default(uuid())
+  name      String    @unique()
+  slug      String    @unique()
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-  posts     CategoriesOnPosts[]
+  posts     Post[]
 }
 
 model Post {
@@ -604,14 +518,14 @@ model Post {
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
 
-  thumbnail   File?               @relation(fields: [thumbnailId], references: [id])
+  thumbnail   File?          @relation(fields: [thumbnailId], references: [id])
   thumbnailId String?
-  categories  CategoriesOnPosts[]
+  categories  PostCategory[]
 
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
   deletedAt  DateTime?
-  tags       PostsInTags[]
+  tags       Tag[]
   jobTitleId String
   likes      LikePost[]
   dislikes   DislikePost[]
@@ -714,18 +628,6 @@ model Invoice {
   payment    Payment  @relation(fields: [paymentId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-}
-
-model CategoriesOnPosts {
-  post       Post         @relation(fields: [postId], references: [id])
-  postId     String
-  category   PostCategory @relation(fields: [categoryId], references: [id])
-  categoryId String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  deletedAt  DateTime?
-
-  @@id([postId, categoryId])
 }
 
 enum EducationType {

@@ -64,6 +64,7 @@ CREATE TABLE "User" (
     "color" TEXT,
     "role" "UserRole" NOT NULL DEFAULT 'employee',
     "addressDetail" TEXT,
+    "verifyCode" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -142,28 +143,6 @@ CREATE TABLE "CompanyType" (
     "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "CompanyType_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "CompaniesOnJobCategories" (
-    "industryId" TEXT NOT NULL,
-    "companyId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-
-    CONSTRAINT "CompaniesOnJobCategories_pkey" PRIMARY KEY ("industryId","companyId")
-);
-
--- CreateTable
-CREATE TABLE "CompaniesOnFiles" (
-    "fileId" TEXT NOT NULL,
-    "companyId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-
-    CONSTRAINT "CompaniesOnFiles_pkey" PRIMARY KEY ("fileId","companyId")
 );
 
 -- CreateTable
@@ -301,28 +280,6 @@ CREATE TABLE "Project" (
 );
 
 -- CreateTable
-CREATE TABLE "SkillsOnProjects" (
-    "skillId" TEXT NOT NULL,
-    "projectId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-
-    CONSTRAINT "SkillsOnProjects_pkey" PRIMARY KEY ("projectId","skillId")
-);
-
--- CreateTable
-CREATE TABLE "ResumesInSkills" (
-    "resumeId" TEXT NOT NULL,
-    "skillId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-
-    CONSTRAINT "ResumesInSkills_pkey" PRIMARY KEY ("resumeId","skillId")
-);
-
--- CreateTable
 CREATE TABLE "WorkExperience" (
     "id" TEXT NOT NULL,
     "isFreelancer" BOOLEAN DEFAULT false,
@@ -442,39 +399,6 @@ CREATE TABLE "Tag" (
     "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "Tag_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "JobsInTags" (
-    "jobId" TEXT NOT NULL,
-    "tagId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-
-    CONSTRAINT "JobsInTags_pkey" PRIMARY KEY ("jobId","tagId")
-);
-
--- CreateTable
-CREATE TABLE "PostsInTags" (
-    "postId" TEXT NOT NULL,
-    "tagId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-
-    CONSTRAINT "PostsInTags_pkey" PRIMARY KEY ("postId","tagId")
-);
-
--- CreateTable
-CREATE TABLE "JobsInSkills" (
-    "jobId" TEXT NOT NULL,
-    "skillId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
-
-    CONSTRAINT "JobsInSkills_pkey" PRIMARY KEY ("jobId","skillId")
 );
 
 -- CreateTable
@@ -690,14 +614,45 @@ CREATE TABLE "Invoice" (
 );
 
 -- CreateTable
-CREATE TABLE "CategoriesOnPosts" (
-    "postId" TEXT NOT NULL,
-    "categoryId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "deletedAt" TIMESTAMP(3),
+CREATE TABLE "_CompanyPhotos" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
 
-    CONSTRAINT "CategoriesOnPosts_pkey" PRIMARY KEY ("postId","categoryId")
+-- CreateTable
+CREATE TABLE "_CompanyToJobCategory" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_JobToTag" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_JobToSkill" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_ProjectToSkill" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_PostToPostCategory" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_PostToTag" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
 );
 
 -- CreateIndex
@@ -748,6 +703,48 @@ CREATE UNIQUE INDEX "PostCategory_name_key" ON "PostCategory"("name");
 -- CreateIndex
 CREATE UNIQUE INDEX "PostCategory_slug_key" ON "PostCategory"("slug");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "_CompanyPhotos_AB_unique" ON "_CompanyPhotos"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_CompanyPhotos_B_index" ON "_CompanyPhotos"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_CompanyToJobCategory_AB_unique" ON "_CompanyToJobCategory"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_CompanyToJobCategory_B_index" ON "_CompanyToJobCategory"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_JobToTag_AB_unique" ON "_JobToTag"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_JobToTag_B_index" ON "_JobToTag"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_JobToSkill_AB_unique" ON "_JobToSkill"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_JobToSkill_B_index" ON "_JobToSkill"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_ProjectToSkill_AB_unique" ON "_ProjectToSkill"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_ProjectToSkill_B_index" ON "_ProjectToSkill"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_PostToPostCategory_AB_unique" ON "_PostToPostCategory"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_PostToPostCategory_B_index" ON "_PostToPostCategory"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_PostToTag_AB_unique" ON "_PostToTag"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_PostToTag_B_index" ON "_PostToTag"("B");
+
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_avatarId_fkey" FOREIGN KEY ("avatarId") REFERENCES "File"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -777,18 +774,6 @@ ALTER TABLE "Company" ADD CONSTRAINT "Company_cityId_fkey" FOREIGN KEY ("cityId"
 
 -- AddForeignKey
 ALTER TABLE "Company" ADD CONSTRAINT "Company_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CompaniesOnJobCategories" ADD CONSTRAINT "CompaniesOnJobCategories_industryId_fkey" FOREIGN KEY ("industryId") REFERENCES "JobCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CompaniesOnJobCategories" ADD CONSTRAINT "CompaniesOnJobCategories_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CompaniesOnFiles" ADD CONSTRAINT "CompaniesOnFiles_fileId_fkey" FOREIGN KEY ("fileId") REFERENCES "File"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CompaniesOnFiles" ADD CONSTRAINT "CompaniesOnFiles_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Social" ADD CONSTRAINT "Social_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -851,18 +836,6 @@ ALTER TABLE "Project" ADD CONSTRAINT "Project_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Project" ADD CONSTRAINT "Project_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "Resume"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SkillsOnProjects" ADD CONSTRAINT "SkillsOnProjects_skillId_fkey" FOREIGN KEY ("skillId") REFERENCES "Skill"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "SkillsOnProjects" ADD CONSTRAINT "SkillsOnProjects_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ResumesInSkills" ADD CONSTRAINT "ResumesInSkills_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "Resume"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ResumesInSkills" ADD CONSTRAINT "ResumesInSkills_skillId_fkey" FOREIGN KEY ("skillId") REFERENCES "Skill"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "WorkExperience" ADD CONSTRAINT "WorkExperience_jobTitleId_fkey" FOREIGN KEY ("jobTitleId") REFERENCES "JobTitle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -891,24 +864,6 @@ ALTER TABLE "LanguageSkill" ADD CONSTRAINT "LanguageSkill_resumeId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "Activity" ADD CONSTRAINT "Activity_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "Resume"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "JobsInTags" ADD CONSTRAINT "JobsInTags_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "Job"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "JobsInTags" ADD CONSTRAINT "JobsInTags_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PostsInTags" ADD CONSTRAINT "PostsInTags_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PostsInTags" ADD CONSTRAINT "PostsInTags_tagId_fkey" FOREIGN KEY ("tagId") REFERENCES "Tag"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "JobsInSkills" ADD CONSTRAINT "JobsInSkills_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "Job"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "JobsInSkills" ADD CONSTRAINT "JobsInSkills_skillId_fkey" FOREIGN KEY ("skillId") REFERENCES "Skill"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "State" ADD CONSTRAINT "State_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "Country"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -983,7 +938,43 @@ ALTER TABLE "CheckoutSession" ADD CONSTRAINT "CheckoutSession_paymentId_fkey" FO
 ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_paymentId_fkey" FOREIGN KEY ("paymentId") REFERENCES "Payment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CategoriesOnPosts" ADD CONSTRAINT "CategoriesOnPosts_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "_CompanyPhotos" ADD CONSTRAINT "_CompanyPhotos_A_fkey" FOREIGN KEY ("A") REFERENCES "Company"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CategoriesOnPosts" ADD CONSTRAINT "CategoriesOnPosts_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "PostCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "_CompanyPhotos" ADD CONSTRAINT "_CompanyPhotos_B_fkey" FOREIGN KEY ("B") REFERENCES "File"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CompanyToJobCategory" ADD CONSTRAINT "_CompanyToJobCategory_A_fkey" FOREIGN KEY ("A") REFERENCES "Company"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CompanyToJobCategory" ADD CONSTRAINT "_CompanyToJobCategory_B_fkey" FOREIGN KEY ("B") REFERENCES "JobCategory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_JobToTag" ADD CONSTRAINT "_JobToTag_A_fkey" FOREIGN KEY ("A") REFERENCES "Job"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_JobToTag" ADD CONSTRAINT "_JobToTag_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_JobToSkill" ADD CONSTRAINT "_JobToSkill_A_fkey" FOREIGN KEY ("A") REFERENCES "Job"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_JobToSkill" ADD CONSTRAINT "_JobToSkill_B_fkey" FOREIGN KEY ("B") REFERENCES "Skill"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ProjectToSkill" ADD CONSTRAINT "_ProjectToSkill_A_fkey" FOREIGN KEY ("A") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ProjectToSkill" ADD CONSTRAINT "_ProjectToSkill_B_fkey" FOREIGN KEY ("B") REFERENCES "Skill"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PostToPostCategory" ADD CONSTRAINT "_PostToPostCategory_A_fkey" FOREIGN KEY ("A") REFERENCES "Post"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PostToPostCategory" ADD CONSTRAINT "_PostToPostCategory_B_fkey" FOREIGN KEY ("B") REFERENCES "PostCategory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PostToTag" ADD CONSTRAINT "_PostToTag_A_fkey" FOREIGN KEY ("A") REFERENCES "Post"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PostToTag" ADD CONSTRAINT "_PostToTag_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag"("id") ON DELETE CASCADE ON UPDATE CASCADE;

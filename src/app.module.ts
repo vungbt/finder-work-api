@@ -35,6 +35,8 @@ import { PostModule } from './modules/post/post.module';
 import { SkillModule } from './modules/skill/skill.module';
 import { UserModule } from './modules/user/user.module';
 import { HttpExceptionFilter } from './utils/exception/http-exception.filter';
+import { PostCategoryModule } from './modules/post-category/post-category.module';
+import { TagModule } from './modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -143,7 +145,9 @@ import { HttpExceptionFilter } from './utils/exception/http-exception.filter';
     FileModule,
     CompanyTypeModule,
     CompanySizeModule,
-    QueueModule
+    QueueModule,
+    PostCategoryModule,
+    TagModule
   ],
   controllers: [],
   providers: [
