@@ -16,11 +16,14 @@ $ yarn install
 # docker run
 $ docker compose up -d
 
+# install package
+$ yarn install
+
+# run migrate
+$ npx prisma migrate dev
+
 # models gen
 $ yarn gen:prisma
-
-# seed data
-$ yarn seed:init
 
 # development
 $ yarn dev
