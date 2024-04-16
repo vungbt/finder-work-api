@@ -22,7 +22,7 @@ export class PostResolver {
   constructor(private readonly postService: PostService) {}
 
   @Mutation(() => Post, { name: 'create_post' })
-  @AuthRoles({ roles: [UserRole.admin] })
+  // @AuthRoles({ roles: [UserRole.admin] })
   create(@Args() args: CreateOnePostArgs) {
     return this.postService.create(args);
   }

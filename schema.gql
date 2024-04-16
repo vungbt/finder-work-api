@@ -850,8 +850,8 @@ type FileCountAggregate {
   createdAt: Int!
   updatedAt: Int!
   deletedAt: Int!
-  certificateId: Int!
   resumeTemplateId: Int!
+  certificateId: Int!
   _all: Int!
 }
 
@@ -862,6 +862,7 @@ type FileCount {
   projects: Int!
   posts: Int!
   company: Int!
+  resumeTemplates: Int!
 }
 
 type FileMaxAggregate {
@@ -872,8 +873,8 @@ type FileMaxAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  certificateId: String
   resumeTemplateId: String
+  certificateId: String
 }
 
 enum FileProvider {
@@ -889,8 +890,8 @@ type FileMinAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  certificateId: String
   resumeTemplateId: String
+  certificateId: String
 }
 
 type File {
@@ -902,16 +903,16 @@ type File {
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
-  certificateId: String
   resumeTemplateId: String
+  certificateId: String
   users: [User!]
   companies: [Company!]
   resume: [Resume!]
   projects: [Project!]
-  certificate: Certificate
-  resumeTemplate: ResumeTemplate
   posts: [Post!]
   company: [Company!]
+  resumeTemplates: [ResumeTemplate!]
+  certificate: Certificate
   _count: FileCount!
 }
 
@@ -1417,12 +1418,12 @@ type PostCountAggregate {
   metadata: Int!
   slug: Int!
   minRead: Int!
+  jobTitleId: Int!
   authorId: Int!
   thumbnailId: Int!
   createdAt: Int!
   updatedAt: Int!
   deletedAt: Int!
-  jobTitleId: Int!
   _all: Int!
 }
 
@@ -1442,12 +1443,12 @@ type PostMaxAggregate {
   shareUrl: String
   slug: String
   minRead: Int
+  jobTitleId: String
   authorId: String
   thumbnailId: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitleId: String
 }
 
 type PostMinAggregate {
@@ -1457,12 +1458,12 @@ type PostMinAggregate {
   shareUrl: String
   slug: String
   minRead: Int
+  jobTitleId: String
   authorId: String
   thumbnailId: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitleId: String
 }
 
 type PostSumAggregate {
@@ -1477,12 +1478,12 @@ type Post {
   metadata: JSON
   slug: String!
   minRead: Int
+  jobTitleId: String
   authorId: String!
   thumbnailId: String
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
-  jobTitleId: String!
   jobTitle: JobTitle
   author: User!
   thumbnail: File
@@ -1788,6 +1789,7 @@ type ResumeTemplateCountAggregate {
   createdAt: Int!
   updatedAt: Int!
   deletedAt: Int!
+  fileId: Int!
   _all: Int!
 }
 
@@ -1798,6 +1800,7 @@ type ResumeTemplateMaxAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  fileId: String
 }
 
 enum UserStatus {
@@ -1812,6 +1815,7 @@ type ResumeTemplateMinAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  fileId: String
 }
 
 type ResumeTemplate {
@@ -1821,6 +1825,7 @@ type ResumeTemplate {
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
+  fileId: String
   file: File
 }
 
@@ -2464,6 +2469,11 @@ type RefreshTokenResult {
   expireTime: DateTime!
 }
 
+type AllPostCategoryResult {
+  data: [PostCategory!]!
+  metadata: Metadata
+}
+
 type AllCompanySizeResult {
   data: [CompanySize!]!
   metadata: Metadata
@@ -2486,7 +2496,7 @@ type Query {
   one_country(where: CountryWhereInput, orderBy: [CountryOrderByWithRelationInput!], cursor: CountryWhereUniqueInput, take: Int, skip: Int, distinct: [CountryScalarFieldEnum!]): Country!
   all_tag(where: TagWhereInput, orderBy: [TagOrderByWithRelationInput!], cursor: TagWhereUniqueInput, take: Int, skip: Int, distinct: [TagScalarFieldEnum!]): [Tag!]!
   one_tag(where: TagWhereInput, orderBy: [TagOrderByWithRelationInput!], cursor: TagWhereUniqueInput, take: Int, skip: Int, distinct: [TagScalarFieldEnum!]): Tag!
-  all_post_category(where: PostCategoryWhereInput, orderBy: [PostCategoryOrderByWithRelationInput!], cursor: PostCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [PostCategoryScalarFieldEnum!]): [PostCategory!]!
+  all_post_category(where: PostCategoryWhereInput, orderBy: [PostCategoryOrderByWithRelationInput!], cursor: PostCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [PostCategoryScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllPostCategoryResult!
   one_post_category(where: PostCategoryWhereInput, orderBy: [PostCategoryOrderByWithRelationInput!], cursor: PostCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [PostCategoryScalarFieldEnum!]): PostCategory!
   all_job_title(where: JobTitleWhereInput, orderBy: [JobTitleOrderByWithRelationInput!], cursor: JobTitleWhereUniqueInput, take: Int, skip: Int, distinct: [JobTitleScalarFieldEnum!]): [JobTitle!]!
   one_job_title(where: JobTitleWhereInput, orderBy: [JobTitleOrderByWithRelationInput!], cursor: JobTitleWhereUniqueInput, take: Int, skip: Int, distinct: [JobTitleScalarFieldEnum!]): JobTitle!
@@ -2903,16 +2913,16 @@ input FileWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  certificateId: StringNullableFilter
   resumeTemplateId: StringNullableFilter
+  certificateId: StringNullableFilter
   users: UserListRelationFilter
   companies: CompanyListRelationFilter
   resume: ResumeListRelationFilter
   projects: ProjectListRelationFilter
-  certificate: CertificateNullableRelationFilter
-  resumeTemplate: ResumeTemplateNullableRelationFilter
   posts: PostListRelationFilter
   company: CompanyListRelationFilter
+  resumeTemplates: ResumeTemplateListRelationFilter
+  certificate: CertificateNullableRelationFilter
 }
 
 input EnumFileProviderNullableFilter {
@@ -3581,12 +3591,12 @@ input PostWhereInput {
   metadata: JsonNullableFilter
   slug: StringFilter
   minRead: IntNullableFilter
+  jobTitleId: StringNullableFilter
   authorId: StringFilter
   thumbnailId: StringNullableFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  jobTitleId: StringFilter
   jobTitle: JobTitleNullableRelationFilter
   author: UserRelationFilter
   thumbnail: FileNullableRelationFilter
@@ -3807,26 +3817,10 @@ input ReferenceWhereInput {
   company: CompanyRelationFilter
 }
 
-input CertificateNullableRelationFilter {
-  is: CertificateWhereInput
-  isNot: CertificateWhereInput
-}
-
-input CertificateWhereInput {
-  AND: [CertificateWhereInput!]
-  OR: [CertificateWhereInput!]
-  NOT: [CertificateWhereInput!]
-  id: StringFilter
-  name: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  files: FileListRelationFilter
-}
-
-input ResumeTemplateNullableRelationFilter {
-  is: ResumeTemplateWhereInput
-  isNot: ResumeTemplateWhereInput
+input ResumeTemplateListRelationFilter {
+  every: ResumeTemplateWhereInput
+  some: ResumeTemplateWhereInput
+  none: ResumeTemplateWhereInput
 }
 
 input ResumeTemplateWhereInput {
@@ -3839,6 +3833,7 @@ input ResumeTemplateWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
+  fileId: StringNullableFilter
   file: FileNullableRelationFilter
 }
 
@@ -3854,6 +3849,23 @@ input NestedEnumUserStatusNullableFilter {
   in: [UserStatus!]
   notIn: [UserStatus!]
   not: NestedEnumUserStatusNullableFilter
+}
+
+input CertificateNullableRelationFilter {
+  is: CertificateWhereInput
+  isNot: CertificateWhereInput
+}
+
+input CertificateWhereInput {
+  AND: [CertificateWhereInput!]
+  OR: [CertificateWhereInput!]
+  NOT: [CertificateWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  files: FileListRelationFilter
 }
 
 input PaymentListRelationFilter {
@@ -4319,19 +4331,23 @@ input FileOrderByWithRelationInput {
   createdAt: SortOrder
   updatedAt: SortOrder
   deletedAt: SortOrderInput
-  certificateId: SortOrderInput
   resumeTemplateId: SortOrderInput
+  certificateId: SortOrderInput
   users: UserOrderByRelationAggregateInput
   companies: CompanyOrderByRelationAggregateInput
   resume: ResumeOrderByRelationAggregateInput
   projects: ProjectOrderByRelationAggregateInput
-  certificate: CertificateOrderByWithRelationInput
-  resumeTemplate: ResumeTemplateOrderByWithRelationInput
   posts: PostOrderByRelationAggregateInput
   company: CompanyOrderByRelationAggregateInput
+  resumeTemplates: ResumeTemplateOrderByRelationAggregateInput
+  certificate: CertificateOrderByWithRelationInput
 }
 
 input ProjectOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input ResumeTemplateOrderByRelationAggregateInput {
   _count: SortOrder
 }
 
@@ -4346,16 +4362,6 @@ input CertificateOrderByWithRelationInput {
 
 input FileOrderByRelationAggregateInput {
   _count: SortOrder
-}
-
-input ResumeTemplateOrderByWithRelationInput {
-  id: SortOrder
-  raw: SortOrder
-  status: SortOrderInput
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  deletedAt: SortOrderInput
-  file: FileOrderByWithRelationInput
 }
 
 input SocialOrderByRelationAggregateInput {
@@ -4573,12 +4579,12 @@ input PostOrderByWithRelationInput {
   metadata: SortOrderInput
   slug: SortOrder
   minRead: SortOrderInput
+  jobTitleId: SortOrderInput
   authorId: SortOrder
   thumbnailId: SortOrderInput
   createdAt: SortOrder
   updatedAt: SortOrder
   deletedAt: SortOrderInput
-  jobTitleId: SortOrder
   jobTitle: JobTitleOrderByWithRelationInput
   author: UserOrderByWithRelationInput
   thumbnail: FileOrderByWithRelationInput
@@ -4609,12 +4615,12 @@ input PostWhereUniqueInput {
   metadata: JsonNullableFilter
   slug: StringFilter
   minRead: IntNullableFilter
+  jobTitleId: StringNullableFilter
   authorId: StringFilter
   thumbnailId: StringNullableFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  jobTitleId: StringFilter
   jobTitle: JobTitleNullableRelationFilter
   author: UserRelationFilter
   thumbnail: FileNullableRelationFilter
@@ -4634,12 +4640,12 @@ enum PostScalarFieldEnum {
   metadata
   slug
   minRead
+  jobTitleId
   authorId
   thumbnailId
   createdAt
   updatedAt
   deletedAt
-  jobTitleId
 }
 
 input JobOrderByWithRelationInput {
@@ -5162,13 +5168,14 @@ input FileCreateWithoutUsersInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  resumeTemplateId: String
   companies: CompanyCreateNestedManyWithoutPhotosInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
-  resumeTemplate: ResumeTemplateCreateNestedOneWithoutFileInput
   posts: PostCreateNestedManyWithoutThumbnailInput
   company: CompanyCreateNestedManyWithoutAvatarInput
+  resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
+  certificate: CertificateCreateNestedOneWithoutFilesInput
 }
 
 input CompanyCreateNestedManyWithoutPhotosInput {
@@ -5214,13 +5221,14 @@ input FileCreateWithoutCompanyInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   companies: CompanyCreateNestedManyWithoutPhotosInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
-  resumeTemplate: ResumeTemplateCreateNestedOneWithoutFileInput
   posts: PostCreateNestedManyWithoutThumbnailInput
+  resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
+  certificate: CertificateCreateNestedOneWithoutFilesInput
 }
 
 input UserCreateNestedManyWithoutAvatarInput {
@@ -5524,13 +5532,14 @@ input FileCreateWithoutCompaniesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
-  resumeTemplate: ResumeTemplateCreateNestedOneWithoutFileInput
   posts: PostCreateNestedManyWithoutThumbnailInput
   company: CompanyCreateNestedManyWithoutAvatarInput
+  resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
+  certificate: CertificateCreateNestedOneWithoutFilesInput
 }
 
 input ResumeCreateNestedManyWithoutAvatarInput {
@@ -5845,13 +5854,14 @@ input FileCreateWithoutResumeInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   companies: CompanyCreateNestedManyWithoutPhotosInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
-  resumeTemplate: ResumeTemplateCreateNestedOneWithoutFileInput
   posts: PostCreateNestedManyWithoutThumbnailInput
   company: CompanyCreateNestedManyWithoutAvatarInput
+  resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
+  certificate: CertificateCreateNestedOneWithoutFilesInput
 }
 
 input ProjectCreateNestedManyWithoutThumbnailInput {
@@ -6665,77 +6675,14 @@ input FileCreateWithoutProjectsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   companies: CompanyCreateNestedManyWithoutPhotosInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
-  resumeTemplate: ResumeTemplateCreateNestedOneWithoutFileInput
   posts: PostCreateNestedManyWithoutThumbnailInput
   company: CompanyCreateNestedManyWithoutAvatarInput
-}
-
-input CertificateCreateNestedOneWithoutFilesInput {
-  create: CertificateCreateWithoutFilesInput
-  connectOrCreate: CertificateCreateOrConnectWithoutFilesInput
-  connect: CertificateWhereUniqueInput
-}
-
-input CertificateCreateWithoutFilesInput {
-  id: String
-  name: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-input CertificateCreateOrConnectWithoutFilesInput {
-  where: CertificateWhereUniqueInput!
-  create: CertificateCreateWithoutFilesInput!
-}
-
-input CertificateWhereUniqueInput {
-  id: String
-  AND: [CertificateWhereInput!]
-  OR: [CertificateWhereInput!]
-  NOT: [CertificateWhereInput!]
-  name: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  files: FileListRelationFilter
-}
-
-input ResumeTemplateCreateNestedOneWithoutFileInput {
-  create: ResumeTemplateCreateWithoutFileInput
-  connectOrCreate: ResumeTemplateCreateOrConnectWithoutFileInput
-  connect: ResumeTemplateWhereUniqueInput
-}
-
-input ResumeTemplateCreateWithoutFileInput {
-  id: String
-  raw: String!
-  status: UserStatus
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-input ResumeTemplateCreateOrConnectWithoutFileInput {
-  where: ResumeTemplateWhereUniqueInput!
-  create: ResumeTemplateCreateWithoutFileInput!
-}
-
-input ResumeTemplateWhereUniqueInput {
-  id: String
-  AND: [ResumeTemplateWhereInput!]
-  OR: [ResumeTemplateWhereInput!]
-  NOT: [ResumeTemplateWhereInput!]
-  raw: StringFilter
-  status: EnumUserStatusNullableFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  file: FileNullableRelationFilter
+  resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
+  certificate: CertificateCreateNestedOneWithoutFilesInput
 }
 
 input PostCreateNestedManyWithoutThumbnailInput {
@@ -7079,13 +7026,14 @@ input FileCreateWithoutPostsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   companies: CompanyCreateNestedManyWithoutPhotosInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
-  resumeTemplate: ResumeTemplateCreateNestedOneWithoutFileInput
   company: CompanyCreateNestedManyWithoutAvatarInput
+  resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
+  certificate: CertificateCreateNestedOneWithoutFilesInput
 }
 
 input CompanyCreateNestedManyWithoutAvatarInput {
@@ -9364,6 +9312,86 @@ input CompanyCreateManyAvatarInput {
   userId: String
 }
 
+input ResumeTemplateCreateNestedManyWithoutFileInput {
+  create: [ResumeTemplateCreateWithoutFileInput!]
+  connectOrCreate: [ResumeTemplateCreateOrConnectWithoutFileInput!]
+  createMany: ResumeTemplateCreateManyFileInputEnvelope
+  connect: [ResumeTemplateWhereUniqueInput!]
+}
+
+input ResumeTemplateCreateWithoutFileInput {
+  id: String
+  raw: String!
+  status: UserStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input ResumeTemplateCreateOrConnectWithoutFileInput {
+  where: ResumeTemplateWhereUniqueInput!
+  create: ResumeTemplateCreateWithoutFileInput!
+}
+
+input ResumeTemplateWhereUniqueInput {
+  id: String
+  AND: [ResumeTemplateWhereInput!]
+  OR: [ResumeTemplateWhereInput!]
+  NOT: [ResumeTemplateWhereInput!]
+  raw: StringFilter
+  status: EnumUserStatusNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  fileId: StringNullableFilter
+  file: FileNullableRelationFilter
+}
+
+input ResumeTemplateCreateManyFileInputEnvelope {
+  data: [ResumeTemplateCreateManyFileInput!]!
+  skipDuplicates: Boolean
+}
+
+input ResumeTemplateCreateManyFileInput {
+  id: String
+  raw: String!
+  status: UserStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input CertificateCreateNestedOneWithoutFilesInput {
+  create: CertificateCreateWithoutFilesInput
+  connectOrCreate: CertificateCreateOrConnectWithoutFilesInput
+  connect: CertificateWhereUniqueInput
+}
+
+input CertificateCreateWithoutFilesInput {
+  id: String
+  name: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input CertificateCreateOrConnectWithoutFilesInput {
+  where: CertificateWhereUniqueInput!
+  create: CertificateCreateWithoutFilesInput!
+}
+
+input CertificateWhereUniqueInput {
+  id: String
+  AND: [CertificateWhereInput!]
+  OR: [CertificateWhereInput!]
+  NOT: [CertificateWhereInput!]
+  name: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  files: FileListRelationFilter
+}
+
 input FileCreateOrConnectWithoutPostsInput {
   where: FileWhereUniqueInput!
   create: FileCreateWithoutPostsInput!
@@ -9387,10 +9415,10 @@ input FileWhereUniqueInput {
   companies: CompanyListRelationFilter
   resume: ResumeListRelationFilter
   projects: ProjectListRelationFilter
-  certificate: CertificateNullableRelationFilter
-  resumeTemplate: ResumeTemplateNullableRelationFilter
   posts: PostListRelationFilter
   company: CompanyListRelationFilter
+  resumeTemplates: ResumeTemplateListRelationFilter
+  certificate: CertificateNullableRelationFilter
 }
 
 input PostCreateOrConnectWithoutAuthorInput {
@@ -9411,11 +9439,11 @@ input PostCreateManyAuthorInput {
   metadata: JSON
   slug: String!
   minRead: Int
+  jobTitleId: String
   thumbnailId: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitleId: String!
 }
 
 input UserCreateOrConnectWithoutProjectsInput {
@@ -9584,11 +9612,11 @@ input PostCreateManyThumbnailInput {
   metadata: JSON
   slug: String!
   minRead: Int
+  jobTitleId: String
   authorId: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitleId: String!
 }
 
 input FileCreateOrConnectWithoutProjectsInput {
@@ -10837,13 +10865,14 @@ input FileUpdateWithoutUsersInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
-  resumeTemplate: ResumeTemplateUpdateOneWithoutFileNestedInput
   posts: PostUpdateManyWithoutThumbnailNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
+  resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
+  certificate: CertificateUpdateOneWithoutFilesNestedInput
 }
 
 input NullableEnumFileProviderFieldUpdateOperationsInput {
@@ -10916,13 +10945,14 @@ input FileUpdateWithoutCompanyInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
-  resumeTemplate: ResumeTemplateUpdateOneWithoutFileNestedInput
   posts: PostUpdateManyWithoutThumbnailNestedInput
+  resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
+  certificate: CertificateUpdateOneWithoutFilesNestedInput
 }
 
 input UserUpdateManyWithoutAvatarNestedInput {
@@ -11358,13 +11388,14 @@ input FileUpdateWithoutCompaniesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
-  resumeTemplate: ResumeTemplateUpdateOneWithoutFileNestedInput
   posts: PostUpdateManyWithoutThumbnailNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
+  resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
+  certificate: CertificateUpdateOneWithoutFilesNestedInput
 }
 
 input ResumeUpdateManyWithoutAvatarNestedInput {
@@ -11807,13 +11838,14 @@ input FileUpdateWithoutResumeInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
-  resumeTemplate: ResumeTemplateUpdateOneWithoutFileNestedInput
   posts: PostUpdateManyWithoutThumbnailNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
+  resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
+  certificate: CertificateUpdateOneWithoutFilesNestedInput
 }
 
 input ProjectUpdateManyWithoutThumbnailNestedInput {
@@ -13008,76 +13040,14 @@ input FileUpdateWithoutProjectsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
-  resumeTemplate: ResumeTemplateUpdateOneWithoutFileNestedInput
   posts: PostUpdateManyWithoutThumbnailNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
-}
-
-input CertificateUpdateOneWithoutFilesNestedInput {
-  create: CertificateCreateWithoutFilesInput
-  connectOrCreate: CertificateCreateOrConnectWithoutFilesInput
-  upsert: CertificateUpsertWithoutFilesInput
-  disconnect: CertificateWhereInput
-  delete: CertificateWhereInput
-  connect: CertificateWhereUniqueInput
-  update: CertificateUpdateToOneWithWhereWithoutFilesInput
-}
-
-input CertificateUpsertWithoutFilesInput {
-  update: CertificateUpdateWithoutFilesInput!
-  create: CertificateCreateWithoutFilesInput!
-  where: CertificateWhereInput
-}
-
-input CertificateUpdateWithoutFilesInput {
-  id: StringFieldUpdateOperationsInput
-  name: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-}
-
-input CertificateUpdateToOneWithWhereWithoutFilesInput {
-  where: CertificateWhereInput
-  data: CertificateUpdateWithoutFilesInput!
-}
-
-input ResumeTemplateUpdateOneWithoutFileNestedInput {
-  create: ResumeTemplateCreateWithoutFileInput
-  connectOrCreate: ResumeTemplateCreateOrConnectWithoutFileInput
-  upsert: ResumeTemplateUpsertWithoutFileInput
-  disconnect: ResumeTemplateWhereInput
-  delete: ResumeTemplateWhereInput
-  connect: ResumeTemplateWhereUniqueInput
-  update: ResumeTemplateUpdateToOneWithWhereWithoutFileInput
-}
-
-input ResumeTemplateUpsertWithoutFileInput {
-  update: ResumeTemplateUpdateWithoutFileInput!
-  create: ResumeTemplateCreateWithoutFileInput!
-  where: ResumeTemplateWhereInput
-}
-
-input ResumeTemplateUpdateWithoutFileInput {
-  id: StringFieldUpdateOperationsInput
-  raw: StringFieldUpdateOperationsInput
-  status: NullableEnumUserStatusFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-}
-
-input NullableEnumUserStatusFieldUpdateOperationsInput {
-  set: UserStatus
-}
-
-input ResumeTemplateUpdateToOneWithWhereWithoutFileInput {
-  where: ResumeTemplateWhereInput
-  data: ResumeTemplateUpdateWithoutFileInput!
+  resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
+  certificate: CertificateUpdateOneWithoutFilesNestedInput
 }
 
 input PostUpdateManyWithoutThumbnailNestedInput {
@@ -13629,13 +13599,14 @@ input FileUpdateWithoutPostsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
-  resumeTemplate: ResumeTemplateUpdateOneWithoutFileNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
+  resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
+  certificate: CertificateUpdateOneWithoutFilesNestedInput
 }
 
 input CompanyUpdateManyWithoutAvatarNestedInput {
@@ -16340,6 +16311,100 @@ input CompanyUpdateManyWithWhereWithoutAvatarInput {
   data: CompanyUpdateManyMutationInput!
 }
 
+input ResumeTemplateUpdateManyWithoutFileNestedInput {
+  create: [ResumeTemplateCreateWithoutFileInput!]
+  connectOrCreate: [ResumeTemplateCreateOrConnectWithoutFileInput!]
+  upsert: [ResumeTemplateUpsertWithWhereUniqueWithoutFileInput!]
+  createMany: ResumeTemplateCreateManyFileInputEnvelope
+  set: [ResumeTemplateWhereUniqueInput!]
+  disconnect: [ResumeTemplateWhereUniqueInput!]
+  delete: [ResumeTemplateWhereUniqueInput!]
+  connect: [ResumeTemplateWhereUniqueInput!]
+  update: [ResumeTemplateUpdateWithWhereUniqueWithoutFileInput!]
+  updateMany: [ResumeTemplateUpdateManyWithWhereWithoutFileInput!]
+  deleteMany: [ResumeTemplateScalarWhereInput!]
+}
+
+input ResumeTemplateUpsertWithWhereUniqueWithoutFileInput {
+  where: ResumeTemplateWhereUniqueInput!
+  update: ResumeTemplateUpdateWithoutFileInput!
+  create: ResumeTemplateCreateWithoutFileInput!
+}
+
+input ResumeTemplateUpdateWithoutFileInput {
+  id: StringFieldUpdateOperationsInput
+  raw: StringFieldUpdateOperationsInput
+  status: NullableEnumUserStatusFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input NullableEnumUserStatusFieldUpdateOperationsInput {
+  set: UserStatus
+}
+
+input ResumeTemplateUpdateWithWhereUniqueWithoutFileInput {
+  where: ResumeTemplateWhereUniqueInput!
+  data: ResumeTemplateUpdateWithoutFileInput!
+}
+
+input ResumeTemplateUpdateManyWithWhereWithoutFileInput {
+  where: ResumeTemplateScalarWhereInput!
+  data: ResumeTemplateUpdateManyMutationInput!
+}
+
+input ResumeTemplateScalarWhereInput {
+  AND: [ResumeTemplateScalarWhereInput!]
+  OR: [ResumeTemplateScalarWhereInput!]
+  NOT: [ResumeTemplateScalarWhereInput!]
+  id: StringFilter
+  raw: StringFilter
+  status: EnumUserStatusNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  fileId: StringNullableFilter
+}
+
+input ResumeTemplateUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  raw: StringFieldUpdateOperationsInput
+  status: NullableEnumUserStatusFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input CertificateUpdateOneWithoutFilesNestedInput {
+  create: CertificateCreateWithoutFilesInput
+  connectOrCreate: CertificateCreateOrConnectWithoutFilesInput
+  upsert: CertificateUpsertWithoutFilesInput
+  disconnect: CertificateWhereInput
+  delete: CertificateWhereInput
+  connect: CertificateWhereUniqueInput
+  update: CertificateUpdateToOneWithWhereWithoutFilesInput
+}
+
+input CertificateUpsertWithoutFilesInput {
+  update: CertificateUpdateWithoutFilesInput!
+  create: CertificateCreateWithoutFilesInput!
+  where: CertificateWhereInput
+}
+
+input CertificateUpdateWithoutFilesInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input CertificateUpdateToOneWithWhereWithoutFilesInput {
+  where: CertificateWhereInput
+  data: CertificateUpdateWithoutFilesInput!
+}
+
 input FileUpdateToOneWithWhereWithoutPostsInput {
   where: FileWhereInput
   data: FileUpdateWithoutPostsInput!
@@ -16366,12 +16431,12 @@ input PostScalarWhereInput {
   metadata: JsonNullableFilter
   slug: StringFilter
   minRead: IntNullableFilter
+  jobTitleId: StringNullableFilter
   authorId: StringFilter
   thumbnailId: StringNullableFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  jobTitleId: StringFilter
 }
 
 input PostUpdateManyMutationInput {
@@ -16974,8 +17039,8 @@ input FileScalarWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  certificateId: StringNullableFilter
   resumeTemplateId: StringNullableFilter
+  certificateId: StringNullableFilter
 }
 
 input FileUpdateManyMutationInput {
@@ -16987,6 +17052,7 @@ input FileUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resumeTemplateId: NullableStringFieldUpdateOperationsInput
 }
 
 input CompanyUpdateToOneWithWhereWithoutSocialInput {

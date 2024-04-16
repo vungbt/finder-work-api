@@ -61,24 +61,24 @@ model User {
 }
 
 model File {
-  id               String          @id @default(uuid())
+  id               String           @id @default(uuid())
   url              String
-  storageId        String          @unique()
-  provider         FileProvider?   @default(cloudinary)
+  storageId        String           @unique()
+  provider         FileProvider?    @default(cloudinary)
   metadata         Json?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
   deletedAt        DateTime?
   users            User[]
-  companies        Company[]       @relation("CompanyPhotos")
+  companies        Company[]        @relation("CompanyPhotos")
   resume           Resume[]
   projects         Project[]
-  certificate      Certificate?    @relation(fields: [certificateId], references: [id])
-  certificateId    String?
-  resumeTemplate   ResumeTemplate? @relation(fields: [resumeTemplateId], references: [id])
-  resumeTemplateId String?         @unique
+  resumeTemplateId String?          @unique
   posts            Post[]
   company          Company[]
+  resumeTemplates  ResumeTemplate[]
+  certificate      Certificate?     @relation(fields: [certificateId], references: [id])
+  certificateId    String?
 }
 
 model Skill {
@@ -250,11 +250,12 @@ model Reference {
 model ResumeTemplate {
   id        String      @id @default(uuid())
   raw       String
-  file      File?
+  file      File?       @relation(fields: [fileId], references: [id])
   status    UserStatus? @default(active)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   deletedAt DateTime?
+  fileId    String?
 }
 
 model Certificate {
@@ -506,14 +507,15 @@ model PostCategory {
 }
 
 model Post {
-  id       String    @id @default(uuid())
-  title    String
-  content  String
-  shareUrl String
-  metadata Json?
-  slug     String
-  minRead  Int?      @default(0)
-  jobTitle JobTitle? @relation(fields: [jobTitleId], references: [id])
+  id         String    @id @default(uuid())
+  title      String
+  content    String
+  shareUrl   String
+  metadata   Json?
+  slug       String
+  minRead    Int?      @default(0)
+  jobTitleId String?
+  jobTitle   JobTitle? @relation(fields: [jobTitleId], references: [id])
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
@@ -522,15 +524,14 @@ model Post {
   thumbnailId String?
   categories  PostCategory[]
 
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  deletedAt  DateTime?
-  tags       Tag[]
-  jobTitleId String
-  likes      LikePost[]
-  dislikes   DislikePost[]
-  comments   Comment[]
-  bookmarks  BookmarkPost[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  deletedAt DateTime?
+  tags      Tag[]
+  likes     LikePost[]
+  dislikes  DislikePost[]
+  comments  Comment[]
+  bookmarks BookmarkPost[]
 }
 
 model LikePost {
