@@ -26,9 +26,12 @@ jobs:
 
       - name: Install Yarn
         run: npm install -g yarn
-      
+
       - name: Install dependencies
         run: yarn install
+      
+      - name: Run CommitLint
+        run:  npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
       - name: Format code
         run: yarn format
