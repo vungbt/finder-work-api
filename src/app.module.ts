@@ -37,6 +37,7 @@ import { UserModule } from './modules/user/user.module';
 import { HttpExceptionFilter } from './utils/exception/http-exception.filter';
 import { PostCategoryModule } from './modules/post-category/post-category.module';
 import { TagModule } from './modules/tag/tag.module';
+import { SettingModule } from './modules/setting/setting.module';
 
 @Module({
   imports: [
@@ -147,7 +148,8 @@ import { TagModule } from './modules/tag/tag.module';
     CompanySizeModule,
     QueueModule,
     PostCategoryModule,
-    TagModule
+    TagModule,
+    SettingModule
   ],
   controllers: [],
   providers: [

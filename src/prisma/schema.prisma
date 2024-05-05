@@ -41,23 +41,25 @@ model User {
   social          Social[]
   verifyCode      String?
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  deletedAt       DateTime?
-  resumes         Resume[]
-  workExperiences WorkExperience[]
-  educations      Education[]
-  projects        Project[]
-  applications    Application[]
-  posts           Post[]
-  likes           LikePost[]
-  dislikes        DislikePost[]
-  comments        Comment[]
-  bookmarks       BookmarkPost[]
-  saveJobs        SaveJob[]
-  payments        Payment[]
-  address         UsersOnCity[]
-  companies       Company[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  deletedAt         DateTime?
+  resumes           Resume[]
+  workExperiences   WorkExperience[]
+  educations        Education[]
+  projects          Project[]
+  applications      Application[]
+  posts             Post[]
+  likes             LikePost[]
+  dislikes          DislikePost[]
+  comments          Comment[]
+  bookmarks         BookmarkPost[]
+  saveJobs          SaveJob[]
+  payments          Payment[]
+  address           UsersOnCity[]
+  companies         Company[]
+  authorSettings    Setting[]        @relation("AuthorSettings")
+  updatedBySettings Setting[]        @relation("UpdatedBySettings")
 }
 
 model File {
@@ -492,8 +494,20 @@ model City {
 }
 
 model Setting {
-  key   String @id
-  value Json
+  key      String
+  type     String
+  value    Json
+  authorId String?
+  author   User?   @relation("AuthorSettings", fields: [authorId], references: [id])
+
+  showWith    UserRole[] @default([super_admin])
+  updatedById String?
+  updatedBy   User?      @relation("UpdatedBySettings", fields: [updatedById], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+
+  @@id([key, type])
 }
 
 model PostCategory {
@@ -648,6 +662,7 @@ enum UserRole {
   employee
   employer
   admin
+  super_admin
 }
 
 enum WorkPosition {

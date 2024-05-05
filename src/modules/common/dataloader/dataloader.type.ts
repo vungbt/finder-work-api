@@ -1,4 +1,4 @@
-import { Country, File, JobTitle, PostCategory, Tag, User } from '@prisma/client';
+import { Country, File, JobTitle, PostCategory, Setting, Tag, User } from '@prisma/client';
 import DataLoader from 'dataloader';
 
 export interface IDataloaders {
@@ -10,4 +10,5 @@ export interface IDataloaders {
   postCategoryMany: DataLoader<string[], PostCategory[]>;
   postCategoryUnique: DataLoader<string, PostCategory>;
   jobTitleUnique: DataLoader<string, JobTitle>;
+  settingUnique: DataLoader<{ key: string; type: string }, Setting>;
 }

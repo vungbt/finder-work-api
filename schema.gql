@@ -1870,16 +1870,56 @@ type SaveJob {
 
 type SettingCountAggregate {
   key: Int!
+  type: Int!
   value: Int!
+  authorId: Int!
+  showWith: Int!
+  updatedById: Int!
+  createdAt: Int!
+  updatedAt: Int!
+  deletedAt: Int!
   _all: Int!
 }
 
 type SettingMaxAggregate {
   key: String
+  type: String
+  authorId: String
+  updatedById: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
 }
 
 type SettingMinAggregate {
   key: String
+  type: String
+  authorId: String
+  updatedById: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type Setting {
+  key: String!
+  type: String!
+  value: JSON!
+  authorId: String
+  showWith: [UserRole!]
+  updatedById: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  author: User
+  updatedBy: User
+}
+
+enum UserRole {
+  employee
+  employer
+  admin
+  super_admin
 }
 
 type SkillCountAggregate {
@@ -2168,6 +2208,8 @@ type UserCount {
   payments: Int!
   address: Int!
   companies: Int!
+  authorSettings: Int!
+  updatedBySettings: Int!
 }
 
 type UserMaxAggregate {
@@ -2205,12 +2247,6 @@ enum WorkPosition {
 
 enum SignInProvider {
   google
-}
-
-enum UserRole {
-  employee
-  employer
-  admin
 }
 
 type UserMinAggregate {
@@ -2278,6 +2314,8 @@ type User {
   payments: [Payment!]
   address: [UsersOnCity!]
   companies: [Company!]
+  authorSettings: [Setting!]
+  updatedBySettings: [Setting!]
   _count: UserCount!
 }
 
@@ -2454,6 +2492,8 @@ type UserOnly {
   payments: [Payment!]
   address: [UsersOnCity!]
   companies: [Company!]
+  authorSettings: [Setting!]
+  updatedBySettings: [Setting!]
   _count: UserCount!
 }
 
@@ -2471,6 +2511,11 @@ type RefreshTokenResult {
 
 type AllPostCategoryResult {
   data: [PostCategory!]!
+  metadata: Metadata
+}
+
+type AllSettingResult {
+  data: [Setting!]!
   metadata: Metadata
 }
 
@@ -2502,6 +2547,9 @@ type Query {
   one_job_title(where: JobTitleWhereInput, orderBy: [JobTitleOrderByWithRelationInput!], cursor: JobTitleWhereUniqueInput, take: Int, skip: Int, distinct: [JobTitleScalarFieldEnum!]): JobTitle!
   all_user(where: UserWhereInput, orderBy: [UserOrderByWithRelationInput!], cursor: UserWhereUniqueInput, take: Int, skip: Int, distinct: [UserScalarFieldEnum!]): [UserOnly!]!
   me: UserOnly!
+  one_setting(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!]): Setting!
+  setting_portal(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!], pagination: PaginationInput, searchValue: String, isInit: Boolean): AllSettingResult!
+  setting_landing_page(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllSettingResult!
   all_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
   one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
   all_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!], pagination: PaginationInput): AllPostResult!
@@ -2784,6 +2832,8 @@ input UserWhereInput {
   payments: PaymentListRelationFilter
   address: UsersOnCityListRelationFilter
   companies: CompanyListRelationFilter
+  authorSettings: SettingListRelationFilter
+  updatedBySettings: SettingListRelationFilter
 }
 
 input BoolFilter {
@@ -3950,6 +4000,37 @@ input UsersOnCityWhereInput {
   city: CityRelationFilter
 }
 
+input SettingListRelationFilter {
+  every: SettingWhereInput
+  some: SettingWhereInput
+  none: SettingWhereInput
+}
+
+input SettingWhereInput {
+  AND: [SettingWhereInput!]
+  OR: [SettingWhereInput!]
+  NOT: [SettingWhereInput!]
+  key: StringFilter
+  type: StringFilter
+  value: JsonFilter
+  authorId: StringNullableFilter
+  showWith: EnumUserRoleNullableListFilter
+  updatedById: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  author: UserNullableRelationFilter
+  updatedBy: UserNullableRelationFilter
+}
+
+input EnumUserRoleNullableListFilter {
+  equals: [UserRole!]
+  has: UserRole
+  hasEvery: [UserRole!]
+  hasSome: [UserRole!]
+  isEmpty: Boolean
+}
+
 input CityOrderByWithRelationInput {
   id: SortOrder
   name: SortOrder
@@ -4320,6 +4401,8 @@ input UserOrderByWithRelationInput {
   payments: PaymentOrderByRelationAggregateInput
   address: UsersOnCityOrderByRelationAggregateInput
   companies: CompanyOrderByRelationAggregateInput
+  authorSettings: SettingOrderByRelationAggregateInput
+  updatedBySettings: SettingOrderByRelationAggregateInput
 }
 
 input FileOrderByWithRelationInput {
@@ -4400,6 +4483,10 @@ input PaymentOrderByRelationAggregateInput {
   _count: SortOrder
 }
 
+input SettingOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
 input UserWhereUniqueInput {
   id: String
   email: String
@@ -4441,6 +4528,8 @@ input UserWhereUniqueInput {
   payments: PaymentListRelationFilter
   address: UsersOnCityListRelationFilter
   companies: CompanyListRelationFilter
+  authorSettings: SettingListRelationFilter
+  updatedBySettings: SettingListRelationFilter
 }
 
 enum UserScalarFieldEnum {
@@ -4461,6 +4550,55 @@ enum UserScalarFieldEnum {
   role
   addressDetail
   verifyCode
+  createdAt
+  updatedAt
+  deletedAt
+}
+
+input SettingOrderByWithRelationInput {
+  key: SortOrder
+  type: SortOrder
+  value: SortOrder
+  authorId: SortOrderInput
+  showWith: SortOrder
+  updatedById: SortOrderInput
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrderInput
+  author: UserOrderByWithRelationInput
+  updatedBy: UserOrderByWithRelationInput
+}
+
+input SettingWhereUniqueInput {
+  key_type: SettingKeyTypeCompoundUniqueInput
+  AND: [SettingWhereInput!]
+  OR: [SettingWhereInput!]
+  NOT: [SettingWhereInput!]
+  key: StringFilter
+  type: StringFilter
+  value: JsonFilter
+  authorId: StringNullableFilter
+  showWith: EnumUserRoleNullableListFilter
+  updatedById: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  author: UserNullableRelationFilter
+  updatedBy: UserNullableRelationFilter
+}
+
+input SettingKeyTypeCompoundUniqueInput {
+  key: String!
+  type: String!
+}
+
+enum SettingScalarFieldEnum {
+  key
+  type
+  value
+  authorId
+  showWith
+  updatedById
   createdAt
   updatedAt
   deletedAt
@@ -4921,6 +5059,9 @@ type Mutation {
   create_job_title(data: JobTitleCreateInput!): JobTitle!
   update_job_title(data: JobTitleUpdateInput!, where: JobTitleWhereUniqueInput!): JobTitle!
   delete_job_title(where: JobTitleWhereUniqueInput!): JobTitle!
+  create_setting(data: SettingCreateInput!): Setting!
+  update_setting(data: SettingUpdateInput!, where: SettingWhereUniqueInput!): Setting!
+  delete_setting(where: SettingWhereUniqueInput!): Setting!
   auth_login(email: String!, password: String!): LoginResult!
   auth_login_with_google(idToken: String!, role: UserRoleWithoutAdmin = employee, provider: SignInProvider = google, countryCode: String = "VI"): LoginResult!
   auth_register(email: String!, password: String!, role: String!, countryCode: String = "VI"): UserOnly!
@@ -5151,6 +5292,8 @@ input UserCreateWithoutAddressInput {
   saveJobs: SaveJobCreateNestedManyWithoutUserInput
   payments: PaymentCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input FileCreateNestedOneWithoutUsersInput {
@@ -5273,6 +5416,8 @@ input UserCreateWithoutAvatarInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input CountryCreateNestedOneWithoutUsersInput {
@@ -5427,6 +5572,8 @@ input UserCreateWithoutCountryInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input SocialCreateNestedManyWithoutUserInput {
@@ -5615,6 +5762,8 @@ input UserCreateWithoutResumesInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input WorkExperienceCreateNestedManyWithoutUserInput {
@@ -6133,6 +6282,8 @@ input UserCreateWithoutSocialInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input ResumeCreateNestedManyWithoutUserInput {
@@ -6313,6 +6464,8 @@ input UserCreateWithoutWorkExperiencesInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input EducationCreateNestedManyWithoutUserInput {
@@ -6534,6 +6687,8 @@ input UserCreateWithoutPostsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input ProjectCreateNestedManyWithoutUserInput {
@@ -6814,6 +6969,8 @@ input UserCreateWithoutLikesInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input ApplicationCreateNestedManyWithoutCandidateInput {
@@ -6981,6 +7138,8 @@ input UserCreateWithoutProjectsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input PostCreateNestedManyWithoutAuthorInput {
@@ -7181,6 +7340,8 @@ input UserCreateWithoutEducationsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input LikePostCreateNestedManyWithoutUserInput {
@@ -7283,6 +7444,8 @@ input UserCreateWithoutDislikesInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input CommentCreateNestedManyWithoutUserInput {
@@ -7389,6 +7552,8 @@ input UserCreateWithoutBookmarksInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input DislikePostCreateNestedManyWithoutUserInput {
@@ -7496,6 +7661,8 @@ input UserCreateWithoutCommentsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input BookmarkPostCreateNestedManyWithoutUserInput {
@@ -7681,6 +7848,8 @@ input UserCreateWithoutApplicationsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input PaymentCreateNestedManyWithoutUserInput {
@@ -7992,6 +8161,8 @@ input UserCreateWithoutSaveJobsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input CompanyCreateNestedManyWithoutUserInput {
@@ -8098,6 +8269,188 @@ input CompanyCreateManyUserInput {
   addressDetail: String!
   cityId: Int!
   description: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input SettingCreateNestedManyWithoutAuthorInput {
+  create: [SettingCreateWithoutAuthorInput!]
+  connectOrCreate: [SettingCreateOrConnectWithoutAuthorInput!]
+  createMany: SettingCreateManyAuthorInputEnvelope
+  connect: [SettingWhereUniqueInput!]
+}
+
+input SettingCreateWithoutAuthorInput {
+  key: String!
+  type: String!
+  value: JSON!
+  showWith: SettingCreateshowWithInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  updatedBy: UserCreateNestedOneWithoutUpdatedBySettingsInput
+}
+
+input SettingCreateshowWithInput {
+  set: [UserRole!]!
+}
+
+input UserCreateNestedOneWithoutUpdatedBySettingsInput {
+  create: UserCreateWithoutUpdatedBySettingsInput
+  connectOrCreate: UserCreateOrConnectWithoutUpdatedBySettingsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutUpdatedBySettingsInput {
+  id: String
+  avatarUrl: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean
+  password: String!
+  phoneNumber: String
+  workingPosition: WorkPosition
+  status: UserStatus
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole
+  addressDetail: String
+  verifyCode: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  avatar: FileCreateNestedOneWithoutUsersInput
+  country: CountryCreateNestedOneWithoutUsersInput
+  social: SocialCreateNestedManyWithoutUserInput
+  resumes: ResumeCreateNestedManyWithoutUserInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
+  educations: EducationCreateNestedManyWithoutUserInput
+  projects: ProjectCreateNestedManyWithoutUserInput
+  applications: ApplicationCreateNestedManyWithoutCandidateInput
+  posts: PostCreateNestedManyWithoutAuthorInput
+  likes: LikePostCreateNestedManyWithoutUserInput
+  dislikes: DislikePostCreateNestedManyWithoutUserInput
+  comments: CommentCreateNestedManyWithoutUserInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
+  saveJobs: SaveJobCreateNestedManyWithoutUserInput
+  payments: PaymentCreateNestedManyWithoutUserInput
+  address: UsersOnCityCreateNestedManyWithoutUserInput
+  companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+}
+
+input UserCreateOrConnectWithoutUpdatedBySettingsInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutUpdatedBySettingsInput!
+}
+
+input SettingCreateOrConnectWithoutAuthorInput {
+  where: SettingWhereUniqueInput!
+  create: SettingCreateWithoutAuthorInput!
+}
+
+input SettingCreateManyAuthorInputEnvelope {
+  data: [SettingCreateManyAuthorInput!]!
+  skipDuplicates: Boolean
+}
+
+input SettingCreateManyAuthorInput {
+  key: String!
+  type: String!
+  value: JSON!
+  showWith: SettingCreateshowWithInput
+  updatedById: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input SettingCreateNestedManyWithoutUpdatedByInput {
+  create: [SettingCreateWithoutUpdatedByInput!]
+  connectOrCreate: [SettingCreateOrConnectWithoutUpdatedByInput!]
+  createMany: SettingCreateManyUpdatedByInputEnvelope
+  connect: [SettingWhereUniqueInput!]
+}
+
+input SettingCreateWithoutUpdatedByInput {
+  key: String!
+  type: String!
+  value: JSON!
+  showWith: SettingCreateshowWithInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  author: UserCreateNestedOneWithoutAuthorSettingsInput
+}
+
+input UserCreateNestedOneWithoutAuthorSettingsInput {
+  create: UserCreateWithoutAuthorSettingsInput
+  connectOrCreate: UserCreateOrConnectWithoutAuthorSettingsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutAuthorSettingsInput {
+  id: String
+  avatarUrl: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean
+  password: String!
+  phoneNumber: String
+  workingPosition: WorkPosition
+  status: UserStatus
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole
+  addressDetail: String
+  verifyCode: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  avatar: FileCreateNestedOneWithoutUsersInput
+  country: CountryCreateNestedOneWithoutUsersInput
+  social: SocialCreateNestedManyWithoutUserInput
+  resumes: ResumeCreateNestedManyWithoutUserInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
+  educations: EducationCreateNestedManyWithoutUserInput
+  projects: ProjectCreateNestedManyWithoutUserInput
+  applications: ApplicationCreateNestedManyWithoutCandidateInput
+  posts: PostCreateNestedManyWithoutAuthorInput
+  likes: LikePostCreateNestedManyWithoutUserInput
+  dislikes: DislikePostCreateNestedManyWithoutUserInput
+  comments: CommentCreateNestedManyWithoutUserInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
+  saveJobs: SaveJobCreateNestedManyWithoutUserInput
+  payments: PaymentCreateNestedManyWithoutUserInput
+  address: UsersOnCityCreateNestedManyWithoutUserInput
+  companies: CompanyCreateNestedManyWithoutUserInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
+}
+
+input UserCreateOrConnectWithoutAuthorSettingsInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutAuthorSettingsInput!
+}
+
+input SettingCreateOrConnectWithoutUpdatedByInput {
+  where: SettingWhereUniqueInput!
+  create: SettingCreateWithoutUpdatedByInput!
+}
+
+input SettingCreateManyUpdatedByInputEnvelope {
+  data: [SettingCreateManyUpdatedByInput!]!
+  skipDuplicates: Boolean
+}
+
+input SettingCreateManyUpdatedByInput {
+  key: String!
+  type: String!
+  value: JSON!
+  authorId: String
+  showWith: SettingCreateshowWithInput
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -9280,6 +9633,8 @@ input UserCreateWithoutCompaniesInput {
   saveJobs: SaveJobCreateNestedManyWithoutUserInput
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
 input UserCreateOrConnectWithoutCompaniesInput {
@@ -10818,6 +11173,8 @@ input UserUpdateWithoutAddressInput {
   saveJobs: SaveJobUpdateManyWithoutUserNestedInput
   payments: PaymentUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input BoolFieldUpdateOperationsInput {
@@ -11010,6 +11367,8 @@ input UserUpdateWithoutAvatarInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input CountryUpdateOneWithoutUsersNestedInput {
@@ -11223,6 +11582,8 @@ input UserUpdateWithoutCountryInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input SocialUpdateManyWithoutUserNestedInput {
@@ -11492,6 +11853,8 @@ input UserUpdateWithoutResumesInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input WorkExperienceUpdateManyWithoutUserNestedInput {
@@ -12235,6 +12598,8 @@ input UserUpdateWithoutSocialInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input ResumeUpdateManyWithoutUserNestedInput {
@@ -12494,6 +12859,8 @@ input UserUpdateWithoutWorkExperiencesInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input EducationUpdateManyWithoutUserNestedInput {
@@ -12829,6 +13196,8 @@ input UserUpdateWithoutPostsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input ProjectUpdateManyWithoutUserNestedInput {
@@ -13299,6 +13668,8 @@ input UserUpdateWithoutLikesInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input ApplicationUpdateManyWithoutCandidateNestedInput {
@@ -13531,6 +13902,8 @@ input UserUpdateWithoutProjectsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input PostUpdateManyWithoutAuthorNestedInput {
@@ -13811,6 +14184,8 @@ input UserUpdateWithoutEducationsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input LikePostUpdateManyWithoutUserNestedInput {
@@ -13957,6 +14332,8 @@ input UserUpdateWithoutDislikesInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input CommentUpdateManyWithoutUserNestedInput {
@@ -14105,6 +14482,8 @@ input UserUpdateWithoutBookmarksInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input DislikePostUpdateManyWithoutUserNestedInput {
@@ -14256,6 +14635,8 @@ input UserUpdateWithoutCommentsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input BookmarkPostUpdateManyWithoutUserNestedInput {
@@ -14501,6 +14882,8 @@ input UserUpdateWithoutApplicationsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input PaymentUpdateManyWithoutUserNestedInput {
@@ -14925,6 +15308,8 @@ input UserUpdateWithoutSaveJobsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input CompanyUpdateManyWithoutUserNestedInput {
@@ -15074,6 +15459,238 @@ input CompanyUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input SettingUpdateManyWithoutAuthorNestedInput {
+  create: [SettingCreateWithoutAuthorInput!]
+  connectOrCreate: [SettingCreateOrConnectWithoutAuthorInput!]
+  upsert: [SettingUpsertWithWhereUniqueWithoutAuthorInput!]
+  createMany: SettingCreateManyAuthorInputEnvelope
+  set: [SettingWhereUniqueInput!]
+  disconnect: [SettingWhereUniqueInput!]
+  delete: [SettingWhereUniqueInput!]
+  connect: [SettingWhereUniqueInput!]
+  update: [SettingUpdateWithWhereUniqueWithoutAuthorInput!]
+  updateMany: [SettingUpdateManyWithWhereWithoutAuthorInput!]
+  deleteMany: [SettingScalarWhereInput!]
+}
+
+input SettingUpsertWithWhereUniqueWithoutAuthorInput {
+  where: SettingWhereUniqueInput!
+  update: SettingUpdateWithoutAuthorInput!
+  create: SettingCreateWithoutAuthorInput!
+}
+
+input SettingUpdateWithoutAuthorInput {
+  key: StringFieldUpdateOperationsInput
+  type: StringFieldUpdateOperationsInput
+  value: JSON
+  showWith: SettingUpdateshowWithInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  updatedBy: UserUpdateOneWithoutUpdatedBySettingsNestedInput
+}
+
+input SettingUpdateshowWithInput {
+  set: [UserRole!]
+  push: [UserRole!]
+}
+
+input UserUpdateOneWithoutUpdatedBySettingsNestedInput {
+  create: UserCreateWithoutUpdatedBySettingsInput
+  connectOrCreate: UserCreateOrConnectWithoutUpdatedBySettingsInput
+  upsert: UserUpsertWithoutUpdatedBySettingsInput
+  disconnect: UserWhereInput
+  delete: UserWhereInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateToOneWithWhereWithoutUpdatedBySettingsInput
+}
+
+input UserUpsertWithoutUpdatedBySettingsInput {
+  update: UserUpdateWithoutUpdatedBySettingsInput!
+  create: UserCreateWithoutUpdatedBySettingsInput!
+  where: UserWhereInput
+}
+
+input UserUpdateWithoutUpdatedBySettingsInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+}
+
+input UserUpdateToOneWithWhereWithoutUpdatedBySettingsInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutUpdatedBySettingsInput!
+}
+
+input SettingUpdateWithWhereUniqueWithoutAuthorInput {
+  where: SettingWhereUniqueInput!
+  data: SettingUpdateWithoutAuthorInput!
+}
+
+input SettingUpdateManyWithWhereWithoutAuthorInput {
+  where: SettingScalarWhereInput!
+  data: SettingUpdateManyMutationInput!
+}
+
+input SettingScalarWhereInput {
+  AND: [SettingScalarWhereInput!]
+  OR: [SettingScalarWhereInput!]
+  NOT: [SettingScalarWhereInput!]
+  key: StringFilter
+  type: StringFilter
+  value: JsonFilter
+  authorId: StringNullableFilter
+  showWith: EnumUserRoleNullableListFilter
+  updatedById: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+}
+
+input SettingUpdateManyMutationInput {
+  key: StringFieldUpdateOperationsInput
+  type: StringFieldUpdateOperationsInput
+  value: JSON
+  showWith: SettingUpdateshowWithInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input SettingUpdateManyWithoutUpdatedByNestedInput {
+  create: [SettingCreateWithoutUpdatedByInput!]
+  connectOrCreate: [SettingCreateOrConnectWithoutUpdatedByInput!]
+  upsert: [SettingUpsertWithWhereUniqueWithoutUpdatedByInput!]
+  createMany: SettingCreateManyUpdatedByInputEnvelope
+  set: [SettingWhereUniqueInput!]
+  disconnect: [SettingWhereUniqueInput!]
+  delete: [SettingWhereUniqueInput!]
+  connect: [SettingWhereUniqueInput!]
+  update: [SettingUpdateWithWhereUniqueWithoutUpdatedByInput!]
+  updateMany: [SettingUpdateManyWithWhereWithoutUpdatedByInput!]
+  deleteMany: [SettingScalarWhereInput!]
+}
+
+input SettingUpsertWithWhereUniqueWithoutUpdatedByInput {
+  where: SettingWhereUniqueInput!
+  update: SettingUpdateWithoutUpdatedByInput!
+  create: SettingCreateWithoutUpdatedByInput!
+}
+
+input SettingUpdateWithoutUpdatedByInput {
+  key: StringFieldUpdateOperationsInput
+  type: StringFieldUpdateOperationsInput
+  value: JSON
+  showWith: SettingUpdateshowWithInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  author: UserUpdateOneWithoutAuthorSettingsNestedInput
+}
+
+input UserUpdateOneWithoutAuthorSettingsNestedInput {
+  create: UserCreateWithoutAuthorSettingsInput
+  connectOrCreate: UserCreateOrConnectWithoutAuthorSettingsInput
+  upsert: UserUpsertWithoutAuthorSettingsInput
+  disconnect: UserWhereInput
+  delete: UserWhereInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateToOneWithWhereWithoutAuthorSettingsInput
+}
+
+input UserUpsertWithoutAuthorSettingsInput {
+  update: UserUpdateWithoutAuthorSettingsInput!
+  create: UserCreateWithoutAuthorSettingsInput!
+  where: UserWhereInput
+}
+
+input UserUpdateWithoutAuthorSettingsInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+input UserUpdateToOneWithWhereWithoutAuthorSettingsInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutAuthorSettingsInput!
+}
+
+input SettingUpdateWithWhereUniqueWithoutUpdatedByInput {
+  where: SettingWhereUniqueInput!
+  data: SettingUpdateWithoutUpdatedByInput!
+}
+
+input SettingUpdateManyWithWhereWithoutUpdatedByInput {
+  where: SettingScalarWhereInput!
+  data: SettingUpdateManyMutationInput!
 }
 
 input UserUpdateToOneWithWhereWithoutSaveJobsInput {
@@ -16294,6 +16911,8 @@ input UserUpdateWithoutCompaniesInput {
   saveJobs: SaveJobUpdateManyWithoutUserNestedInput
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input UserUpdateToOneWithWhereWithoutCompaniesInput {
@@ -17416,6 +18035,30 @@ input JobTitleUpdateInput {
   resumes: ResumeUpdateManyWithoutJobTitleNestedInput
   workExperiences: WorkExperienceUpdateManyWithoutJobTitleNestedInput
   posts: PostUpdateManyWithoutJobTitleNestedInput
+}
+
+input SettingCreateInput {
+  key: String!
+  type: String!
+  value: JSON!
+  showWith: SettingCreateshowWithInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  author: UserCreateNestedOneWithoutAuthorSettingsInput
+  updatedBy: UserCreateNestedOneWithoutUpdatedBySettingsInput
+}
+
+input SettingUpdateInput {
+  key: StringFieldUpdateOperationsInput
+  type: StringFieldUpdateOperationsInput
+  value: JSON
+  showWith: SettingUpdateshowWithInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  author: UserUpdateOneWithoutAuthorSettingsNestedInput
+  updatedBy: UserUpdateOneWithoutUpdatedBySettingsNestedInput
 }
 
 enum UserRoleWithoutAdmin {
