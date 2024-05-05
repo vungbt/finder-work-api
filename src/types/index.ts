@@ -1,4 +1,6 @@
+import { IDataloaders } from '@/modules/common/dataloader/dataloader.type';
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { UserRole } from '@prisma/client';
 
 @ObjectType()
 export class Metadata {
@@ -35,4 +37,24 @@ export class FileType {
   url: string;
   secure_url: string;
   access_mode: string;
+}
+
+export class CurrentUser {
+  id: string;
+  role: UserRole;
+}
+
+export class ContextType {
+  loaders: IDataloaders;
+  req: {
+    user: CurrentUser;
+  };
+}
+
+export enum ESettingKey {
+  admin = 'admin',
+  employer = 'employer',
+  employee = 'employee',
+  super_admin = 'super_admin',
+  landing_page = 'landing_page'
 }

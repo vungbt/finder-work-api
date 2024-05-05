@@ -5,6 +5,7 @@ import { AuthRoles } from '../auth/passport/jwt/jwt.decorator';
 import { IDataloaders } from '../common/dataloader/dataloader.type';
 import { UserService } from './user.service';
 import { UserOnly } from './user.type';
+import { CurrentUser } from '@/types';
 
 @Resolver(() => UserOnly)
 export class UserResolver {
@@ -18,7 +19,7 @@ export class UserResolver {
   @Query(() => UserOnly, { name: 'me' })
   @AuthRoles()
   me(@Context() context) {
-    const currentUser = context.req.user;
+    const currentUser = context.req.user as CurrentUser;
     return this.userService.me({ userId: currentUser.id });
   }
 

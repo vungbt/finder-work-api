@@ -1,5 +1,5 @@
 export const SITE_NAME = 'Jobcadu';
-export const MAX_LIMIT = 5000;
+export const MAX_LIMIT = 100;
 export const DEFAULT_COLOR = '#586EE0';
 export const COUNTRY_CODE_DEFAULT = 'VI';
 export const DEFAULT_PHONE = {

@@ -16,7 +16,7 @@ export class AddressResolver {
   ) {}
 
   @Query(() => Address, { name: 'all_address' })
-  async all(@Args(new TakeLimit()) args: AllAddressArgs) {
+  async all(@Args(new TakeLimit(5000)) args: AllAddressArgs) {
     const data = await this.addressService.findAll(args);
     return data;
   }

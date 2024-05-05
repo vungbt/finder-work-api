@@ -12,5 +12,6 @@
   "user_not_verified": "User has not verified the email yet",
   "common": "Error",
   "verify_code_invalid": "Verify code is invalid, pls resend a code.",
-  "email_registered_with": "Email has registered with {provider}"
+  "email_registered_with": "Email has registered with {provider}",
+  "setting_unique_constraint": "Setting must be unique constraint on the fields (`key`, `type`)"
 }

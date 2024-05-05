@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import * as DataLoader from 'dataloader';
-import { FileService } from '../../file/file.service';
-import { Country, File, JobTitle, PostCategory, Tag, User } from '@prisma/client';
-import { IDataloaders } from './dataloader.type';
 import { AddressService } from '@/modules/address/address.service';
-import { PostCategoryService } from '@/modules/post-category/post-category.service';
 import { JobTitleService } from '@/modules/job-title/job-title.service';
+import { PostCategoryService } from '@/modules/post-category/post-category.service';
+import { SettingService } from '@/modules/setting/setting.service';
 import { TagService } from '@/modules/tag/tag.service';
 import { UserService } from '@/modules/user/user.service';
-import omitObject from 'lodash/omit';
+import { Injectable } from '@nestjs/common';
+import { Country, File, JobTitle, PostCategory, Setting, Tag, User } from '@prisma/client';
+import * as DataLoader from 'dataloader';
+import { FileService } from '../../file/file.service';
+import { IDataloaders } from './dataloader.type';
 
 @Injectable()
 export class DataloaderService {
@@ -18,7 +18,8 @@ export class DataloaderService {
     private readonly addressService: AddressService,
     private readonly tagService: TagService,
     private readonly postCategoryService: PostCategoryService,
-    private readonly jobTitleService: JobTitleService
+    private readonly jobTitleService: JobTitleService,
+    private readonly settingService: SettingService
   ) {}
 
   getLoaders(): IDataloaders {
@@ -30,6 +31,7 @@ export class DataloaderService {
     const jobTitleUnique = this._createJobTitleUniqueLoader();
     const tagMany = this._createTagManyLoader();
     const postCategoryMany = this._createPostCategoryManyLoader();
+    const settingUnique = this._createSettingUniqueLoader();
 
     return {
       fileUnique,
@@ -39,7 +41,8 @@ export class DataloaderService {
       postCategoryUnique,
       jobTitleUnique,
       tagMany,
-      postCategoryMany
+      postCategoryMany,
+      settingUnique
     };
   }
 
@@ -57,7 +60,7 @@ export class DataloaderService {
     return new DataLoader<string, User>((keys: readonly string[]) => {
       return Promise.all(
         keys.map((key) => {
-          return omitObject(this.userService.findUnique({ where: { id: key } }), 'password');
+          return this.userService.findUnique({ where: { id: key } });
         })
       );
     });
@@ -121,5 +124,19 @@ export class DataloaderService {
         })
       );
     });
+  }
+
+  private _createSettingUniqueLoader() {
+    return new DataLoader<{ key: string; type: string }, Setting>(
+      (keys: readonly { key: string; type: string }[]) => {
+        return Promise.all(
+          keys.map((item) => {
+            return this.settingService.findUnique({
+              where: { key_type: { key: item.key, type: item.type } }
+            });
+          })
+        );
+      }
+    );
   }
 }
