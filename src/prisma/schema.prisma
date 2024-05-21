@@ -379,7 +379,6 @@ model JobTitle {
   jobs            Job[]
   resumes         Resume[]
   workExperiences WorkExperience[]
-  posts           Post[]
 }
 
 model JobCategory {
@@ -394,6 +393,7 @@ model JobCategory {
   deletedAt DateTime?
   jobs      Job[]
   companies Company[]
+  posts     Post[]
 }
 
 model Tag {
@@ -521,15 +521,15 @@ model PostCategory {
 }
 
 model Post {
-  id         String    @id @default(uuid())
-  title      String
-  content    String
-  shareUrl   String
-  metadata   Json?
-  slug       String
-  minRead    Int?      @default(0)
-  jobTitleId String?
-  jobTitle   JobTitle? @relation(fields: [jobTitleId], references: [id])
+  id            String       @id @default(uuid())
+  title         String
+  content       String
+  shareUrl      String
+  metadata      Json?
+  slug          String
+  minRead       Int?         @default(0)
+  jobCategoryId String?
+  jobCategory   JobCategory? @relation(fields: [jobCategoryId], references: [id])
 
   authorId String
   author   User   @relation(fields: [authorId], references: [id])

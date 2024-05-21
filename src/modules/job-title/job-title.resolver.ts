@@ -2,12 +2,13 @@ import {
   CreateOneJobTitleArgs,
   DeleteOneJobTitleArgs,
   FindFirstJobTitleArgs,
-  FindManyJobTitleArgs,
   JobTitle,
   UpdateOneJobTitleArgs
 } from '@/prisma/graphql';
+import { TakeLimit } from '@/utils/pipes/take-limit.decorator';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JobTitleService } from './job-title.service';
+import { AllJobTitleArgs, AllJobTitleResult } from './job-title.type';
 
 @Resolver(() => JobTitle)
 export class JobTitleResolver {
@@ -28,8 +29,8 @@ export class JobTitleResolver {
     return this.jobTitleService.delete(args);
   }
 
-  @Query(() => [JobTitle], { name: 'all_job_title' })
-  all(@Args() args: FindManyJobTitleArgs) {
+  @Query(() => AllJobTitleResult, { name: 'all_job_title' })
+  all(@Args(new TakeLimit()) args: AllJobTitleArgs) {
     return this.jobTitleService.findMany(args);
   }
 

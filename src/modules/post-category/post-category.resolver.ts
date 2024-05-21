@@ -35,7 +35,6 @@ export class PostCategoryResolver {
   }
 
   @Query(() => AllPostCategoryResult, { name: 'all_post_category' })
-  @AuthRoles({ roles: [UserRole.admin] })
   all(@Args(new TakeLimit()) args: AllPostCategoryArgs) {
     return this.postCategoryService.findAll(args);
   }

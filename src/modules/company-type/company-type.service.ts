@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { BaseService } from '@/utils/base/base.service';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import { responseHelper } from '@/utils/helpers';
-import { AllCompanyTypeArgs } from './company-type.type';
 import { FindManyCompanyTypeArgs } from '@/prisma/graphql';
+import { PrismaService } from '@/prisma/prisma.service';
+import { BaseService } from '@/utils/base/base.service';
+import { responseHelper } from '@/utils/helpers';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { AllCompanyTypeArgs } from './company-type.type';
 
 @Injectable()
 export class CompanyTypeService implements BaseService {
@@ -30,9 +30,9 @@ export class CompanyTypeService implements BaseService {
     }
 
     const data = this.prismaService.companyType.findMany({
+      orderBy: { createdAt: 'desc' },
       ...queries,
-      ...reset,
-      orderBy: { createdAt: 'desc' }
+      ...reset
     });
     const total = await this.count(queries);
     return responseHelper(data, { total, ...pagination });

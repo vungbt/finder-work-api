@@ -2,7 +2,7 @@ import {
   CreateOnePostArgs,
   DeleteOnePostArgs,
   FindFirstPostArgs,
-  JobTitle,
+  JobCategory,
   Post,
   PostCategory,
   Tag,
@@ -63,15 +63,15 @@ export class PostResolver {
     return loaders.postCategoryMany.load(categoryIds);
   }
 
-  @ResolveField(() => JobTitle)
-  jobTitle(@Parent() post: Post, @Context() { loaders }: { loaders: IDataloaders }) {
-    if (!post.jobTitleId) return null;
-    return loaders.jobTitleUnique.load(post.jobTitleId);
+  @ResolveField(() => JobCategory)
+  jobCategory(@Parent() post: Post, @Context() { loaders }: { loaders: IDataloaders }) {
+    if (!post.jobCategoryId) return null;
+    return loaders.jobCategoryUnique.load(post.jobCategoryId);
   }
 
   @ResolveField(() => UserOnly)
   author(@Parent() post: Post, @Context() { loaders }: { loaders: IDataloaders }) {
-    if (!post.jobTitleId) return null;
+    if (!post.authorId) return null;
     return loaders.userUnique.load(post.authorId);
   }
 }

@@ -1110,6 +1110,7 @@ type JobCategoryCountAggregate {
 type JobCategoryCount {
   jobs: Int!
   companies: Int!
+  posts: Int!
 }
 
 type JobCategoryMaxAggregate {
@@ -1148,6 +1149,7 @@ type JobCategory {
   deletedAt: DateTime
   jobs: [Job!]
   companies: [Company!]
+  posts: [Post!]
   _count: JobCategoryCount!
 }
 
@@ -1165,7 +1167,6 @@ type JobTitleCount {
   jobs: Int!
   resumes: Int!
   workExperiences: Int!
-  posts: Int!
 }
 
 type JobTitleMaxAggregate {
@@ -1196,7 +1197,6 @@ type JobTitle {
   jobs: [Job!]
   resumes: [Resume!]
   workExperiences: [WorkExperience!]
-  posts: [Post!]
   _count: JobTitleCount!
 }
 
@@ -1418,7 +1418,7 @@ type PostCountAggregate {
   metadata: Int!
   slug: Int!
   minRead: Int!
-  jobTitleId: Int!
+  jobCategoryId: Int!
   authorId: Int!
   thumbnailId: Int!
   createdAt: Int!
@@ -1443,7 +1443,7 @@ type PostMaxAggregate {
   shareUrl: String
   slug: String
   minRead: Int
-  jobTitleId: String
+  jobCategoryId: String
   authorId: String
   thumbnailId: String
   createdAt: DateTime
@@ -1458,7 +1458,7 @@ type PostMinAggregate {
   shareUrl: String
   slug: String
   minRead: Int
-  jobTitleId: String
+  jobCategoryId: String
   authorId: String
   thumbnailId: String
   createdAt: DateTime
@@ -1478,13 +1478,13 @@ type Post {
   metadata: JSON
   slug: String!
   minRead: Int
-  jobTitleId: String
+  jobCategoryId: String
   authorId: String!
   thumbnailId: String
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
-  jobTitle: JobTitle
+  jobCategory: JobCategory
   author: User!
   thumbnail: File
   categories: [PostCategory!]
@@ -2509,6 +2509,11 @@ type RefreshTokenResult {
   expireTime: DateTime!
 }
 
+type AllJobTitleResult {
+  data: [JobTitle!]!
+  metadata: Metadata
+}
+
 type AllPostCategoryResult {
   data: [PostCategory!]!
   metadata: Metadata
@@ -2516,6 +2521,11 @@ type AllPostCategoryResult {
 
 type AllSettingResult {
   data: [Setting!]!
+  metadata: Metadata
+}
+
+type AllJobCategoryResult {
+  data: [JobCategory!]!
   metadata: Metadata
 }
 
@@ -2543,8 +2553,10 @@ type Query {
   one_tag(where: TagWhereInput, orderBy: [TagOrderByWithRelationInput!], cursor: TagWhereUniqueInput, take: Int, skip: Int, distinct: [TagScalarFieldEnum!]): Tag!
   all_post_category(where: PostCategoryWhereInput, orderBy: [PostCategoryOrderByWithRelationInput!], cursor: PostCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [PostCategoryScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllPostCategoryResult!
   one_post_category(where: PostCategoryWhereInput, orderBy: [PostCategoryOrderByWithRelationInput!], cursor: PostCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [PostCategoryScalarFieldEnum!]): PostCategory!
-  all_job_title(where: JobTitleWhereInput, orderBy: [JobTitleOrderByWithRelationInput!], cursor: JobTitleWhereUniqueInput, take: Int, skip: Int, distinct: [JobTitleScalarFieldEnum!]): [JobTitle!]!
+  all_job_title(where: JobTitleWhereInput, orderBy: [JobTitleOrderByWithRelationInput!], cursor: JobTitleWhereUniqueInput, take: Int, skip: Int, distinct: [JobTitleScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllJobTitleResult!
   one_job_title(where: JobTitleWhereInput, orderBy: [JobTitleOrderByWithRelationInput!], cursor: JobTitleWhereUniqueInput, take: Int, skip: Int, distinct: [JobTitleScalarFieldEnum!]): JobTitle!
+  all_job_category(where: JobCategoryWhereInput, orderBy: [JobCategoryOrderByWithRelationInput!], cursor: JobCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [JobCategoryScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllJobCategoryResult!
+  one_job_category(where: JobCategoryWhereInput, orderBy: [JobCategoryOrderByWithRelationInput!], cursor: JobCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [JobCategoryScalarFieldEnum!]): JobCategory!
   all_user(where: UserWhereInput, orderBy: [UserOrderByWithRelationInput!], cursor: UserWhereUniqueInput, take: Int, skip: Int, distinct: [UserScalarFieldEnum!]): [UserOnly!]!
   me: UserOnly!
   one_setting(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!]): Setting!
@@ -2556,8 +2568,6 @@ type Query {
   one_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!]): Post!
   all_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): [Job!]!
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
-  all_job_category(where: JobCategoryWhereInput, orderBy: [JobCategoryOrderByWithRelationInput!], cursor: JobCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [JobCategoryScalarFieldEnum!]): [JobCategory!]!
-  one_job_category(where: JobCategoryWhereInput, orderBy: [JobCategoryOrderByWithRelationInput!], cursor: JobCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [JobCategoryScalarFieldEnum!]): JobCategory!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): [Skill!]!
   one_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): Skill!
   all_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyTypeResult!
@@ -3122,6 +3132,7 @@ input JobCategoryWhereInput {
   deletedAt: DateTimeNullableFilter
   jobs: JobListRelationFilter
   companies: CompanyListRelationFilter
+  posts: PostListRelationFilter
 }
 
 input JobListRelationFilter {
@@ -3222,7 +3233,6 @@ input JobTitleWhereInput {
   jobs: JobListRelationFilter
   resumes: ResumeListRelationFilter
   workExperiences: WorkExperienceListRelationFilter
-  posts: PostListRelationFilter
 }
 
 input ResumeListRelationFilter {
@@ -3624,62 +3634,9 @@ input ActivityWhereInput {
   resume: ResumeNullableRelationFilter
 }
 
-input PostListRelationFilter {
-  every: PostWhereInput
-  some: PostWhereInput
-  none: PostWhereInput
-}
-
-input PostWhereInput {
-  AND: [PostWhereInput!]
-  OR: [PostWhereInput!]
-  NOT: [PostWhereInput!]
-  id: StringFilter
-  title: StringFilter
-  content: StringFilter
-  shareUrl: StringFilter
-  metadata: JsonNullableFilter
-  slug: StringFilter
-  minRead: IntNullableFilter
-  jobTitleId: StringNullableFilter
-  authorId: StringFilter
-  thumbnailId: StringNullableFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  jobTitle: JobTitleNullableRelationFilter
-  author: UserRelationFilter
-  thumbnail: FileNullableRelationFilter
-  categories: PostCategoryListRelationFilter
-  tags: TagListRelationFilter
-  likes: LikePostListRelationFilter
-  dislikes: DislikePostListRelationFilter
-  comments: CommentListRelationFilter
-  bookmarks: BookmarkPostListRelationFilter
-}
-
-input JobTitleNullableRelationFilter {
-  is: JobTitleWhereInput
-  isNot: JobTitleWhereInput
-}
-
-input PostCategoryListRelationFilter {
-  every: PostCategoryWhereInput
-  some: PostCategoryWhereInput
-  none: PostCategoryWhereInput
-}
-
-input PostCategoryWhereInput {
-  AND: [PostCategoryWhereInput!]
-  OR: [PostCategoryWhereInput!]
-  NOT: [PostCategoryWhereInput!]
-  id: StringFilter
-  name: StringFilter
-  slug: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  posts: PostListRelationFilter
+input JobCategoryRelationFilter {
+  is: JobCategoryWhereInput
+  isNot: JobCategoryWhereInput
 }
 
 input TagListRelationFilter {
@@ -3717,6 +3674,64 @@ input NestedEnumTagTypeNullableFilter {
   in: [TagType!]
   notIn: [TagType!]
   not: NestedEnumTagTypeNullableFilter
+}
+
+input PostListRelationFilter {
+  every: PostWhereInput
+  some: PostWhereInput
+  none: PostWhereInput
+}
+
+input PostWhereInput {
+  AND: [PostWhereInput!]
+  OR: [PostWhereInput!]
+  NOT: [PostWhereInput!]
+  id: StringFilter
+  title: StringFilter
+  content: StringFilter
+  shareUrl: StringFilter
+  metadata: JsonNullableFilter
+  slug: StringFilter
+  minRead: IntNullableFilter
+  jobCategoryId: StringNullableFilter
+  authorId: StringFilter
+  thumbnailId: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  jobCategory: JobCategoryNullableRelationFilter
+  author: UserRelationFilter
+  thumbnail: FileNullableRelationFilter
+  categories: PostCategoryListRelationFilter
+  tags: TagListRelationFilter
+  likes: LikePostListRelationFilter
+  dislikes: DislikePostListRelationFilter
+  comments: CommentListRelationFilter
+  bookmarks: BookmarkPostListRelationFilter
+}
+
+input JobCategoryNullableRelationFilter {
+  is: JobCategoryWhereInput
+  isNot: JobCategoryWhereInput
+}
+
+input PostCategoryListRelationFilter {
+  every: PostCategoryWhereInput
+  some: PostCategoryWhereInput
+  none: PostCategoryWhereInput
+}
+
+input PostCategoryWhereInput {
+  AND: [PostCategoryWhereInput!]
+  OR: [PostCategoryWhereInput!]
+  NOT: [PostCategoryWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  slug: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  posts: PostListRelationFilter
 }
 
 input LikePostListRelationFilter {
@@ -3818,11 +3833,6 @@ input BookmarkPostWhereInput {
   deletedAt: DateTimeNullableFilter
   user: UserRelationFilter
   post: PostRelationFilter
-}
-
-input JobCategoryRelationFilter {
-  is: JobCategoryWhereInput
-  isNot: JobCategoryWhereInput
 }
 
 input SaveJobListRelationFilter {
@@ -4335,7 +4345,6 @@ input JobTitleOrderByWithRelationInput {
   jobs: JobOrderByRelationAggregateInput
   resumes: ResumeOrderByRelationAggregateInput
   workExperiences: WorkExperienceOrderByRelationAggregateInput
-  posts: PostOrderByRelationAggregateInput
 }
 
 input JobTitleWhereUniqueInput {
@@ -4351,13 +4360,57 @@ input JobTitleWhereUniqueInput {
   jobs: JobListRelationFilter
   resumes: ResumeListRelationFilter
   workExperiences: WorkExperienceListRelationFilter
-  posts: PostListRelationFilter
 }
 
 enum JobTitleScalarFieldEnum {
   id
   name
   isFeature
+  createdAt
+  updatedAt
+  deletedAt
+}
+
+input JobCategoryOrderByWithRelationInput {
+  id: SortOrder
+  name: SortOrder
+  slug: SortOrder
+  isFeature: SortOrderInput
+  isTheFive: SortOrderInput
+  isDefault: SortOrderInput
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrderInput
+  jobs: JobOrderByRelationAggregateInput
+  companies: CompanyOrderByRelationAggregateInput
+  posts: PostOrderByRelationAggregateInput
+}
+
+input JobCategoryWhereUniqueInput {
+  id: String
+  name: String
+  slug: String
+  AND: [JobCategoryWhereInput!]
+  OR: [JobCategoryWhereInput!]
+  NOT: [JobCategoryWhereInput!]
+  isFeature: BoolNullableFilter
+  isTheFive: BoolNullableFilter
+  isDefault: BoolNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  jobs: JobListRelationFilter
+  companies: CompanyListRelationFilter
+  posts: PostListRelationFilter
+}
+
+enum JobCategoryScalarFieldEnum {
+  id
+  name
+  slug
+  isFeature
+  isTheFive
+  isDefault
   createdAt
   updatedAt
   deletedAt
@@ -4717,13 +4770,13 @@ input PostOrderByWithRelationInput {
   metadata: SortOrderInput
   slug: SortOrder
   minRead: SortOrderInput
-  jobTitleId: SortOrderInput
+  jobCategoryId: SortOrderInput
   authorId: SortOrder
   thumbnailId: SortOrderInput
   createdAt: SortOrder
   updatedAt: SortOrder
   deletedAt: SortOrderInput
-  jobTitle: JobTitleOrderByWithRelationInput
+  jobCategory: JobCategoryOrderByWithRelationInput
   author: UserOrderByWithRelationInput
   thumbnail: FileOrderByWithRelationInput
   categories: PostCategoryOrderByRelationAggregateInput
@@ -4753,13 +4806,13 @@ input PostWhereUniqueInput {
   metadata: JsonNullableFilter
   slug: StringFilter
   minRead: IntNullableFilter
-  jobTitleId: StringNullableFilter
+  jobCategoryId: StringNullableFilter
   authorId: StringFilter
   thumbnailId: StringNullableFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  jobTitle: JobTitleNullableRelationFilter
+  jobCategory: JobCategoryNullableRelationFilter
   author: UserRelationFilter
   thumbnail: FileNullableRelationFilter
   categories: PostCategoryListRelationFilter
@@ -4778,7 +4831,7 @@ enum PostScalarFieldEnum {
   metadata
   slug
   minRead
-  jobTitleId
+  jobCategoryId
   authorId
   thumbnailId
   createdAt
@@ -4813,20 +4866,6 @@ input JobOrderByWithRelationInput {
   skills: SkillOrderByRelationAggregateInput
   applications: ApplicationOrderByRelationAggregateInput
   saveJobs: SaveJobOrderByRelationAggregateInput
-}
-
-input JobCategoryOrderByWithRelationInput {
-  id: SortOrder
-  name: SortOrder
-  slug: SortOrder
-  isFeature: SortOrderInput
-  isTheFive: SortOrderInput
-  isDefault: SortOrderInput
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  deletedAt: SortOrderInput
-  jobs: JobOrderByRelationAggregateInput
-  companies: CompanyOrderByRelationAggregateInput
 }
 
 input SkillOrderByRelationAggregateInput {
@@ -4881,35 +4920,6 @@ enum JobScalarFieldEnum {
   isBoot
   numberOfRecruits
   applicationDeadline
-  createdAt
-  updatedAt
-  deletedAt
-}
-
-input JobCategoryWhereUniqueInput {
-  id: String
-  name: String
-  slug: String
-  AND: [JobCategoryWhereInput!]
-  OR: [JobCategoryWhereInput!]
-  NOT: [JobCategoryWhereInput!]
-  isFeature: BoolNullableFilter
-  isTheFive: BoolNullableFilter
-  isDefault: BoolNullableFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  jobs: JobListRelationFilter
-  companies: CompanyListRelationFilter
-}
-
-enum JobCategoryScalarFieldEnum {
-  id
-  name
-  slug
-  isFeature
-  isTheFive
-  isDefault
   createdAt
   updatedAt
   deletedAt
@@ -5059,6 +5069,9 @@ type Mutation {
   create_job_title(data: JobTitleCreateInput!): JobTitle!
   update_job_title(data: JobTitleUpdateInput!, where: JobTitleWhereUniqueInput!): JobTitle!
   delete_job_title(where: JobTitleWhereUniqueInput!): JobTitle!
+  create_job_category(data: JobCategoryCreateInput!): JobCategory!
+  update_job_category(data: JobCategoryUpdateInput!, where: JobCategoryWhereUniqueInput!): JobCategory!
+  delete_job_category(where: JobCategoryWhereUniqueInput!): JobCategory!
   create_setting(data: SettingCreateInput!): Setting!
   update_setting(data: SettingUpdateInput!, where: SettingWhereUniqueInput!): Setting!
   delete_setting(where: SettingWhereUniqueInput!): Setting!
@@ -5081,9 +5094,6 @@ type Mutation {
   create_job(data: JobCreateInput!): Job!
   update_job(data: JobUpdateInput!, where: JobWhereUniqueInput!): Job!
   delete_job(where: JobWhereUniqueInput!): Job!
-  create_job_category(data: JobCategoryCreateInput!): JobCategory!
-  update_job_category(data: JobCategoryUpdateInput!, where: JobCategoryWhereUniqueInput!): JobCategory!
-  delete_job_category(where: JobCategoryWhereUniqueInput!): JobCategory!
   create_skill(data: SkillCreateInput!): Skill!
   update_skill(data: SkillUpdateInput!, where: SkillWhereUniqueInput!): Skill!
   delete_skill(where: SkillWhereUniqueInput!): Skill!
@@ -5803,7 +5813,6 @@ input JobTitleCreateWithoutWorkExperiencesInput {
   deletedAt: DateTime
   jobs: JobCreateNestedManyWithoutJobTitleInput
   resumes: ResumeCreateNestedManyWithoutJobTitleInput
-  posts: PostCreateNestedManyWithoutJobTitleInput
 }
 
 input JobCreateNestedManyWithoutJobTitleInput {
@@ -5854,6 +5863,7 @@ input JobCategoryCreateWithoutJobsInput {
   updatedAt: DateTime
   deletedAt: DateTime
   companies: CompanyCreateNestedManyWithoutIndustriesInput
+  posts: PostCreateNestedManyWithoutJobCategoryInput
 }
 
 input CompanyCreateNestedManyWithoutIndustriesInput {
@@ -5953,7 +5963,6 @@ input JobTitleCreateWithoutJobsInput {
   deletedAt: DateTime
   resumes: ResumeCreateNestedManyWithoutJobTitleInput
   workExperiences: WorkExperienceCreateNestedManyWithoutJobTitleInput
-  posts: PostCreateNestedManyWithoutJobTitleInput
 }
 
 input ResumeCreateNestedManyWithoutJobTitleInput {
@@ -6162,6 +6171,7 @@ input JobCategoryCreateWithoutCompaniesInput {
   updatedAt: DateTime
   deletedAt: DateTime
   jobs: JobCreateNestedManyWithoutJobCategoryInput
+  posts: PostCreateNestedManyWithoutJobCategoryInput
 }
 
 input JobCreateNestedManyWithoutJobCategoryInput {
@@ -6398,7 +6408,6 @@ input JobTitleCreateWithoutResumesInput {
   deletedAt: DateTime
   jobs: JobCreateNestedManyWithoutJobTitleInput
   workExperiences: WorkExperienceCreateNestedManyWithoutJobTitleInput
-  posts: PostCreateNestedManyWithoutJobTitleInput
 }
 
 input WorkExperienceCreateNestedManyWithoutJobTitleInput {
@@ -6613,7 +6622,7 @@ input PostCreateWithoutTagsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnail: FileCreateNestedOneWithoutPostsInput
   categories: PostCategoryCreateNestedManyWithoutPostsInput
@@ -6623,27 +6632,29 @@ input PostCreateWithoutTagsInput {
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
 }
 
-input JobTitleCreateNestedOneWithoutPostsInput {
-  create: JobTitleCreateWithoutPostsInput
-  connectOrCreate: JobTitleCreateOrConnectWithoutPostsInput
-  connect: JobTitleWhereUniqueInput
+input JobCategoryCreateNestedOneWithoutPostsInput {
+  create: JobCategoryCreateWithoutPostsInput
+  connectOrCreate: JobCategoryCreateOrConnectWithoutPostsInput
+  connect: JobCategoryWhereUniqueInput
 }
 
-input JobTitleCreateWithoutPostsInput {
+input JobCategoryCreateWithoutPostsInput {
   id: String
   name: String!
+  slug: String!
   isFeature: Boolean
+  isTheFive: Boolean
+  isDefault: Boolean
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobs: JobCreateNestedManyWithoutJobTitleInput
-  resumes: ResumeCreateNestedManyWithoutJobTitleInput
-  workExperiences: WorkExperienceCreateNestedManyWithoutJobTitleInput
+  jobs: JobCreateNestedManyWithoutJobCategoryInput
+  companies: CompanyCreateNestedManyWithoutIndustriesInput
 }
 
-input JobTitleCreateOrConnectWithoutPostsInput {
-  where: JobTitleWhereUniqueInput!
-  create: JobTitleCreateWithoutPostsInput!
+input JobCategoryCreateOrConnectWithoutPostsInput {
+  where: JobCategoryWhereUniqueInput!
+  create: JobCategoryCreateWithoutPostsInput!
 }
 
 input UserCreateNestedOneWithoutPostsInput {
@@ -6858,7 +6869,7 @@ input PostCreateWithoutThumbnailInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   categories: PostCategoryCreateNestedManyWithoutPostsInput
   tags: TagCreateNestedManyWithoutPostsInput
@@ -7160,7 +7171,7 @@ input PostCreateWithoutAuthorInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   thumbnail: FileCreateNestedOneWithoutPostsInput
   categories: PostCategoryCreateNestedManyWithoutPostsInput
   tags: TagCreateNestedManyWithoutPostsInput
@@ -7377,7 +7388,7 @@ input PostCreateWithoutLikesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnail: FileCreateNestedOneWithoutPostsInput
   categories: PostCategoryCreateNestedManyWithoutPostsInput
@@ -7486,7 +7497,7 @@ input PostCreateWithoutCommentsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnail: FileCreateNestedOneWithoutPostsInput
   categories: PostCategoryCreateNestedManyWithoutPostsInput
@@ -7589,7 +7600,7 @@ input PostCreateWithoutDislikesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnail: FileCreateNestedOneWithoutPostsInput
   categories: PostCategoryCreateNestedManyWithoutPostsInput
@@ -7697,7 +7708,7 @@ input PostCreateWithoutBookmarksInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnail: FileCreateNestedOneWithoutPostsInput
   categories: PostCategoryCreateNestedManyWithoutPostsInput
@@ -9794,7 +9805,7 @@ input PostCreateManyAuthorInput {
   metadata: JSON
   slug: String!
   minRead: Int
-  jobTitleId: String
+  jobCategoryId: String
   thumbnailId: String
   createdAt: DateTime
   updatedAt: DateTime
@@ -9967,7 +9978,7 @@ input PostCreateManyThumbnailInput {
   metadata: JSON
   slug: String!
   minRead: Int
-  jobTitleId: String
+  jobCategoryId: String
   authorId: String!
   createdAt: DateTime
   updatedAt: DateTime
@@ -10152,59 +10163,6 @@ input WorkExperienceCreateManyJobTitleInput {
   description: String!
 }
 
-input PostCreateNestedManyWithoutJobTitleInput {
-  create: [PostCreateWithoutJobTitleInput!]
-  connectOrCreate: [PostCreateOrConnectWithoutJobTitleInput!]
-  createMany: PostCreateManyJobTitleInputEnvelope
-  connect: [PostWhereUniqueInput!]
-}
-
-input PostCreateWithoutJobTitleInput {
-  id: String
-  title: String!
-  content: String!
-  shareUrl: String!
-  metadata: JSON
-  slug: String!
-  minRead: Int
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  author: UserCreateNestedOneWithoutPostsInput!
-  thumbnail: FileCreateNestedOneWithoutPostsInput
-  categories: PostCategoryCreateNestedManyWithoutPostsInput
-  tags: TagCreateNestedManyWithoutPostsInput
-  likes: LikePostCreateNestedManyWithoutPostInput
-  dislikes: DislikePostCreateNestedManyWithoutPostInput
-  comments: CommentCreateNestedManyWithoutPostInput
-  bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
-}
-
-input PostCreateOrConnectWithoutJobTitleInput {
-  where: PostWhereUniqueInput!
-  create: PostCreateWithoutJobTitleInput!
-}
-
-input PostCreateManyJobTitleInputEnvelope {
-  data: [PostCreateManyJobTitleInput!]!
-  skipDuplicates: Boolean
-}
-
-input PostCreateManyJobTitleInput {
-  id: String
-  title: String!
-  content: String!
-  shareUrl: String!
-  metadata: JSON
-  slug: String!
-  minRead: Int
-  authorId: String!
-  thumbnailId: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
 input JobTitleCreateOrConnectWithoutResumesInput {
   where: JobTitleWhereUniqueInput!
   create: JobTitleCreateWithoutResumesInput!
@@ -10360,6 +10318,59 @@ input JobCreateManyJobCategoryInput {
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input PostCreateNestedManyWithoutJobCategoryInput {
+  create: [PostCreateWithoutJobCategoryInput!]
+  connectOrCreate: [PostCreateOrConnectWithoutJobCategoryInput!]
+  createMany: PostCreateManyJobCategoryInputEnvelope
+  connect: [PostWhereUniqueInput!]
+}
+
+input PostCreateWithoutJobCategoryInput {
+  id: String
+  title: String!
+  content: String!
+  shareUrl: String!
+  metadata: JSON
+  slug: String!
+  minRead: Int
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  author: UserCreateNestedOneWithoutPostsInput!
+  thumbnail: FileCreateNestedOneWithoutPostsInput
+  categories: PostCategoryCreateNestedManyWithoutPostsInput
+  tags: TagCreateNestedManyWithoutPostsInput
+  likes: LikePostCreateNestedManyWithoutPostInput
+  dislikes: DislikePostCreateNestedManyWithoutPostInput
+  comments: CommentCreateNestedManyWithoutPostInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+}
+
+input PostCreateOrConnectWithoutJobCategoryInput {
+  where: PostWhereUniqueInput!
+  create: PostCreateWithoutJobCategoryInput!
+}
+
+input PostCreateManyJobCategoryInputEnvelope {
+  data: [PostCreateManyJobCategoryInput!]!
+  skipDuplicates: Boolean
+}
+
+input PostCreateManyJobCategoryInput {
+  id: String
+  title: String!
+  content: String!
+  shareUrl: String!
+  metadata: JSON
+  slug: String!
+  minRead: Int
+  authorId: String!
+  thumbnailId: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -11915,7 +11926,6 @@ input JobTitleUpdateWithoutWorkExperiencesInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
   jobs: JobUpdateManyWithoutJobTitleNestedInput
   resumes: ResumeUpdateManyWithoutJobTitleNestedInput
-  posts: PostUpdateManyWithoutJobTitleNestedInput
 }
 
 input JobUpdateManyWithoutJobTitleNestedInput {
@@ -11987,6 +11997,7 @@ input JobCategoryUpdateWithoutJobsInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
   companies: CompanyUpdateManyWithoutIndustriesNestedInput
+  posts: PostUpdateManyWithoutJobCategoryNestedInput
 }
 
 input CompanyUpdateManyWithoutIndustriesNestedInput {
@@ -12128,7 +12139,6 @@ input JobTitleUpdateWithoutJobsInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
   resumes: ResumeUpdateManyWithoutJobTitleNestedInput
   workExperiences: WorkExperienceUpdateManyWithoutJobTitleNestedInput
-  posts: PostUpdateManyWithoutJobTitleNestedInput
 }
 
 input ResumeUpdateManyWithoutJobTitleNestedInput {
@@ -12434,6 +12444,7 @@ input JobCategoryUpdateWithoutCompaniesInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
   jobs: JobUpdateManyWithoutJobCategoryNestedInput
+  posts: PostUpdateManyWithoutJobCategoryNestedInput
 }
 
 input JobUpdateManyWithoutJobCategoryNestedInput {
@@ -12772,7 +12783,6 @@ input JobTitleUpdateWithoutResumesInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
   jobs: JobUpdateManyWithoutJobTitleNestedInput
   workExperiences: WorkExperienceUpdateManyWithoutJobTitleNestedInput
-  posts: PostUpdateManyWithoutJobTitleNestedInput
 }
 
 input WorkExperienceUpdateManyWithoutJobTitleNestedInput {
@@ -13104,7 +13114,7 @@ input PostUpdateWithoutTagsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnail: FileUpdateOneWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
@@ -13114,37 +13124,39 @@ input PostUpdateWithoutTagsInput {
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
 }
 
-input JobTitleUpdateOneWithoutPostsNestedInput {
-  create: JobTitleCreateWithoutPostsInput
-  connectOrCreate: JobTitleCreateOrConnectWithoutPostsInput
-  upsert: JobTitleUpsertWithoutPostsInput
-  disconnect: JobTitleWhereInput
-  delete: JobTitleWhereInput
-  connect: JobTitleWhereUniqueInput
-  update: JobTitleUpdateToOneWithWhereWithoutPostsInput
+input JobCategoryUpdateOneWithoutPostsNestedInput {
+  create: JobCategoryCreateWithoutPostsInput
+  connectOrCreate: JobCategoryCreateOrConnectWithoutPostsInput
+  upsert: JobCategoryUpsertWithoutPostsInput
+  disconnect: JobCategoryWhereInput
+  delete: JobCategoryWhereInput
+  connect: JobCategoryWhereUniqueInput
+  update: JobCategoryUpdateToOneWithWhereWithoutPostsInput
 }
 
-input JobTitleUpsertWithoutPostsInput {
-  update: JobTitleUpdateWithoutPostsInput!
-  create: JobTitleCreateWithoutPostsInput!
-  where: JobTitleWhereInput
+input JobCategoryUpsertWithoutPostsInput {
+  update: JobCategoryUpdateWithoutPostsInput!
+  create: JobCategoryCreateWithoutPostsInput!
+  where: JobCategoryWhereInput
 }
 
-input JobTitleUpdateWithoutPostsInput {
+input JobCategoryUpdateWithoutPostsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  slug: StringFieldUpdateOperationsInput
   isFeature: NullableBoolFieldUpdateOperationsInput
+  isTheFive: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobs: JobUpdateManyWithoutJobTitleNestedInput
-  resumes: ResumeUpdateManyWithoutJobTitleNestedInput
-  workExperiences: WorkExperienceUpdateManyWithoutJobTitleNestedInput
+  jobs: JobUpdateManyWithoutJobCategoryNestedInput
+  companies: CompanyUpdateManyWithoutIndustriesNestedInput
 }
 
-input JobTitleUpdateToOneWithWhereWithoutPostsInput {
-  where: JobTitleWhereInput
-  data: JobTitleUpdateWithoutPostsInput!
+input JobCategoryUpdateToOneWithWhereWithoutPostsInput {
+  where: JobCategoryWhereInput
+  data: JobCategoryUpdateWithoutPostsInput!
 }
 
 input UserUpdateOneRequiredWithoutPostsNestedInput {
@@ -13450,7 +13462,7 @@ input PostUpdateWithoutThumbnailInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
   tags: TagUpdateManyWithoutPostsNestedInput
@@ -13937,7 +13949,7 @@ input PostUpdateWithoutAuthorInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   thumbnail: FileUpdateOneWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
   tags: TagUpdateManyWithoutPostsNestedInput
@@ -14242,7 +14254,7 @@ input PostUpdateWithoutLikesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnail: FileUpdateOneWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
@@ -14395,7 +14407,7 @@ input PostUpdateWithoutCommentsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnail: FileUpdateOneWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
@@ -14540,7 +14552,7 @@ input PostUpdateWithoutDislikesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnail: FileUpdateOneWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
@@ -14692,7 +14704,7 @@ input PostUpdateWithoutBookmarksInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnail: FileUpdateOneWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
@@ -17050,7 +17062,7 @@ input PostScalarWhereInput {
   metadata: JsonNullableFilter
   slug: StringFilter
   minRead: IntNullableFilter
-  jobTitleId: StringNullableFilter
+  jobCategoryId: StringNullableFilter
   authorId: StringFilter
   thumbnailId: StringNullableFilter
   createdAt: DateTimeFilter
@@ -17307,57 +17319,6 @@ input WorkExperienceUpdateManyWithWhereWithoutJobTitleInput {
   data: WorkExperienceUpdateManyMutationInput!
 }
 
-input PostUpdateManyWithoutJobTitleNestedInput {
-  create: [PostCreateWithoutJobTitleInput!]
-  connectOrCreate: [PostCreateOrConnectWithoutJobTitleInput!]
-  upsert: [PostUpsertWithWhereUniqueWithoutJobTitleInput!]
-  createMany: PostCreateManyJobTitleInputEnvelope
-  set: [PostWhereUniqueInput!]
-  disconnect: [PostWhereUniqueInput!]
-  delete: [PostWhereUniqueInput!]
-  connect: [PostWhereUniqueInput!]
-  update: [PostUpdateWithWhereUniqueWithoutJobTitleInput!]
-  updateMany: [PostUpdateManyWithWhereWithoutJobTitleInput!]
-  deleteMany: [PostScalarWhereInput!]
-}
-
-input PostUpsertWithWhereUniqueWithoutJobTitleInput {
-  where: PostWhereUniqueInput!
-  update: PostUpdateWithoutJobTitleInput!
-  create: PostCreateWithoutJobTitleInput!
-}
-
-input PostUpdateWithoutJobTitleInput {
-  id: StringFieldUpdateOperationsInput
-  title: StringFieldUpdateOperationsInput
-  content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
-  metadata: JSON
-  slug: StringFieldUpdateOperationsInput
-  minRead: NullableIntFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  author: UserUpdateOneRequiredWithoutPostsNestedInput
-  thumbnail: FileUpdateOneWithoutPostsNestedInput
-  categories: PostCategoryUpdateManyWithoutPostsNestedInput
-  tags: TagUpdateManyWithoutPostsNestedInput
-  likes: LikePostUpdateManyWithoutPostNestedInput
-  dislikes: DislikePostUpdateManyWithoutPostNestedInput
-  comments: CommentUpdateManyWithoutPostNestedInput
-  bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
-}
-
-input PostUpdateWithWhereUniqueWithoutJobTitleInput {
-  where: PostWhereUniqueInput!
-  data: PostUpdateWithoutJobTitleInput!
-}
-
-input PostUpdateManyWithWhereWithoutJobTitleInput {
-  where: PostScalarWhereInput!
-  data: PostUpdateManyMutationInput!
-}
-
 input JobTitleUpdateToOneWithWhereWithoutResumesInput {
   where: JobTitleWhereInput
   data: JobTitleUpdateWithoutResumesInput!
@@ -17467,6 +17428,57 @@ input JobUpdateWithWhereUniqueWithoutJobCategoryInput {
 input JobUpdateManyWithWhereWithoutJobCategoryInput {
   where: JobScalarWhereInput!
   data: JobUpdateManyMutationInput!
+}
+
+input PostUpdateManyWithoutJobCategoryNestedInput {
+  create: [PostCreateWithoutJobCategoryInput!]
+  connectOrCreate: [PostCreateOrConnectWithoutJobCategoryInput!]
+  upsert: [PostUpsertWithWhereUniqueWithoutJobCategoryInput!]
+  createMany: PostCreateManyJobCategoryInputEnvelope
+  set: [PostWhereUniqueInput!]
+  disconnect: [PostWhereUniqueInput!]
+  delete: [PostWhereUniqueInput!]
+  connect: [PostWhereUniqueInput!]
+  update: [PostUpdateWithWhereUniqueWithoutJobCategoryInput!]
+  updateMany: [PostUpdateManyWithWhereWithoutJobCategoryInput!]
+  deleteMany: [PostScalarWhereInput!]
+}
+
+input PostUpsertWithWhereUniqueWithoutJobCategoryInput {
+  where: PostWhereUniqueInput!
+  update: PostUpdateWithoutJobCategoryInput!
+  create: PostCreateWithoutJobCategoryInput!
+}
+
+input PostUpdateWithoutJobCategoryInput {
+  id: StringFieldUpdateOperationsInput
+  title: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  shareUrl: StringFieldUpdateOperationsInput
+  metadata: JSON
+  slug: StringFieldUpdateOperationsInput
+  minRead: NullableIntFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  author: UserUpdateOneRequiredWithoutPostsNestedInput
+  thumbnail: FileUpdateOneWithoutPostsNestedInput
+  categories: PostCategoryUpdateManyWithoutPostsNestedInput
+  tags: TagUpdateManyWithoutPostsNestedInput
+  likes: LikePostUpdateManyWithoutPostNestedInput
+  dislikes: DislikePostUpdateManyWithoutPostNestedInput
+  comments: CommentUpdateManyWithoutPostNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+}
+
+input PostUpdateWithWhereUniqueWithoutJobCategoryInput {
+  where: PostWhereUniqueInput!
+  data: PostUpdateWithoutJobCategoryInput!
+}
+
+input PostUpdateManyWithWhereWithoutJobCategoryInput {
+  where: PostScalarWhereInput!
+  data: PostUpdateManyMutationInput!
 }
 
 input JobCategoryUpdateWithWhereUniqueWithoutCompaniesInput {
@@ -17936,7 +17948,7 @@ input PostCreateWithoutCategoriesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnail: FileCreateNestedOneWithoutPostsInput
   tags: TagCreateNestedManyWithoutPostsInput
@@ -17991,7 +18003,7 @@ input PostUpdateWithoutCategoriesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnail: FileUpdateOneWithoutPostsNestedInput
   tags: TagUpdateManyWithoutPostsNestedInput
@@ -18021,7 +18033,6 @@ input JobTitleCreateInput {
   jobs: JobCreateNestedManyWithoutJobTitleInput
   resumes: ResumeCreateNestedManyWithoutJobTitleInput
   workExperiences: WorkExperienceCreateNestedManyWithoutJobTitleInput
-  posts: PostCreateNestedManyWithoutJobTitleInput
 }
 
 input JobTitleUpdateInput {
@@ -18034,7 +18045,36 @@ input JobTitleUpdateInput {
   jobs: JobUpdateManyWithoutJobTitleNestedInput
   resumes: ResumeUpdateManyWithoutJobTitleNestedInput
   workExperiences: WorkExperienceUpdateManyWithoutJobTitleNestedInput
-  posts: PostUpdateManyWithoutJobTitleNestedInput
+}
+
+input JobCategoryCreateInput {
+  id: String
+  name: String!
+  slug: String!
+  isFeature: Boolean
+  isTheFive: Boolean
+  isDefault: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  jobs: JobCreateNestedManyWithoutJobCategoryInput
+  companies: CompanyCreateNestedManyWithoutIndustriesInput
+  posts: PostCreateNestedManyWithoutJobCategoryInput
+}
+
+input JobCategoryUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  slug: StringFieldUpdateOperationsInput
+  isFeature: NullableBoolFieldUpdateOperationsInput
+  isTheFive: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  jobs: JobUpdateManyWithoutJobCategoryNestedInput
+  companies: CompanyUpdateManyWithoutIndustriesNestedInput
+  posts: PostUpdateManyWithoutJobCategoryNestedInput
 }
 
 input SettingCreateInput {
@@ -18123,7 +18163,7 @@ input PostCreateInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutPostsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnail: FileCreateNestedOneWithoutPostsInput
   categories: PostCategoryCreateNestedManyWithoutPostsInput
@@ -18145,7 +18185,7 @@ input PostUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneWithoutPostsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnail: FileUpdateOneWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
@@ -18204,34 +18244,6 @@ input JobUpdateInput {
   skills: SkillUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
-}
-
-input JobCategoryCreateInput {
-  id: String
-  name: String!
-  slug: String!
-  isFeature: Boolean
-  isTheFive: Boolean
-  isDefault: Boolean
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  jobs: JobCreateNestedManyWithoutJobCategoryInput
-  companies: CompanyCreateNestedManyWithoutIndustriesInput
-}
-
-input JobCategoryUpdateInput {
-  id: StringFieldUpdateOperationsInput
-  name: StringFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
-  isFeature: NullableBoolFieldUpdateOperationsInput
-  isTheFive: NullableBoolFieldUpdateOperationsInput
-  isDefault: NullableBoolFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobs: JobUpdateManyWithoutJobCategoryNestedInput
-  companies: CompanyUpdateManyWithoutIndustriesNestedInput
 }
 
 input SkillCreateInput {
