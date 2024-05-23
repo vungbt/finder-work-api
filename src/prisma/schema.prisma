@@ -534,9 +534,8 @@ model Post {
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
 
-  thumbnail   File?          @relation(fields: [thumbnailId], references: [id])
-  thumbnailId String?
-  categories  PostCategory[]
+  thumbnails File[]
+  categories PostCategory[]
 
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt

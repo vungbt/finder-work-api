@@ -2,12 +2,13 @@ import {
   CreateOneTagArgs,
   DeleteOneTagArgs,
   FindFirstTagArgs,
-  FindManyTagArgs,
   Tag,
   UpdateOneTagArgs
 } from '@/prisma/graphql';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { TagService } from './tag.service';
+import { AllTagArgs, AllTagResult } from './tag.type';
+import { TakeLimit } from '@/utils/pipes/take-limit.decorator';
 
 @Resolver(() => Tag)
 export class TagResolver {
@@ -28,9 +29,9 @@ export class TagResolver {
     return this.tagService.delete(args);
   }
 
-  @Query(() => [Tag], { name: 'all_tag' })
-  all(@Args() args: FindManyTagArgs) {
-    return this.tagService.findMany(args);
+  @Query(() => AllTagResult, { name: 'all_tag' })
+  all(@Args(new TakeLimit()) args: AllTagArgs) {
+    return this.tagService.findAll(args);
   }
 
   @Query(() => Tag, { name: 'one_tag' })
