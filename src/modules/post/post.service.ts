@@ -39,7 +39,9 @@ export class PostService implements BaseService {
       where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: {
-        tags: true
+        tags: true,
+        bookmarks: true,
+        thumbnails: true
       },
       ...reset
     });

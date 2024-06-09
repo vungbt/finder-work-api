@@ -2438,9 +2438,10 @@ type WorkExperience {
 }
 
 type Metadata {
-  total: Float!
+  total: Float
   page: Float
   limit: Float
+  status: String
 }
 
 type Address {
@@ -2543,6 +2544,11 @@ type AllCompanyTypeResult {
 
 type AllPostResult {
   data: [Post!]!
+  metadata: Metadata
+}
+
+type BookmarkPostResult {
+  data: BookmarkPost!
   metadata: Metadata
 }
 
@@ -5102,6 +5108,7 @@ type Mutation {
   create_company_size(data: CompanySizeCreateInput!): CompanySize!
   update_company_size(data: CompanySizeUpdateInput!, where: CompanySizeWhereUniqueInput!): CompanySize!
   delete_company_size(where: CompanySizeWhereUniqueInput!): CompanySize!
+  bookmark_post(postId: String!): BookmarkPostResult!
 }
 
 input TagCreateInput {
