@@ -39,7 +39,10 @@ import { PostCategoryModule } from './modules/post-category/post-category.module
 import { TagModule } from './modules/tag/tag.module';
 import { SettingModule } from './modules/setting/setting.module';
 import { BookmarkPostModule } from './modules/bookmark-post/bookmark-post.module';
+import { VotePostModule } from './modules/vote-post/vote-post.module';
+import { PubSub } from 'graphql-subscriptions';
 
+export const pubSub = new PubSub();
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -151,7 +154,8 @@ import { BookmarkPostModule } from './modules/bookmark-post/bookmark-post.module
     PostCategoryModule,
     TagModule,
     SettingModule,
-    BookmarkPostModule
+    BookmarkPostModule,
+    VotePostModule
   ],
   controllers: [],
   providers: [

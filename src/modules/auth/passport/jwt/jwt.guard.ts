@@ -28,7 +28,7 @@ export class AuthRolesGuard extends AuthGuard('jwt') {
       context.getClass()
     ]);
 
-    if (this.options?.roles) {
+    if (this.options?.roles || this.options?.isOptional) {
       return super.canActivate(context);
     }
     return true;
@@ -36,6 +36,7 @@ export class AuthRolesGuard extends AuthGuard('jwt') {
 
   handleRequest(err, user) {
     const requiredRoles = this.options.roles;
+    const isOptional = this.options.isOptional ?? false;
     if (err) {
       throw new HttpException(
         {
@@ -43,7 +44,7 @@ export class AuthRolesGuard extends AuthGuard('jwt') {
         },
         HttpStatus.UNAUTHORIZED
       );
-    } else if (!user) {
+    } else if (!user && !isOptional) {
       throw new HttpException(
         {
           key: 'error.unauthorized'

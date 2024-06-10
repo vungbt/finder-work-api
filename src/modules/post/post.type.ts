@@ -28,8 +28,8 @@ export class CreatePostArgs {
 
 @ObjectType()
 export class AllPostResult {
-  @Field(() => [Post])
-  data: Post[];
+  @Field(() => [PostItem])
+  data: PostItem[];
 
   @Field(() => Metadata, { nullable: true })
   metadata?: Metadata;
@@ -40,9 +40,15 @@ export class PostItem extends OmitType(Post, ['categories', 'tags', 'author']) {
   @Field(() => UserOnly, { defaultValue: null })
   author: UserOnly;
 
-  @Field(() => [PostCategory], { defaultValue: [] })
+  @Field(() => [PostCategory], { defaultValue: [], nullable: true })
   categories: PostCategory[];
 
-  @Field(() => [Tag], { defaultValue: [] })
+  @Field(() => [Tag], { defaultValue: [], nullable: true })
   tags: Tag[];
+
+  @Field(() => UserOnly, { nullable: true })
+  userBookmark?: UserOnly;
+
+  @Field(() => UserOnly, { nullable: true })
+  userVote?: UserOnly;
 }

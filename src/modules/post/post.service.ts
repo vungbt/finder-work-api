@@ -40,7 +40,6 @@ export class PostService implements BaseService {
       orderBy: { createdAt: 'desc' },
       include: {
         tags: true,
-        bookmarks: true,
         thumbnails: true
       },
       ...reset

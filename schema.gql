@@ -2442,6 +2442,7 @@ type Metadata {
   page: Float
   limit: Float
   status: String
+  action: String
 }
 
 type Address {
@@ -2543,7 +2544,53 @@ type AllCompanyTypeResult {
 }
 
 type AllPostResult {
-  data: [Post!]!
+  data: [PostItem!]!
+  metadata: Metadata
+}
+
+type PostItem {
+  id: ID!
+  title: String!
+  content: String!
+  shareUrl: String!
+  metadata: JSON
+  slug: String!
+  minRead: Int
+  jobCategoryId: String
+  authorId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  jobCategory: JobCategory
+  thumbnails: [File!]
+  likes: [LikePost!]
+  dislikes: [DislikePost!]
+  comments: [Comment!]
+  bookmarks: [BookmarkPost!]
+  _count: PostCount!
+  author: UserOnly!
+  categories: [PostCategory!]
+  tags: [Tag!]
+  userBookmark: UserOnly
+  userVote: UserOnly
+}
+
+type VoteItem {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  userId: String
+  postId: String!
+  commentId: String
+  user: User
+  post: Post!
+  comment: Comment
+  _post_count: Float
+}
+
+type CreateVotePostResult {
+  data: VoteItem!
   metadata: Metadata
 }
 
@@ -2574,7 +2621,7 @@ type Query {
   all_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
   one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
   all_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllPostResult!
-  one_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!]): Post!
+  one_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!]): PostItem!
   all_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): [Job!]!
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): [Skill!]!
@@ -5093,9 +5140,11 @@ type Mutation {
   create_company(data: CompanyCreateInput!): Company!
   update_company(data: CompanyUpdateInput!, where: CompanyWhereUniqueInput!): Company!
   delete_company(where: CompanyWhereUniqueInput!): Company!
-  create_post(data: CreatePostInput!): Post!
-  update_post(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post!
-  delete_post(where: PostWhereUniqueInput!): Post!
+  create_post(data: CreatePostInput!): PostItem!
+  update_post(data: PostUpdateInput!, where: PostWhereUniqueInput!): PostItem!
+  delete_post(where: PostWhereUniqueInput!): PostItem!
+  bookmark_post(postId: String!): BookmarkPostResult!
+  vote_post(postId: String!, commentId: String, action: VoteAction!): CreateVotePostResult!
   create_job(data: JobCreateInput!): Job!
   update_job(data: JobUpdateInput!, where: JobWhereUniqueInput!): Job!
   delete_job(where: JobWhereUniqueInput!): Job!
@@ -5108,7 +5157,6 @@ type Mutation {
   create_company_size(data: CompanySizeCreateInput!): CompanySize!
   update_company_size(data: CompanySizeUpdateInput!, where: CompanySizeWhereUniqueInput!): CompanySize!
   delete_company_size(where: CompanySizeWhereUniqueInput!): CompanySize!
-  bookmark_post(postId: String!): BookmarkPostResult!
 }
 
 input TagCreateInput {
@@ -18183,6 +18231,12 @@ input PostUpdateInput {
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
 }
 
+"""The roles of the user"""
+enum VoteAction {
+  UP_VOTE
+  DOWN_VOTE
+}
+
 input JobCreateInput {
   id: String
   type: JobType!
@@ -18509,4 +18563,8 @@ input CompanyUpdateWithWhereUniqueWithoutSizeInput {
 input CompanyUpdateManyWithWhereWithoutSizeInput {
   where: CompanyScalarWhereInput!
   data: CompanyUpdateManyMutationInput!
+}
+
+type Subscription {
+  vote_post: CreateVotePostResult!
 }

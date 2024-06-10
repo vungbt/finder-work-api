@@ -15,6 +15,9 @@ export class Metadata {
 
   @Field(() => String, { nullable: true })
   status?: string;
+
+  @Field(() => String, { nullable: true })
+  action?: string;
 }
 
 @InputType()
