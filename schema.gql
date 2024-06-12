@@ -2543,9 +2543,81 @@ type AllCompanyTypeResult {
   metadata: Metadata
 }
 
+type VotePostCount {
+  likes: Float!
+  dislikes: Float!
+}
+
+type VoteItem {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  userId: String
+  postId: String!
+  commentId: String
+  user: User
+  post: Post!
+  comment: Comment
+  _postCount: VotePostCount
+}
+
+type CreateVotePostResult {
+  data: VoteItem!
+  metadata: Metadata
+}
+
 type AllPostResult {
   data: [PostItem!]!
   metadata: Metadata
+}
+
+type UserVote {
+  id: ID!
+  avatarUrl: String
+  avatarId: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean!
+  phoneNumber: String
+  countryId: Int
+  workingPosition: WorkPosition
+  status: UserStatus!
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole!
+  addressDetail: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  avatar: File
+  country: Country
+  social: [Social!]
+  resumes: [Resume!]
+  workExperiences: [WorkExperience!]
+  educations: [Education!]
+  projects: [Project!]
+  applications: [Application!]
+  posts: [Post!]
+  likes: [LikePost!]
+  dislikes: [DislikePost!]
+  comments: [Comment!]
+  bookmarks: [BookmarkPost!]
+  saveJobs: [SaveJob!]
+  payments: [Payment!]
+  address: [UsersOnCity!]
+  companies: [Company!]
+  authorSettings: [Setting!]
+  updatedBySettings: [Setting!]
+  _count: UserCount!
+  action: VoteAction
+}
+
+"""The roles of the user"""
+enum VoteAction {
+  UP_VOTE
+  DOWN_VOTE
 }
 
 type PostItem {
@@ -2563,35 +2635,13 @@ type PostItem {
   deletedAt: DateTime
   jobCategory: JobCategory
   thumbnails: [File!]
-  likes: [LikePost!]
-  dislikes: [DislikePost!]
   comments: [Comment!]
-  bookmarks: [BookmarkPost!]
   _count: PostCount!
   author: UserOnly!
   categories: [PostCategory!]
   tags: [Tag!]
   userBookmark: UserOnly
-  userVote: UserOnly
-}
-
-type VoteItem {
-  id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  deletedAt: DateTime
-  userId: String
-  postId: String!
-  commentId: String
-  user: User
-  post: Post!
-  comment: Comment
-  _post_count: Float
-}
-
-type CreateVotePostResult {
-  data: VoteItem!
-  metadata: Metadata
+  userVote: UserVote
 }
 
 type BookmarkPostResult {
@@ -18229,12 +18279,6 @@ input PostUpdateInput {
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
-}
-
-"""The roles of the user"""
-enum VoteAction {
-  UP_VOTE
-  DOWN_VOTE
 }
 
 input JobCreateInput {

@@ -20,7 +20,13 @@ export class PostService implements BaseService {
     return this.prismaService.post.findUnique(args);
   }
   findFirst(args: Prisma.PostFindFirstArgs) {
-    return this.prismaService.post.findFirst(args);
+    return this.prismaService.post.findFirst({
+      ...args,
+      include: {
+        tags: true,
+        thumbnails: true
+      }
+    });
   }
   async findMany(args: AllPostArgs) {
     const { searchValue, pagination, where, ...reset } = args;

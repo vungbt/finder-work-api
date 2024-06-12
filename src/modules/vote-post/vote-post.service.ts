@@ -1,9 +1,9 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentUser } from '@/types';
+import { responseHelper } from '@/utils/helpers';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CreateVoteArgs, CreateVotePostResult, VoteAction } from './vote-post.type';
-import { responseHelper } from '@/utils/helpers';
 
 @Injectable()
 export class VotePostService {
@@ -46,5 +46,13 @@ export class VotePostService {
 
   countDislike(args: Prisma.DislikePostCountArgs) {
     return this.prismaService.dislikePost.count(args);
+  }
+
+  findManyLike(args: Prisma.LikePostFindManyArgs) {
+    return this.prismaService.likePost.findMany(args);
+  }
+
+  findManyDislike(args: Prisma.DislikePostFindManyArgs) {
+    return this.prismaService.dislikePost.findMany(args);
   }
 }

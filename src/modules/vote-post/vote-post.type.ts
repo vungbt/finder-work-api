@@ -1,6 +1,6 @@
-import { LikePost, PostCount } from '@/prisma/graphql';
+import { LikePost } from '@/prisma/graphql';
 import { Metadata } from '@/types';
-import { ArgsType, Field, ObjectType, OmitType, registerEnumType } from '@nestjs/graphql';
+import { ArgsType, Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 
 @ArgsType()
 export class CreateVoteArgs {
@@ -14,9 +14,18 @@ export class CreateVoteArgs {
   action: VoteAction;
 }
 
+@ArgsType()
+export class FindManyVoteArgs {
+  @Field(() => String)
+  postId?: string;
+
+  @Field(() => String, { nullable: true })
+  commentId?: string;
+}
+
 export enum VoteAction {
-  UP_VOTE = 1,
-  DOWN_VOTE = -1
+  UP_VOTE = 'UP_VOTE',
+  DOWN_VOTE = 'DOWN_VOTE'
 }
 
 registerEnumType(VoteAction, {
@@ -25,11 +34,17 @@ registerEnumType(VoteAction, {
 });
 
 @ObjectType()
+export class VotePostCount {
+  @Field(() => Number, { nullable: false })
+  likes?: number;
+  @Field(() => Number, { nullable: false })
+  dislikes?: number;
+}
+
+@ObjectType()
 export class VoteItem extends LikePost {
-  @Field(() => OmitType(PostCount, ['bookmarks', 'categories', 'comments', 'tags', 'thumbnails']), {
-    nullable: true
-  })
-  _post_count?: number;
+  @Field(() => VotePostCount, { nullable: true })
+  _postCount: VotePostCount;
 }
 
 @ObjectType()

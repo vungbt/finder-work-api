@@ -14,16 +14,20 @@ import { AuthRoles } from '../auth/passport/jwt/jwt.decorator';
 import { IDataloaders } from '../common/dataloader/dataloader.type';
 import { UserOnly } from '../user/user.type';
 import { PostService } from './post.service';
-import { AllPostArgs, AllPostResult, CreatePostArgs, PostItem } from './post.type';
+import { AllPostArgs, AllPostResult, CreatePostArgs, PostItem, UserVote } from './post.type';
 import { BookmarkPostService } from '../bookmark-post/bookmark-post.service';
 import { VotePostService } from '../vote-post/vote-post.service';
+import { VoteAction } from '../vote-post/vote-post.type';
+import { merge } from 'lodash';
+import { UserService } from '../user/user.service';
 
 @Resolver(() => PostItem)
 export class PostResolver {
   constructor(
     private readonly postService: PostService,
     private readonly bookmarkPostService: BookmarkPostService,
-    private readonly votePostService: VotePostService
+    private readonly votePostService: VotePostService,
+    private readonly userService: UserService
   ) {}
 
   @Mutation(() => PostItem, { name: 'create_post' })
@@ -51,6 +55,7 @@ export class PostResolver {
   }
 
   @Query(() => PostItem, { name: 'one_post' })
+  @AuthRoles({ isOptional: true })
   findOne(@Args() args: FindFirstPostArgs) {
     return this.postService.findFirst(args);
   }
@@ -82,6 +87,26 @@ export class PostResolver {
     });
     if (!userId || !bookmarkValid) return null;
     return loaders.userUnique.load(userId);
+  }
+
+  @ResolveField(() => UserVote)
+  async userVote(@Parent() post: PostItem, @Context() { req, loaders }: ContextType) {
+    const userId = req?.user?.id;
+
+    if (!userId || !req.user.id) return null;
+    const likes = await this.votePostService.countLike({ where: { userId, postId: post.id } });
+    const dislikes = await this.votePostService.countDislike({
+      where: { userId, postId: post.id }
+    });
+    if (likes <= 0 && dislikes <= 0) return null;
+    let action = null;
+    if (likes > 0) {
+      action = VoteAction.UP_VOTE;
+    } else {
+      action = VoteAction.DOWN_VOTE;
+    }
+    const result = merge(await loaders.userUnique.load(userId), { action });
+    return result;
   }
 
   @ResolveField(() => PostCount)
