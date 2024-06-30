@@ -330,7 +330,7 @@ type City {
 type CommentCountAggregate {
   id: Int!
   userId: Int!
-  conent: Int!
+  content: Int!
   createdAt: Int!
   updatedAt: Int!
   deletedAt: Int!
@@ -349,7 +349,7 @@ type CommentCount {
 type CommentMaxAggregate {
   id: String
   userId: String
-  conent: String
+  content: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -361,7 +361,7 @@ type CommentMaxAggregate {
 type CommentMinAggregate {
   id: String
   userId: String
-  conent: String
+  content: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -373,7 +373,7 @@ type CommentMinAggregate {
 type Comment {
   id: ID!
   userId: String
-  conent: String!
+  content: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
@@ -2680,6 +2680,8 @@ type Query {
   one_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!]): CompanyType!
   all_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanySizeResult!
   one_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!]): CompanySize!
+  all_comment(where: CommentWhereInput, orderBy: [CommentOrderByWithRelationInput!], cursor: CommentWhereUniqueInput, take: Int, skip: Int, distinct: [CommentScalarFieldEnum!]): [Comment!]!
+  one_comment(where: CommentWhereInput, orderBy: [CommentOrderByWithRelationInput!], cursor: CommentWhereUniqueInput, take: Int, skip: Int, distinct: [CommentScalarFieldEnum!]): Comment!
 }
 
 input CityWhereInput {
@@ -3877,7 +3879,7 @@ input CommentWhereInput {
   NOT: [CommentWhereInput!]
   id: StringFilter
   userId: StringNullableFilter
-  conent: StringFilter
+  content: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
@@ -5161,6 +5163,57 @@ enum CompanySizeScalarFieldEnum {
   deletedAt
 }
 
+input CommentOrderByWithRelationInput {
+  id: SortOrder
+  userId: SortOrderInput
+  content: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrderInput
+  postId: SortOrder
+  isAnonymously: SortOrderInput
+  parentId: SortOrderInput
+  post: PostOrderByWithRelationInput
+  user: UserOrderByWithRelationInput
+  parent: CommentOrderByWithRelationInput
+  replies: CommentOrderByRelationAggregateInput
+  likes: LikePostOrderByRelationAggregateInput
+  dislikes: DislikePostOrderByRelationAggregateInput
+}
+
+input CommentWhereUniqueInput {
+  id: String
+  AND: [CommentWhereInput!]
+  OR: [CommentWhereInput!]
+  NOT: [CommentWhereInput!]
+  userId: StringNullableFilter
+  content: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  postId: StringFilter
+  isAnonymously: BoolNullableFilter
+  parentId: StringNullableFilter
+  post: PostRelationFilter
+  user: UserNullableRelationFilter
+  parent: CommentNullableRelationFilter
+  replies: CommentListRelationFilter
+  likes: LikePostListRelationFilter
+  dislikes: DislikePostListRelationFilter
+}
+
+enum CommentScalarFieldEnum {
+  id
+  userId
+  content
+  createdAt
+  updatedAt
+  deletedAt
+  postId
+  isAnonymously
+  parentId
+}
+
 type Mutation {
   create_tag(data: TagCreateInput!): Tag!
   update_tag(data: TagUpdateInput!, where: TagWhereUniqueInput!): Tag!
@@ -5207,6 +5260,9 @@ type Mutation {
   create_company_size(data: CompanySizeCreateInput!): CompanySize!
   update_company_size(data: CompanySizeUpdateInput!, where: CompanySizeWhereUniqueInput!): CompanySize!
   delete_company_size(where: CompanySizeWhereUniqueInput!): CompanySize!
+  create_comment(data: CommentCreateInput!): Comment!
+  update_comment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): Comment!
+  delete_comment(where: CommentWhereUniqueInput!): Comment!
 }
 
 input TagCreateInput {
@@ -7571,7 +7627,7 @@ input CommentCreateNestedManyWithoutUserInput {
 
 input CommentCreateWithoutUserInput {
   id: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -7722,7 +7778,7 @@ input CommentCreateNestedManyWithoutPostInput {
 
 input CommentCreateWithoutPostInput {
   id: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -9223,7 +9279,7 @@ input CommentCreateNestedOneWithoutRepliesInput {
 
 input CommentCreateWithoutRepliesInput {
   id: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -9342,27 +9398,6 @@ input CommentCreateOrConnectWithoutRepliesInput {
   create: CommentCreateWithoutRepliesInput!
 }
 
-input CommentWhereUniqueInput {
-  id: String
-  AND: [CommentWhereInput!]
-  OR: [CommentWhereInput!]
-  NOT: [CommentWhereInput!]
-  userId: StringNullableFilter
-  conent: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  postId: StringFilter
-  isAnonymously: BoolNullableFilter
-  parentId: StringNullableFilter
-  post: PostRelationFilter
-  user: UserNullableRelationFilter
-  parent: CommentNullableRelationFilter
-  replies: CommentListRelationFilter
-  likes: LikePostListRelationFilter
-  dislikes: DislikePostListRelationFilter
-}
-
 input CommentCreateNestedManyWithoutParentInput {
   create: [CommentCreateWithoutParentInput!]
   connectOrCreate: [CommentCreateOrConnectWithoutParentInput!]
@@ -9372,7 +9407,7 @@ input CommentCreateNestedManyWithoutParentInput {
 
 input CommentCreateWithoutParentInput {
   id: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -9397,7 +9432,7 @@ input CommentCreateManyParentInputEnvelope {
 input CommentCreateManyParentInput {
   id: String
   userId: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -9418,7 +9453,7 @@ input CommentCreateManyPostInputEnvelope {
 input CommentCreateManyPostInput {
   id: String
   userId: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -9439,7 +9474,7 @@ input CommentCreateNestedOneWithoutDislikesInput {
 
 input CommentCreateWithoutDislikesInput {
   id: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -9515,7 +9550,7 @@ input CommentCreateManyUserInputEnvelope {
 
 input CommentCreateManyUserInput {
   id: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -9561,7 +9596,7 @@ input CommentCreateNestedOneWithoutLikesInput {
 
 input CommentCreateWithoutLikesInput {
   id: String
-  conent: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -14453,7 +14488,7 @@ input CommentUpsertWithWhereUniqueWithoutUserInput {
 
 input CommentUpdateWithoutUserInput {
   id: StringFieldUpdateOperationsInput
-  conent: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -14667,7 +14702,7 @@ input CommentUpsertWithWhereUniqueWithoutPostInput {
 
 input CommentUpdateWithoutPostInput {
   id: StringFieldUpdateOperationsInput
-  conent: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -16496,7 +16531,7 @@ input CommentUpsertWithoutRepliesInput {
 
 input CommentUpdateWithoutRepliesInput {
   id: StringFieldUpdateOperationsInput
-  conent: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -16653,7 +16688,7 @@ input CommentUpsertWithWhereUniqueWithoutParentInput {
 
 input CommentUpdateWithoutParentInput {
   id: StringFieldUpdateOperationsInput
-  conent: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -16681,7 +16716,7 @@ input CommentScalarWhereInput {
   NOT: [CommentScalarWhereInput!]
   id: StringFilter
   userId: StringNullableFilter
-  conent: StringFilter
+  content: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
@@ -16692,7 +16727,7 @@ input CommentScalarWhereInput {
 
 input CommentUpdateManyMutationInput {
   id: StringFieldUpdateOperationsInput
-  conent: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -16732,7 +16767,7 @@ input CommentUpsertWithoutDislikesInput {
 
 input CommentUpdateWithoutDislikesInput {
   id: StringFieldUpdateOperationsInput
-  conent: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -16827,7 +16862,7 @@ input CommentUpsertWithoutLikesInput {
 
 input CommentUpdateWithoutLikesInput {
   id: StringFieldUpdateOperationsInput
-  conent: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -18607,6 +18642,36 @@ input CompanyUpdateWithWhereUniqueWithoutSizeInput {
 input CompanyUpdateManyWithWhereWithoutSizeInput {
   where: CompanyScalarWhereInput!
   data: CompanyUpdateManyMutationInput!
+}
+
+input CommentCreateInput {
+  id: String
+  content: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  isAnonymously: Boolean
+  post: PostCreateNestedOneWithoutCommentsInput!
+  user: UserCreateNestedOneWithoutCommentsInput
+  parent: CommentCreateNestedOneWithoutRepliesInput
+  replies: CommentCreateNestedManyWithoutParentInput
+  likes: LikePostCreateNestedManyWithoutCommentInput
+  dislikes: DislikePostCreateNestedManyWithoutCommentInput
+}
+
+input CommentUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  isAnonymously: NullableBoolFieldUpdateOperationsInput
+  post: PostUpdateOneRequiredWithoutCommentsNestedInput
+  user: UserUpdateOneWithoutCommentsNestedInput
+  parent: CommentUpdateOneWithoutRepliesNestedInput
+  replies: CommentUpdateManyWithoutParentNestedInput
+  likes: LikePostUpdateManyWithoutCommentNestedInput
+  dislikes: DislikePostUpdateManyWithoutCommentNestedInput
 }
 
 type Subscription {

@@ -41,6 +41,7 @@ import { SettingModule } from './modules/setting/setting.module';
 import { BookmarkPostModule } from './modules/bookmark-post/bookmark-post.module';
 import { VotePostModule } from './modules/vote-post/vote-post.module';
 import { PubSub } from 'graphql-subscriptions';
+import { CommentModule } from './modules/comment/comment.module';
 
 export const pubSub = new PubSub();
 @Module({
@@ -155,7 +156,8 @@ export const pubSub = new PubSub();
     TagModule,
     SettingModule,
     BookmarkPostModule,
-    VotePostModule
+    VotePostModule,
+    CommentModule
   ],
   controllers: [],
   providers: [

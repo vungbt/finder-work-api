@@ -600,7 +600,7 @@ model Comment {
   post          Post          @relation(fields: [postId], references: [id])
   user          User?         @relation(fields: [userId], references: [id])
   userId        String?
-  conent        String
+  content       String
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
