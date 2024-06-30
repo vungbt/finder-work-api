@@ -7,6 +7,8 @@ export const DEFAULT_PHONE = {
   number: '000000000'
 };
 
+export const STORE_FOLDER = 'assets';
+
 export const CACHE_KEYS = {
   all_country: 'all_country'
 };

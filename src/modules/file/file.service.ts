@@ -17,6 +17,9 @@ export class FileService implements BaseService {
   create(args: Prisma.FileCreateArgs) {
     return this.prismaService.file.create(args);
   }
+  createMany(args: Prisma.FileCreateManyArgs) {
+    return this.prismaService.file.createMany(args);
+  }
   findUnique(args: Prisma.FileFindUniqueArgs) {
     return this.prismaService.file.findUnique(args);
   }
@@ -45,6 +48,10 @@ export class FileService implements BaseService {
     return this.storageService.uploadUrl(name);
   }
 
+  uploadUrls(names: string[]) {
+    return Promise.all(names.map((item) => this.storageService.uploadUrl(item)));
+  }
+
   async createFromStorageId(id: string, options?: CreateFileOptions) {
     try {
       let storageFile: FileType;
@@ -53,10 +60,6 @@ export class FileService implements BaseService {
       } else {
         storageFile = await this.storageService.getInfo(id);
       }
-      // url: random(imagesUrl),
-      // provider: 'cloudinary',
-      // metadata: { width: 640, height: 480 },
-      // storageId: faker.commerce.price(100, 700, 0)
       if (storageFile) {
         return this.create({
           data: {
@@ -74,6 +77,15 @@ export class FileService implements BaseService {
         HttpStatus.NOT_FOUND
       );
     } catch (error) {}
+  }
+
+  async createFromStorageIds(ids: string[], options?: CreateFileOptions) {
+    try {
+      if (!ids || ids.length <= 0) return [];
+      return await Promise.all(ids.map((id) => this.createFromStorageId(id, options)));
+    } catch (error) {
+      return [];
+    }
   }
 
   async createFromUrl(url: string, options?: CreateFileOptions) {

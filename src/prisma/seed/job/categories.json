@@ -120,5 +120,9 @@
   {
     "value": "Other",
     "isFeature": true
+  },
+  {
+    "value": "Job Role / Industry",
+    "isDefault": true
   }
 ]

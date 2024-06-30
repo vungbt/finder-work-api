@@ -19,11 +19,12 @@ export type Payload = {
 
 export type AuthRolesOptions = {
   roles?: UserRole[];
+  isOptional?: boolean;
 };
 
 export const AUTH_JWT_OPTIONS_KEY = 'AUTH_JWT_OPTIONS';
 
-export const AuthRoles = (options: AuthRolesOptions = { roles: [] }) => {
+export const AuthRoles = (options: AuthRolesOptions = { roles: [], isOptional: false }) => {
   return applyDecorators(
     SetMetadata(AUTH_JWT_OPTIONS_KEY, options),
     UseGuards(JwtStrategy, AuthRolesGuard)

@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { BaseService } from '@/utils/base/base.service';
+import { FindManyCompanySizeArgs } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
+import { BaseService } from '@/utils/base/base.service';
+import { responseHelper } from '@/utils/helpers';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { AllCompanySizeArgs } from './company-size.type';
-import { responseHelper } from '@/utils/helpers';
-import { FindManyCompanySizeArgs } from '@/prisma/graphql';
 
 @Injectable()
 export class CompanySizeService implements BaseService {
@@ -30,9 +30,9 @@ export class CompanySizeService implements BaseService {
     }
 
     const data = this.prismaService.companySize.findMany({
+      orderBy: { createdAt: 'desc' },
       ...queries,
-      ...reset,
-      orderBy: { createdAt: 'desc' }
+      ...reset
     });
     const total = await this.count(queries);
     return responseHelper(data, { total, ...pagination });

@@ -17,6 +17,12 @@ export class FileArgs {
 }
 
 @ArgsType()
+export class FilesArgs {
+  @Field(() => [String])
+  names: string[];
+}
+
+@ArgsType()
 export class CreateFromUrlArgs {
   @Field()
   url: string;

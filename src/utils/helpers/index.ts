@@ -115,3 +115,23 @@ export const genSlug = (name?: string) => {
 export const genFileName = (name?: string) => {
   return `${formatDate(new Date())}-${slug(name || strGenerate({ length: 10, lowerCase: true }))}`;
 };
+
+/**
+ *
+ * @param content
+ * @returns
+ */
+export const calculateReadingTime = (content: string) => {
+  if (!content || content.length <= 0) return 0;
+
+  // Assuming an average reading speed of 200 words per minute
+  const wordsPerMinute = 200;
+
+  // Count the number of words in the content
+  const wordCount = content.split(/\s+/).length;
+
+  // Calculate the estimated reading time in minutes
+  const readingTimeInMinutes = Math.ceil(wordCount / wordsPerMinute);
+
+  return readingTimeInMinutes;
+};

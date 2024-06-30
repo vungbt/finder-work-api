@@ -5,10 +5,20 @@ import { SettingService } from '@/modules/setting/setting.service';
 import { TagService } from '@/modules/tag/tag.service';
 import { UserService } from '@/modules/user/user.service';
 import { Injectable } from '@nestjs/common';
-import { Country, File, JobTitle, PostCategory, Setting, Tag, User } from '@prisma/client';
+import {
+  Country,
+  File,
+  JobCategory,
+  JobTitle,
+  PostCategory,
+  Setting,
+  Tag,
+  User
+} from '@prisma/client';
 import * as DataLoader from 'dataloader';
 import { FileService } from '../../file/file.service';
 import { IDataloaders } from './dataloader.type';
+import { JobCategoryService } from '@/modules/job-category/job-category.service';
 
 @Injectable()
 export class DataloaderService {
@@ -19,6 +29,7 @@ export class DataloaderService {
     private readonly tagService: TagService,
     private readonly postCategoryService: PostCategoryService,
     private readonly jobTitleService: JobTitleService,
+    private readonly jobCategoryService: JobCategoryService,
     private readonly settingService: SettingService
   ) {}
 
@@ -29,6 +40,7 @@ export class DataloaderService {
     const tagUnique = this._createTagUniqueLoader();
     const postCategoryUnique = this._createPostCategoryUniqueLoader();
     const jobTitleUnique = this._createJobTitleUniqueLoader();
+    const jobCategoryUnique = this._createJobCategoryUniqueLoader();
     const tagMany = this._createTagManyLoader();
     const postCategoryMany = this._createPostCategoryManyLoader();
     const settingUnique = this._createSettingUniqueLoader();
@@ -42,7 +54,8 @@ export class DataloaderService {
       jobTitleUnique,
       tagMany,
       postCategoryMany,
-      settingUnique
+      settingUnique,
+      jobCategoryUnique
     };
   }
 
@@ -121,6 +134,16 @@ export class DataloaderService {
       return Promise.all(
         keys.map((key) => {
           return this.jobTitleService.findUnique({ where: { id: key } });
+        })
+      );
+    });
+  }
+
+  private _createJobCategoryUniqueLoader() {
+    return new DataLoader<string, JobCategory>((keys: readonly string[]) => {
+      return Promise.all(
+        keys.map((key) => {
+          return this.jobCategoryService.findUnique({ where: { id: key } });
         })
       );
     });

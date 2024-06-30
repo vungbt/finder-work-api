@@ -72,8 +72,7 @@ export class SettingService {
     const showWith: any = [`${role}`];
     const queries: FindManySettingArgs = {};
     queries.where = {
-      ...reset.where,
-      showWith: { hasSome: showWith }
+      ...reset.where
     };
 
     if (isInit) {
