@@ -1,13 +1,14 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { JobCategoryService } from './job-category.service';
 import {
   CreateOneJobCategoryArgs,
   DeleteOneJobCategoryArgs,
   FindFirstJobCategoryArgs,
-  FindManyJobCategoryArgs,
   JobCategory,
   UpdateOneJobCategoryArgs
 } from '@/prisma/graphql';
+import { TakeLimit } from '@/utils/pipes/take-limit.decorator';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { JobCategoryService } from './job-category.service';
+import { AllJobCategoryArgs, AllJobCategoryResult } from './job-category.type';
 
 @Resolver(() => JobCategory)
 export class JobCategoryResolver {
@@ -28,8 +29,8 @@ export class JobCategoryResolver {
     return this.jobCategoryService.delete(args);
   }
 
-  @Query(() => [JobCategory], { name: 'all_job_category' })
-  all(@Args() args: FindManyJobCategoryArgs) {
+  @Query(() => AllJobCategoryResult, { name: 'all_job_category' })
+  all(@Args(new TakeLimit()) args: AllJobCategoryArgs) {
     return this.jobCategoryService.findMany(args);
   }
 

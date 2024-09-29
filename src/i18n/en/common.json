@@ -3,6 +3,9 @@
   "user": {
     "title": "User"
   },
+  "bookmark": {
+    "title": "Bookmark"
+  },
   "email_template": {
     "subject": {
       "verify_code": "Verify your account"

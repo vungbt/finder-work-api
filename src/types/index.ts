@@ -4,14 +4,20 @@ import { UserRole } from '@prisma/client';
 
 @ObjectType()
 export class Metadata {
-  @Field(() => Number)
-  total: number;
+  @Field(() => Number, { nullable: true })
+  total?: number;
 
   @Field(() => Number, { nullable: true })
   page?: number;
 
   @Field(() => Number, { nullable: true })
   limit?: number;
+
+  @Field(() => String, { nullable: true })
+  status?: string;
+
+  @Field(() => String, { nullable: true })
+  action?: string;
 }
 
 @InputType()

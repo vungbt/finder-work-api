@@ -1,30 +1,56 @@
+import { STORE_FOLDER } from '@/configs/constant';
+import { PostWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
+import { CurrentUser } from '@/types';
 import { BaseService } from '@/utils/base/base.service';
+import { calculateReadingTime, genSlug, responseHelper } from '@/utils/helpers';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { AllPostArgs } from './post.type';
-import { FindManyPostArgs } from '@/prisma/graphql';
-import { responseHelper } from '@/utils/helpers';
+import { FileService } from '../file/file.service';
+import { AllPostArgs, CreatePostArgs } from './post.type';
 
 @Injectable()
 export class PostService implements BaseService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly fileService: FileService
+  ) {}
 
   findUnique(args: Prisma.PostFindUniqueArgs) {
     return this.prismaService.post.findUnique(args);
   }
   findFirst(args: Prisma.PostFindFirstArgs) {
-    return this.prismaService.post.findFirst(args);
+    return this.prismaService.post.findFirst({
+      ...args,
+      include: {
+        tags: true,
+        thumbnails: true
+      }
+    });
   }
   async findMany(args: AllPostArgs) {
-    const { pagination, ...reset } = args;
-    const queries: FindManyPostArgs = {};
+    const { searchValue, pagination, where, ...reset } = args;
+    let whereClause: PostWhereInput = {};
+    if (searchValue && searchValue.length > 0) {
+      whereClause.OR = [{ title: { contains: searchValue, mode: 'insensitive' } }];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
+      };
+    }
 
     const data = this.prismaService.post.findMany({
-      ...queries,
+      where: whereClause,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        tags: true,
+        thumbnails: true
+      },
       ...reset
     });
-    const total = await this.count(queries);
+    const total = await this.count({ where: whereClause });
     return responseHelper(data, { total, ...pagination });
   }
   count(args: Prisma.PostCountArgs) {
@@ -36,7 +62,21 @@ export class PostService implements BaseService {
   update(args: Prisma.PostUpdateArgs) {
     return this.prismaService.post.update(args);
   }
-  create(args: Prisma.PostCreateArgs) {
-    return this.prismaService.post.create(args);
+  async create(args: CreatePostArgs, user: CurrentUser) {
+    const data = args.data;
+    const thumbnailsIds = data.thumbnailIds;
+    delete data.thumbnailIds;
+    const files = await this.fileService.createFromStorageIds(thumbnailsIds, {
+      folder: STORE_FOLDER
+    });
+    return this.prismaService.post.create({
+      data: {
+        ...data,
+        author: { connect: { id: user.id } },
+        minRead: calculateReadingTime(data.content),
+        slug: genSlug(data.title),
+        thumbnails: { connect: files.map((item) => ({ id: item.id })) }
+      }
+    });
   }
 }

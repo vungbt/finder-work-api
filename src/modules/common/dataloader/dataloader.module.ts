@@ -7,6 +7,7 @@ import { UserModule } from '@/modules/user/user.module';
 import { Module } from '@nestjs/common';
 import { FileModule } from '../../file/file.module';
 import { DataloaderService } from './dataloader.service';
+import { JobCategoryModule } from '@/modules/job-category/job-category.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { DataloaderService } from './dataloader.service';
     TagModule,
     PostCategoryModule,
     JobTitleModule,
+    JobCategoryModule,
     UserModule,
     SettingModule
   ],

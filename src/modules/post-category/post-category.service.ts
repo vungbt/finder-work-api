@@ -27,9 +27,9 @@ export class PostCategoryService implements BaseService {
       };
     }
     const data = this.prismaService.postCategory.findMany({
+      orderBy: { createdAt: 'desc' },
       ...queries,
-      ...reset,
-      orderBy: { createdAt: 'desc' }
+      ...reset
     });
     const total = await this.count(queries);
     return responseHelper(data, { total, ...pagination });

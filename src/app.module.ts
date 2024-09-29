@@ -38,7 +38,12 @@ import { HttpExceptionFilter } from './utils/exception/http-exception.filter';
 import { PostCategoryModule } from './modules/post-category/post-category.module';
 import { TagModule } from './modules/tag/tag.module';
 import { SettingModule } from './modules/setting/setting.module';
+import { BookmarkPostModule } from './modules/bookmark-post/bookmark-post.module';
+import { VotePostModule } from './modules/vote-post/vote-post.module';
+import { PubSub } from 'graphql-subscriptions';
+import { CommentModule } from './modules/comment/comment.module';
 
+export const pubSub = new PubSub();
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -149,7 +154,10 @@ import { SettingModule } from './modules/setting/setting.module';
     QueueModule,
     PostCategoryModule,
     TagModule,
-    SettingModule
+    SettingModule,
+    BookmarkPostModule,
+    VotePostModule,
+    CommentModule
   ],
   controllers: [],
   providers: [
