@@ -50,6 +50,7 @@ model User {
   projects          Project[]
   applications      Application[]
   posts             Post[]
+  postReports       ReportPost[]
   likes             LikePost[]
   dislikes          DislikePost[]
   comments          Comment[]
@@ -63,24 +64,23 @@ model User {
 }
 
 model File {
-  id               String           @id @default(uuid())
-  url              String
-  storageId        String           @unique()
-  provider         FileProvider?    @default(cloudinary)
-  metadata         Json?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  deletedAt        DateTime?
-  users            User[]
-  companies        Company[]        @relation("CompanyPhotos")
-  resume           Resume[]
-  projects         Project[]
-  resumeTemplateId String?          @unique
-  posts            Post[]
-  company          Company[]
-  resumeTemplates  ResumeTemplate[]
-  certificate      Certificate?     @relation(fields: [certificateId], references: [id])
-  certificateId    String?
+  id              String           @id @default(uuid())
+  url             String
+  storageId       String           @unique()
+  provider        FileProvider?    @default(cloudinary)
+  metadata        Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  users           User[]
+  companies       Company[]        @relation("CompanyPhotos")
+  resume          Resume[]
+  projects        Project[]
+  posts           Post[]
+  company         Company[]
+  resumeTemplates ResumeTemplate[]
+
+  Certificate Certificate[]
 }
 
 model Skill {
@@ -545,6 +545,20 @@ model Post {
   dislikes  DislikePost[]
   comments  Comment[]
   bookmarks BookmarkPost[]
+  reports   ReportPost[]
+}
+
+model ReportPost {
+  id      String  @id @default(uuid())
+  reason  String
+  message String?
+  userId  String?
+  user    User?   @relation(fields: [userId], references: [id])
+  postId  String
+  post    Post    @relation(fields: [postId], references: [id])
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  deletedAt DateTime?
 }
 
 model LikePost {

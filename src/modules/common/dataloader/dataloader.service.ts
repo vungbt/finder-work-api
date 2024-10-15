@@ -6,10 +6,12 @@ import { TagService } from '@/modules/tag/tag.service';
 import { UserService } from '@/modules/user/user.service';
 import { Injectable } from '@nestjs/common';
 import {
+  Comment,
   Country,
   File,
   JobCategory,
   JobTitle,
+  Post,
   PostCategory,
   Setting,
   Tag,
@@ -19,18 +21,22 @@ import * as DataLoader from 'dataloader';
 import { FileService } from '../../file/file.service';
 import { IDataloaders } from './dataloader.type';
 import { JobCategoryService } from '@/modules/job-category/job-category.service';
+import { PostService } from '@/modules/post/post.service';
+import { CommentService } from '@/modules/comment/comment.service';
 
 @Injectable()
 export class DataloaderService {
   constructor(
     private readonly fileService: FileService,
     private readonly userService: UserService,
+    private readonly postService: PostService,
     private readonly addressService: AddressService,
     private readonly tagService: TagService,
     private readonly postCategoryService: PostCategoryService,
     private readonly jobTitleService: JobTitleService,
     private readonly jobCategoryService: JobCategoryService,
-    private readonly settingService: SettingService
+    private readonly settingService: SettingService,
+    private readonly commentService: CommentService
   ) {}
 
   getLoaders(): IDataloaders {
@@ -44,6 +50,8 @@ export class DataloaderService {
     const tagMany = this._createTagManyLoader();
     const postCategoryMany = this._createPostCategoryManyLoader();
     const settingUnique = this._createSettingUniqueLoader();
+    const postUnique = this._createPostUniqueLoader();
+    const commentUnique = this._createCommentUniqueLoader();
 
     return {
       fileUnique,
@@ -55,7 +63,9 @@ export class DataloaderService {
       tagMany,
       postCategoryMany,
       settingUnique,
-      jobCategoryUnique
+      jobCategoryUnique,
+      postUnique,
+      commentUnique
     };
   }
 
@@ -161,5 +171,25 @@ export class DataloaderService {
         );
       }
     );
+  }
+
+  private _createPostUniqueLoader() {
+    return new DataLoader<string, Post>((keys: readonly string[]) => {
+      return Promise.all(
+        keys.map((key) => {
+          return this.postService.findUnique({ where: { id: key } });
+        })
+      );
+    });
+  }
+
+  private _createCommentUniqueLoader() {
+    return new DataLoader<string, Comment>((keys: readonly string[]) => {
+      return Promise.all(
+        keys.map((key) => {
+          return this.commentService.findUnique({ where: { id: key } });
+        })
+      );
+    });
   }
 }

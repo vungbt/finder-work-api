@@ -42,6 +42,7 @@ import { BookmarkPostModule } from './modules/bookmark-post/bookmark-post.module
 import { VotePostModule } from './modules/vote-post/vote-post.module';
 import { PubSub } from 'graphql-subscriptions';
 import { CommentModule } from './modules/comment/comment.module';
+import { ReportPostModule } from './modules/report-post/report-post.module';
 
 export const pubSub = new PubSub();
 @Module({
@@ -130,7 +131,10 @@ export const pubSub = new PubSub();
           }),
           subscriptions: {
             'subscriptions-transport-ws': {
-              onConnect: (params) => ({ connectionParams: params }),
+              onConnect: (params) => ({
+                connectionParams: params,
+                loaders: dataloaderService.getLoaders()
+              }),
               path: '/graphql'
             }
           }
@@ -157,11 +161,13 @@ export const pubSub = new PubSub();
     SettingModule,
     BookmarkPostModule,
     VotePostModule,
-    CommentModule
+    CommentModule,
+    ReportPostModule
   ],
   controllers: [],
   providers: [
     ComplexityPlugin,
+    DataloaderService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter
