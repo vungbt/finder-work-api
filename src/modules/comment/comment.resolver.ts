@@ -27,7 +27,7 @@ export class CommentResolver {
   create(@Args() args: CreateCommentArgs, @Context() ctx: ContextType) {
     const userId = ctx?.req?.user?.id;
     const comment = this.commentService.create(args, userId);
-    pubSub.publish('post_comment', { comment });
+    pubSub.publish('post_comment', { post_comment: comment });
     return comment;
   }
 
@@ -61,9 +61,9 @@ export class CommentResolver {
   }
 
   @ResolveField(() => UserOnly)
-  async user(@Parent() comment: CommentItem, @Context() { loaders }: ContextType) {
+  async user(@Parent() comment: CommentItem, @Context() ctx: ContextType) {
     if (!comment.id || !comment || !comment.userId) return null;
-
+    const loaders = ctx.loaders;
     const result = await this.commentService.findFirst({
       where: { id: comment.id, userId: comment.userId },
       select: { id: true }

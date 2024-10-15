@@ -131,7 +131,10 @@ export const pubSub = new PubSub();
           }),
           subscriptions: {
             'subscriptions-transport-ws': {
-              onConnect: (params) => ({ connectionParams: params }),
+              onConnect: (params) => ({
+                connectionParams: params,
+                loaders: dataloaderService.getLoaders()
+              }),
               path: '/graphql'
             }
           }
@@ -164,6 +167,7 @@ export const pubSub = new PubSub();
   controllers: [],
   providers: [
     ComplexityPlugin,
+    DataloaderService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter
