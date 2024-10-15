@@ -20,6 +20,7 @@ import { VotePostService } from '../vote-post/vote-post.service';
 import { VoteAction } from '../vote-post/vote-post.type';
 import { merge } from 'lodash';
 import { UserService } from '../user/user.service';
+import { ReportPostService } from '../report-post/report-post.service';
 
 @Resolver(() => PostItem)
 export class PostResolver {
@@ -27,6 +28,7 @@ export class PostResolver {
     private readonly postService: PostService,
     private readonly bookmarkPostService: BookmarkPostService,
     private readonly votePostService: VotePostService,
+    private readonly reportPostService: ReportPostService,
     private readonly userService: UserService
   ) {}
 
@@ -119,5 +121,15 @@ export class PostResolver {
       dislikes: dislikes,
       comments: 0 // TODO: Implement count comments
     };
+  }
+
+  @ResolveField(() => UserOnly)
+  async userReport(@Parent() post: PostItem, @Context() { req, loaders }: ContextType) {
+    const userId = req?.user?.id;
+    if (!post.id || !userId || !req.user.id) return null;
+
+    const report = await this.reportPostService.findFirst({ where: { postId: post.id, userId } });
+    if (!report || !report.id) return null;
+    return loaders.userUnique.load(userId);
   }
 }
