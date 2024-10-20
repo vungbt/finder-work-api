@@ -2546,6 +2546,11 @@ type UserOnly {
   _count: UserCount!
 }
 
+type AllUserResult {
+  data: [User!]!
+  metadata: Metadata
+}
+
 type LoginResult {
   accessToken: String!
   expireTime: DateTime!
@@ -2858,7 +2863,7 @@ type Query {
   one_job_title(where: JobTitleWhereInput, orderBy: [JobTitleOrderByWithRelationInput!], cursor: JobTitleWhereUniqueInput, take: Int, skip: Int, distinct: [JobTitleScalarFieldEnum!]): JobTitle!
   all_job_category(where: JobCategoryWhereInput, orderBy: [JobCategoryOrderByWithRelationInput!], cursor: JobCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [JobCategoryScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllJobCategoryResult!
   one_job_category(where: JobCategoryWhereInput, orderBy: [JobCategoryOrderByWithRelationInput!], cursor: JobCategoryWhereUniqueInput, take: Int, skip: Int, distinct: [JobCategoryScalarFieldEnum!]): JobCategory!
-  all_user(where: UserWhereInput, orderBy: [UserOrderByWithRelationInput!], cursor: UserWhereUniqueInput, take: Int, skip: Int, distinct: [UserScalarFieldEnum!]): [UserOnly!]!
+  all_user(where: UserWhereInput, orderBy: [UserOrderByWithRelationInput!], cursor: UserWhereUniqueInput, take: Int, skip: Int, distinct: [UserScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllUserResult!
   me: UserOnly!
   one_setting(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!]): Setting!
   setting_portal(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!], pagination: PaginationInput, searchValue: String, isInit: Boolean): AllSettingResult!
@@ -5629,6 +5634,7 @@ type Mutation {
   create_job_category(data: JobCategoryCreateInput!): JobCategory!
   update_job_category(data: JobCategoryUpdateInput!, where: JobCategoryWhereUniqueInput!): JobCategory!
   delete_job_category(where: JobCategoryWhereUniqueInput!): JobCategory!
+  update_user(data: UserUpdateInput!, where: UserWhereUniqueInput!): UserOnly!
   create_setting(data: SettingCreateInput!): Setting!
   update_setting(data: SettingUpdateInput!, where: SettingWhereUniqueInput!): Setting!
   delete_setting(where: SettingWhereUniqueInput!): Setting!
@@ -19087,6 +19093,46 @@ input JobCategoryUpdateInput {
   jobs: JobUpdateManyWithoutJobCategoryNestedInput
   companies: CompanyUpdateManyWithoutIndustriesNestedInput
   posts: PostUpdateManyWithoutJobCategoryNestedInput
+}
+
+input UserUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
 input SettingCreateInput {
