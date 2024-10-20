@@ -2487,11 +2487,8 @@ type Metadata {
   limit: Float
   status: String
   action: String
-<<<<<<< HEAD
-=======
   likes: Float
   dislikes: Float
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 type Address {
@@ -2588,8 +2585,6 @@ type AllJobCategoryResult {
   metadata: Metadata
 }
 
-<<<<<<< HEAD
-=======
 type VotePostCount {
   likes: Float!
   dislikes: Float!
@@ -2729,7 +2724,6 @@ type CommentItem {
   totalReplies: Float!
 }
 
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 type AllCompanySizeResult {
   data: [CompanySize!]!
   metadata: Metadata
@@ -2740,115 +2734,6 @@ type AllCompanyTypeResult {
   metadata: Metadata
 }
 
-<<<<<<< HEAD
-type VotePostCount {
-  likes: Float!
-  dislikes: Float!
-}
-
-type VoteItem {
-  id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  deletedAt: DateTime
-  userId: String
-  postId: String!
-  commentId: String
-  user: User
-  post: Post!
-  comment: Comment
-  _postCount: VotePostCount
-}
-
-type CreateVotePostResult {
-  data: VoteItem!
-  metadata: Metadata
-}
-
-type AllPostResult {
-  data: [PostItem!]!
-  metadata: Metadata
-}
-
-type UserVote {
-  id: ID!
-  avatarUrl: String
-  avatarId: String
-  firstName: String!
-  lastName: String!
-  email: String!
-  emailVerified: Boolean!
-  phoneNumber: String
-  countryId: Int
-  workingPosition: WorkPosition
-  status: UserStatus!
-  signInProvider: SignInProvider
-  color: String
-  role: UserRole!
-  addressDetail: String
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  deletedAt: DateTime
-  avatar: File
-  country: Country
-  social: [Social!]
-  resumes: [Resume!]
-  workExperiences: [WorkExperience!]
-  educations: [Education!]
-  projects: [Project!]
-  applications: [Application!]
-  posts: [Post!]
-  likes: [LikePost!]
-  dislikes: [DislikePost!]
-  comments: [Comment!]
-  bookmarks: [BookmarkPost!]
-  saveJobs: [SaveJob!]
-  payments: [Payment!]
-  address: [UsersOnCity!]
-  companies: [Company!]
-  authorSettings: [Setting!]
-  updatedBySettings: [Setting!]
-  _count: UserCount!
-  action: VoteAction
-}
-
-"""The roles of the user"""
-enum VoteAction {
-  UP_VOTE
-  DOWN_VOTE
-}
-
-type PostItem {
-  id: ID!
-  title: String!
-  content: String!
-  shareUrl: String!
-  metadata: JSON
-  slug: String!
-  minRead: Int
-  jobCategoryId: String
-  authorId: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  deletedAt: DateTime
-  jobCategory: JobCategory
-  thumbnails: [File!]
-  comments: [Comment!]
-  _count: PostCount!
-  author: UserOnly!
-  categories: [PostCategory!]
-  tags: [Tag!]
-  userBookmark: UserOnly
-  userVote: UserVote
-}
-
-type BookmarkPostResult {
-  data: BookmarkPost!
-  metadata: Metadata
-}
-
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 type Query {
   upload_url(name: String!): String!
   upload_urls(names: [String!]!): [String!]!
@@ -2876,11 +2761,6 @@ type Query {
   one_comment(where: CommentWhereInput, orderBy: [CommentOrderByWithRelationInput!], cursor: CommentWhereUniqueInput, take: Int, skip: Int, distinct: [CommentScalarFieldEnum!]): CommentItem!
   all_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
   one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
-<<<<<<< HEAD
-  all_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllPostResult!
-  one_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!]): PostItem!
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   all_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): [Job!]!
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): [Skill!]!
@@ -2889,8 +2769,6 @@ type Query {
   one_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!]): CompanyType!
   all_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanySizeResult!
   one_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!]): CompanySize!
-  all_comment(where: CommentWhereInput, orderBy: [CommentOrderByWithRelationInput!], cursor: CommentWhereUniqueInput, take: Int, skip: Int, distinct: [CommentScalarFieldEnum!]): [Comment!]!
-  one_comment(where: CommentWhereInput, orderBy: [CommentOrderByWithRelationInput!], cursor: CommentWhereUniqueInput, take: Int, skip: Int, distinct: [CommentScalarFieldEnum!]): Comment!
 }
 
 input CityWhereInput {
@@ -4023,10 +3901,7 @@ input PostWhereInput {
   dislikes: DislikePostListRelationFilter
   comments: CommentListRelationFilter
   bookmarks: BookmarkPostListRelationFilter
-<<<<<<< HEAD
-=======
   reports: ReportPostListRelationFilter
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input JobCategoryNullableRelationFilter {
@@ -4154,8 +4029,6 @@ input BookmarkPostWhereInput {
   post: PostRelationFilter
 }
 
-<<<<<<< HEAD
-=======
 input ReportPostListRelationFilter {
   every: ReportPostWhereInput
   some: ReportPostWhereInput
@@ -4178,7 +4051,6 @@ input ReportPostWhereInput {
   post: PostRelationFilter
 }
 
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 input SaveJobListRelationFilter {
   every: SaveJobWhereInput
   some: SaveJobWhereInput
@@ -5273,83 +5145,6 @@ enum CompanyScalarFieldEnum {
   userId
 }
 
-<<<<<<< HEAD
-input PostOrderByWithRelationInput {
-  id: SortOrder
-  title: SortOrder
-  content: SortOrder
-  shareUrl: SortOrder
-  metadata: SortOrderInput
-  slug: SortOrder
-  minRead: SortOrderInput
-  jobCategoryId: SortOrderInput
-  authorId: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  deletedAt: SortOrderInput
-  jobCategory: JobCategoryOrderByWithRelationInput
-  author: UserOrderByWithRelationInput
-  thumbnails: FileOrderByRelationAggregateInput
-  categories: PostCategoryOrderByRelationAggregateInput
-  tags: TagOrderByRelationAggregateInput
-  likes: LikePostOrderByRelationAggregateInput
-  dislikes: DislikePostOrderByRelationAggregateInput
-  comments: CommentOrderByRelationAggregateInput
-  bookmarks: BookmarkPostOrderByRelationAggregateInput
-}
-
-input PostCategoryOrderByRelationAggregateInput {
-  _count: SortOrder
-}
-
-input TagOrderByRelationAggregateInput {
-  _count: SortOrder
-}
-
-input PostWhereUniqueInput {
-  id: String
-  AND: [PostWhereInput!]
-  OR: [PostWhereInput!]
-  NOT: [PostWhereInput!]
-  title: StringFilter
-  content: StringFilter
-  shareUrl: StringFilter
-  metadata: JsonNullableFilter
-  slug: StringFilter
-  minRead: IntNullableFilter
-  jobCategoryId: StringNullableFilter
-  authorId: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  jobCategory: JobCategoryNullableRelationFilter
-  author: UserRelationFilter
-  thumbnails: FileListRelationFilter
-  categories: PostCategoryListRelationFilter
-  tags: TagListRelationFilter
-  likes: LikePostListRelationFilter
-  dislikes: DislikePostListRelationFilter
-  comments: CommentListRelationFilter
-  bookmarks: BookmarkPostListRelationFilter
-}
-
-enum PostScalarFieldEnum {
-  id
-  title
-  content
-  shareUrl
-  metadata
-  slug
-  minRead
-  jobCategoryId
-  authorId
-  createdAt
-  updatedAt
-  deletedAt
-}
-
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 input JobOrderByWithRelationInput {
   id: SortOrder
   type: SortOrder
@@ -5570,57 +5365,6 @@ enum CompanySizeScalarFieldEnum {
   deletedAt
 }
 
-input CommentOrderByWithRelationInput {
-  id: SortOrder
-  userId: SortOrderInput
-  content: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  deletedAt: SortOrderInput
-  postId: SortOrder
-  isAnonymously: SortOrderInput
-  parentId: SortOrderInput
-  post: PostOrderByWithRelationInput
-  user: UserOrderByWithRelationInput
-  parent: CommentOrderByWithRelationInput
-  replies: CommentOrderByRelationAggregateInput
-  likes: LikePostOrderByRelationAggregateInput
-  dislikes: DislikePostOrderByRelationAggregateInput
-}
-
-input CommentWhereUniqueInput {
-  id: String
-  AND: [CommentWhereInput!]
-  OR: [CommentWhereInput!]
-  NOT: [CommentWhereInput!]
-  userId: StringNullableFilter
-  content: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  postId: StringFilter
-  isAnonymously: BoolNullableFilter
-  parentId: StringNullableFilter
-  post: PostRelationFilter
-  user: UserNullableRelationFilter
-  parent: CommentNullableRelationFilter
-  replies: CommentListRelationFilter
-  likes: LikePostListRelationFilter
-  dislikes: DislikePostListRelationFilter
-}
-
-enum CommentScalarFieldEnum {
-  id
-  userId
-  content
-  createdAt
-  updatedAt
-  deletedAt
-  postId
-  isAnonymously
-  parentId
-}
-
 type Mutation {
   create_tag(data: TagCreateInput!): Tag!
   update_tag(data: TagUpdateInput!, where: TagWhereUniqueInput!): Tag!
@@ -5662,14 +5406,6 @@ type Mutation {
   create_company(data: CompanyCreateInput!): Company!
   update_company(data: CompanyUpdateInput!, where: CompanyWhereUniqueInput!): Company!
   delete_company(where: CompanyWhereUniqueInput!): Company!
-<<<<<<< HEAD
-  create_post(data: CreatePostInput!): PostItem!
-  update_post(data: PostUpdateInput!, where: PostWhereUniqueInput!): PostItem!
-  delete_post(where: PostWhereUniqueInput!): PostItem!
-  bookmark_post(postId: String!): BookmarkPostResult!
-  vote_post(postId: String!, commentId: String, action: VoteAction!): CreateVotePostResult!
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   create_job(data: JobCreateInput!): Job!
   update_job(data: JobUpdateInput!, where: JobWhereUniqueInput!): Job!
   delete_job(where: JobWhereUniqueInput!): Job!
@@ -5682,9 +5418,6 @@ type Mutation {
   create_company_size(data: CompanySizeCreateInput!): CompanySize!
   update_company_size(data: CompanySizeUpdateInput!, where: CompanySizeWhereUniqueInput!): CompanySize!
   delete_company_size(where: CompanySizeWhereUniqueInput!): CompanySize!
-  create_comment(data: CommentCreateInput!): Comment!
-  update_comment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): Comment!
-  delete_comment(where: CommentWhereUniqueInput!): Comment!
 }
 
 input TagCreateInput {
@@ -8059,10 +7792,6 @@ input LikePostCreateNestedManyWithoutUserInput {
 
 input LikePostCreateWithoutUserInput {
   id: String
-<<<<<<< HEAD
-  content: String!
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -8090,8 +7819,6 @@ input PostCreateWithoutLikesInput {
   jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnails: FileCreateNestedManyWithoutPostsInput
-<<<<<<< HEAD
-=======
   categories: PostCategoryCreateNestedManyWithoutPostsInput
   tags: TagCreateNestedManyWithoutPostsInput
   dislikes: DislikePostCreateNestedManyWithoutPostInput
@@ -8203,7 +7930,6 @@ input PostCreateWithoutDislikesInput {
   jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnails: FileCreateNestedManyWithoutPostsInput
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   categories: PostCategoryCreateNestedManyWithoutPostsInput
   tags: TagCreateNestedManyWithoutPostsInput
   likes: LikePostCreateNestedManyWithoutPostInput
@@ -8331,12 +8057,8 @@ input ReportPostCreateNestedManyWithoutPostInput {
 
 input ReportPostCreateWithoutPostInput {
   id: String
-<<<<<<< HEAD
-  content: String!
-=======
   reason: String!
   message: String
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -10036,10 +9758,6 @@ input CommentCreateManyUserInputEnvelope {
 
 input CommentCreateManyUserInput {
   id: String
-<<<<<<< HEAD
-  userId: String
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   content: String!
   createdAt: DateTime
   updatedAt: DateTime
@@ -10138,10 +9856,7 @@ input CommentCreateManyPostInputEnvelope {
 
 input CommentCreateManyPostInput {
   id: String
-<<<<<<< HEAD
-=======
   userId: String
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   content: String!
   createdAt: DateTime
   updatedAt: DateTime
@@ -11081,10 +10796,7 @@ input PostCreateWithoutJobCategoryInput {
   dislikes: DislikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
-<<<<<<< HEAD
-=======
   reports: ReportPostCreateNestedManyWithoutPostInput
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input PostCreateOrConnectWithoutJobCategoryInput {
@@ -15117,10 +14829,6 @@ input LikePostUpsertWithWhereUniqueWithoutUserInput {
 
 input LikePostUpdateWithoutUserInput {
   id: StringFieldUpdateOperationsInput
-<<<<<<< HEAD
-  content: StringFieldUpdateOperationsInput
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -15156,8 +14864,6 @@ input PostUpdateWithoutLikesInput {
   jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnails: FileUpdateManyWithoutPostsNestedInput
-<<<<<<< HEAD
-=======
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
   tags: TagUpdateManyWithoutPostsNestedInput
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
@@ -15313,7 +15019,6 @@ input PostUpdateWithoutDislikesInput {
   jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnails: FileUpdateManyWithoutPostsNestedInput
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
   tags: TagUpdateManyWithoutPostsNestedInput
   likes: LikePostUpdateManyWithoutPostNestedInput
@@ -15496,12 +15201,8 @@ input ReportPostUpsertWithWhereUniqueWithoutPostInput {
 
 input ReportPostUpdateWithoutPostInput {
   id: StringFieldUpdateOperationsInput
-<<<<<<< HEAD
-  content: StringFieldUpdateOperationsInput
-=======
   reason: StringFieldUpdateOperationsInput
   message: NullableStringFieldUpdateOperationsInput
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -18011,8 +17712,6 @@ input CertificateUpdateWithWhereUniqueWithoutFilesInput {
   data: CertificateUpdateWithoutFilesInput!
 }
 
-<<<<<<< HEAD
-=======
 input CertificateUpdateManyWithWhereWithoutFilesInput {
   where: CertificateScalarWhereInput!
   data: CertificateUpdateManyMutationInput!
@@ -18037,7 +17736,6 @@ input CertificateUpdateManyMutationInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
 }
 
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 input FileUpdateWithWhereUniqueWithoutPostsInput {
   where: FileWhereUniqueInput!
   data: FileUpdateWithoutPostsInput!
@@ -18060,11 +17758,6 @@ input FileScalarWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-<<<<<<< HEAD
-  resumeTemplateId: StringNullableFilter
-  certificateId: StringNullableFilter
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input FileUpdateManyMutationInput {
@@ -18076,10 +17769,6 @@ input FileUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-<<<<<<< HEAD
-  resumeTemplateId: NullableStringFieldUpdateOperationsInput
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input PostUpdateWithWhereUniqueWithoutAuthorInput {
@@ -18509,10 +18198,7 @@ input PostUpdateWithoutJobCategoryInput {
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
-<<<<<<< HEAD
-=======
   reports: ReportPostUpdateManyWithoutPostNestedInput
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input PostUpdateWithWhereUniqueWithoutJobCategoryInput {
@@ -19123,6 +18809,7 @@ input UserUpdateInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -19305,51 +18992,6 @@ input CompanyUpdateInput {
   user: UserUpdateOneWithoutCompaniesNestedInput
 }
 
-<<<<<<< HEAD
-input CreatePostInput {
-  id: String
-  title: String!
-  content: String!
-  shareUrl: String!
-  metadata: JSON
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
-  thumbnails: FileCreateNestedManyWithoutPostsInput
-  categories: PostCategoryCreateNestedManyWithoutPostsInput
-  tags: TagCreateNestedManyWithoutPostsInput
-  likes: LikePostCreateNestedManyWithoutPostInput
-  dislikes: DislikePostCreateNestedManyWithoutPostInput
-  comments: CommentCreateNestedManyWithoutPostInput
-  bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
-  thumbnailIds: [String!] = []
-}
-
-input PostUpdateInput {
-  id: StringFieldUpdateOperationsInput
-  title: StringFieldUpdateOperationsInput
-  content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
-  metadata: JSON
-  slug: StringFieldUpdateOperationsInput
-  minRead: NullableIntFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
-  author: UserUpdateOneRequiredWithoutPostsNestedInput
-  thumbnails: FileUpdateManyWithoutPostsNestedInput
-  categories: PostCategoryUpdateManyWithoutPostsNestedInput
-  tags: TagUpdateManyWithoutPostsNestedInput
-  likes: LikePostUpdateManyWithoutPostNestedInput
-  dislikes: DislikePostUpdateManyWithoutPostNestedInput
-  comments: CommentUpdateManyWithoutPostNestedInput
-  bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
-}
-
-=======
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 input JobCreateInput {
   id: String
   type: JobType!
@@ -19678,42 +19320,7 @@ input CompanyUpdateManyWithWhereWithoutSizeInput {
   data: CompanyUpdateManyMutationInput!
 }
 
-<<<<<<< HEAD
-input CommentCreateInput {
-  id: String
-  content: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  isAnonymously: Boolean
-  post: PostCreateNestedOneWithoutCommentsInput!
-  user: UserCreateNestedOneWithoutCommentsInput
-  parent: CommentCreateNestedOneWithoutRepliesInput
-  replies: CommentCreateNestedManyWithoutParentInput
-  likes: LikePostCreateNestedManyWithoutCommentInput
-  dislikes: DislikePostCreateNestedManyWithoutCommentInput
-}
-
-input CommentUpdateInput {
-  id: StringFieldUpdateOperationsInput
-  content: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  isAnonymously: NullableBoolFieldUpdateOperationsInput
-  post: PostUpdateOneRequiredWithoutCommentsNestedInput
-  user: UserUpdateOneWithoutCommentsNestedInput
-  parent: CommentUpdateOneWithoutRepliesNestedInput
-  replies: CommentUpdateManyWithoutParentNestedInput
-  likes: LikePostUpdateManyWithoutCommentNestedInput
-  dislikes: DislikePostUpdateManyWithoutCommentNestedInput
-}
-
-type Subscription {
-  vote_post: CreateVotePostResult!
-=======
 type Subscription {
   vote_post: CreateVotePostResult!
   post_comment: CommentItem!
->>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
