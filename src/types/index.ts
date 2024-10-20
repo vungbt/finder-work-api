@@ -18,6 +18,12 @@ export class Metadata {
 
   @Field(() => String, { nullable: true })
   action?: string;
+
+  @Field(() => Number, { nullable: true, defaultValue: 0 })
+  likes?: number;
+
+  @Field(() => Number, { nullable: true, defaultValue: 0 })
+  dislikes?: number;
 }
 
 @InputType()

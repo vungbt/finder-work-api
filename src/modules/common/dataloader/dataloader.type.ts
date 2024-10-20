@@ -1,8 +1,10 @@
 import {
+  Comment,
   Country,
   File,
   JobCategory,
   JobTitle,
+  Post,
   PostCategory,
   Setting,
   Tag,
@@ -21,4 +23,6 @@ export interface IDataloaders {
   jobTitleUnique: DataLoader<string, JobTitle>;
   jobCategoryUnique: DataLoader<string, JobCategory>;
   settingUnique: DataLoader<{ key: string; type: string }, Setting>;
+  postUnique: DataLoader<string, Post>;
+  commentUnique: DataLoader<string, Comment>;
 }

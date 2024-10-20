@@ -8,6 +8,8 @@ import { Module } from '@nestjs/common';
 import { FileModule } from '../../file/file.module';
 import { DataloaderService } from './dataloader.service';
 import { JobCategoryModule } from '@/modules/job-category/job-category.module';
+import { PostModule } from '@/modules/post/post.module';
+import { CommentModule } from '@/modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -18,7 +20,9 @@ import { JobCategoryModule } from '@/modules/job-category/job-category.module';
     JobTitleModule,
     JobCategoryModule,
     UserModule,
-    SettingModule
+    SettingModule,
+    PostModule,
+    CommentModule
   ],
   providers: [DataloaderService],
   exports: [DataloaderService]
