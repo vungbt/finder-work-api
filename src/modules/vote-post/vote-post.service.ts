@@ -36,8 +36,12 @@ export class VotePostService {
       votePost = await voteModel.create({ data });
       status = 'created';
     }
+    const dislikes = await this.prismaService.dislikePost.count({
+      where: { postId, commentId }
+    });
+    const likes = await this.prismaService.likePost.count({ where: { postId, commentId } });
 
-    return responseHelper(votePost, { status, action });
+    return responseHelper(votePost, { status, action, dislikes, likes });
   }
 
   countLike(args: Prisma.LikePostCountArgs) {

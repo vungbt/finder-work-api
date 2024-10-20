@@ -850,8 +850,6 @@ type FileCountAggregate {
   createdAt: Int!
   updatedAt: Int!
   deletedAt: Int!
-  resumeTemplateId: Int!
-  certificateId: Int!
   _all: Int!
 }
 
@@ -863,6 +861,7 @@ type FileCount {
   posts: Int!
   company: Int!
   resumeTemplates: Int!
+  Certificate: Int!
 }
 
 type FileMaxAggregate {
@@ -873,8 +872,6 @@ type FileMaxAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  resumeTemplateId: String
-  certificateId: String
 }
 
 enum FileProvider {
@@ -890,8 +887,6 @@ type FileMinAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  resumeTemplateId: String
-  certificateId: String
 }
 
 type File {
@@ -903,8 +898,6 @@ type File {
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
-  resumeTemplateId: String
-  certificateId: String
   users: [User!]
   companies: [Company!]
   resume: [Resume!]
@@ -912,7 +905,7 @@ type File {
   posts: [Post!]
   company: [Company!]
   resumeTemplates: [ResumeTemplate!]
-  certificate: Certificate
+  Certificate: [Certificate!]
   _count: FileCount!
 }
 
@@ -1434,6 +1427,7 @@ type PostCount {
   dislikes: Int!
   comments: Int!
   bookmarks: Int!
+  reports: Int!
 }
 
 type PostMaxAggregate {
@@ -1490,6 +1484,7 @@ type Post {
   dislikes: [DislikePost!]
   comments: [Comment!]
   bookmarks: [BookmarkPost!]
+  reports: [ReportPost!]
   _count: PostCount!
 }
 
@@ -1671,6 +1666,53 @@ type Reference {
   deletedAt: DateTime
   companyId: String!
   company: Company!
+}
+
+type ReportPostCountAggregate {
+  id: Int!
+  reason: Int!
+  message: Int!
+  userId: Int!
+  postId: Int!
+  createdAt: Int!
+  updatedAt: Int!
+  deletedAt: Int!
+  _all: Int!
+}
+
+type ReportPostMaxAggregate {
+  id: String
+  reason: String
+  message: String
+  userId: String
+  postId: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type ReportPostMinAggregate {
+  id: String
+  reason: String
+  message: String
+  userId: String
+  postId: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type ReportPost {
+  id: ID!
+  reason: String!
+  message: String
+  userId: String
+  postId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  user: User
+  post: Post!
 }
 
 type ResumeAvgAggregate {
@@ -2197,6 +2239,7 @@ type UserCount {
   projects: Int!
   applications: Int!
   posts: Int!
+  postReports: Int!
   likes: Int!
   dislikes: Int!
   comments: Int!
@@ -2303,6 +2346,7 @@ type User {
   projects: [Project!]
   applications: [Application!]
   posts: [Post!]
+  postReports: [ReportPost!]
   likes: [LikePost!]
   dislikes: [DislikePost!]
   comments: [Comment!]
@@ -2443,6 +2487,11 @@ type Metadata {
   limit: Float
   status: String
   action: String
+<<<<<<< HEAD
+=======
+  likes: Float
+  dislikes: Float
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 type Address {
@@ -2483,6 +2532,7 @@ type UserOnly {
   projects: [Project!]
   applications: [Application!]
   posts: [Post!]
+  postReports: [ReportPost!]
   likes: [LikePost!]
   dislikes: [DislikePost!]
   comments: [Comment!]
@@ -2533,6 +2583,148 @@ type AllJobCategoryResult {
   metadata: Metadata
 }
 
+<<<<<<< HEAD
+=======
+type VotePostCount {
+  likes: Float!
+  dislikes: Float!
+}
+
+type VoteItem {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  userId: String
+  postId: String!
+  commentId: String
+  user: User
+  post: Post!
+  comment: Comment
+  _postCount: VotePostCount
+}
+
+type CreateVotePostResult {
+  data: VoteItem!
+  metadata: Metadata
+}
+
+type AllPostResult {
+  data: [PostItem!]!
+  metadata: Metadata
+}
+
+type UserVote {
+  id: ID!
+  avatarUrl: String
+  avatarId: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean!
+  phoneNumber: String
+  countryId: Int
+  workingPosition: WorkPosition
+  status: UserStatus!
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole!
+  addressDetail: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  avatar: File
+  country: Country
+  social: [Social!]
+  resumes: [Resume!]
+  workExperiences: [WorkExperience!]
+  educations: [Education!]
+  projects: [Project!]
+  applications: [Application!]
+  posts: [Post!]
+  postReports: [ReportPost!]
+  likes: [LikePost!]
+  dislikes: [DislikePost!]
+  comments: [Comment!]
+  bookmarks: [BookmarkPost!]
+  saveJobs: [SaveJob!]
+  payments: [Payment!]
+  address: [UsersOnCity!]
+  companies: [Company!]
+  authorSettings: [Setting!]
+  updatedBySettings: [Setting!]
+  _count: UserCount!
+  action: VoteAction
+}
+
+"""The roles of the user"""
+enum VoteAction {
+  UP_VOTE
+  DOWN_VOTE
+}
+
+type PostItem {
+  id: ID!
+  title: String!
+  content: String!
+  shareUrl: String!
+  metadata: JSON
+  slug: String!
+  minRead: Int
+  jobCategoryId: String
+  authorId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  jobCategory: JobCategory
+  thumbnails: [File!]
+  comments: [Comment!]
+  reports: [ReportPost!]
+  _count: PostCount!
+  author: UserOnly!
+  categories: [PostCategory!]
+  tags: [Tag!]
+  userBookmark: UserOnly
+  userVote: UserVote
+  userReport: UserOnly
+}
+
+type BookmarkPostResult {
+  data: BookmarkPost!
+  metadata: Metadata
+}
+
+type AllReportPostResult {
+  data: [ReportPost!]!
+  metadata: Metadata
+}
+
+type AllCommentResult {
+  data: [CommentItem!]!
+  metadata: Metadata
+}
+
+type CommentItem {
+  id: ID!
+  userId: String
+  content: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  postId: String!
+  isAnonymously: Boolean
+  parentId: String
+  post: Post!
+  user: User
+  parent: Comment
+  replies: [Comment!]
+  likes: [LikePost!]
+  dislikes: [DislikePost!]
+  _count: CommentCount!
+  totalReplies: Float!
+}
+
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 type AllCompanySizeResult {
   data: [CompanySize!]!
   metadata: Metadata
@@ -2543,6 +2735,7 @@ type AllCompanyTypeResult {
   metadata: Metadata
 }
 
+<<<<<<< HEAD
 type VotePostCount {
   likes: Float!
   dislikes: Float!
@@ -2649,6 +2842,8 @@ type BookmarkPostResult {
   metadata: Metadata
 }
 
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 type Query {
   upload_url(name: String!): String!
   upload_urls(names: [String!]!): [String!]!
@@ -2668,10 +2863,19 @@ type Query {
   one_setting(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!]): Setting!
   setting_portal(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!], pagination: PaginationInput, searchValue: String, isInit: Boolean): AllSettingResult!
   setting_landing_page(where: SettingWhereInput, orderBy: [SettingOrderByWithRelationInput!], cursor: SettingWhereUniqueInput, take: Int, skip: Int, distinct: [SettingScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllSettingResult!
-  all_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
-  one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
   all_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllPostResult!
   one_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!]): PostItem!
+  all_report_post(where: ReportPostWhereInput, orderBy: [ReportPostOrderByWithRelationInput!], cursor: ReportPostWhereUniqueInput, take: Int, skip: Int, distinct: [ReportPostScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllReportPostResult!
+  one_report_post(where: ReportPostWhereInput, orderBy: [ReportPostOrderByWithRelationInput!], cursor: ReportPostWhereUniqueInput, take: Int, skip: Int, distinct: [ReportPostScalarFieldEnum!]): ReportPost!
+  all_comment(where: CommentWhereInput, orderBy: [CommentOrderByWithRelationInput!], cursor: CommentWhereUniqueInput, take: Int, skip: Int, distinct: [CommentScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCommentResult!
+  one_comment(where: CommentWhereInput, orderBy: [CommentOrderByWithRelationInput!], cursor: CommentWhereUniqueInput, take: Int, skip: Int, distinct: [CommentScalarFieldEnum!]): CommentItem!
+  all_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
+  one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
+<<<<<<< HEAD
+  all_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllPostResult!
+  one_post(where: PostWhereInput, orderBy: [PostOrderByWithRelationInput!], cursor: PostWhereUniqueInput, take: Int, skip: Int, distinct: [PostScalarFieldEnum!]): PostItem!
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   all_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): [Job!]!
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): [Skill!]!
@@ -2942,6 +3146,7 @@ input UserWhereInput {
   projects: ProjectListRelationFilter
   applications: ApplicationListRelationFilter
   posts: PostListRelationFilter
+  postReports: ReportPostListRelationFilter
   likes: LikePostListRelationFilter
   dislikes: DislikePostListRelationFilter
   comments: CommentListRelationFilter
@@ -3081,8 +3286,6 @@ input FileWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  resumeTemplateId: StringNullableFilter
-  certificateId: StringNullableFilter
   users: UserListRelationFilter
   companies: CompanyListRelationFilter
   resume: ResumeListRelationFilter
@@ -3090,7 +3293,7 @@ input FileWhereInput {
   posts: PostListRelationFilter
   company: CompanyListRelationFilter
   resumeTemplates: ResumeTemplateListRelationFilter
-  certificate: CertificateNullableRelationFilter
+  Certificate: CertificateListRelationFilter
 }
 
 input EnumFileProviderNullableFilter {
@@ -3815,6 +4018,10 @@ input PostWhereInput {
   dislikes: DislikePostListRelationFilter
   comments: CommentListRelationFilter
   bookmarks: BookmarkPostListRelationFilter
+<<<<<<< HEAD
+=======
+  reports: ReportPostListRelationFilter
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input JobCategoryNullableRelationFilter {
@@ -3942,6 +4149,31 @@ input BookmarkPostWhereInput {
   post: PostRelationFilter
 }
 
+<<<<<<< HEAD
+=======
+input ReportPostListRelationFilter {
+  every: ReportPostWhereInput
+  some: ReportPostWhereInput
+  none: ReportPostWhereInput
+}
+
+input ReportPostWhereInput {
+  AND: [ReportPostWhereInput!]
+  OR: [ReportPostWhereInput!]
+  NOT: [ReportPostWhereInput!]
+  id: StringFilter
+  reason: StringFilter
+  message: StringNullableFilter
+  userId: StringNullableFilter
+  postId: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  user: UserNullableRelationFilter
+  post: PostRelationFilter
+}
+
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 input SaveJobListRelationFilter {
   every: SaveJobWhereInput
   some: SaveJobWhereInput
@@ -4018,9 +4250,10 @@ input NestedEnumUserStatusNullableFilter {
   not: NestedEnumUserStatusNullableFilter
 }
 
-input CertificateNullableRelationFilter {
-  is: CertificateWhereInput
-  isNot: CertificateWhereInput
+input CertificateListRelationFilter {
+  every: CertificateWhereInput
+  some: CertificateWhereInput
+  none: CertificateWhereInput
 }
 
 input CertificateWhereInput {
@@ -4553,6 +4786,7 @@ input UserOrderByWithRelationInput {
   projects: ProjectOrderByRelationAggregateInput
   applications: ApplicationOrderByRelationAggregateInput
   posts: PostOrderByRelationAggregateInput
+  postReports: ReportPostOrderByRelationAggregateInput
   likes: LikePostOrderByRelationAggregateInput
   dislikes: DislikePostOrderByRelationAggregateInput
   comments: CommentOrderByRelationAggregateInput
@@ -4574,8 +4808,6 @@ input FileOrderByWithRelationInput {
   createdAt: SortOrder
   updatedAt: SortOrder
   deletedAt: SortOrderInput
-  resumeTemplateId: SortOrderInput
-  certificateId: SortOrderInput
   users: UserOrderByRelationAggregateInput
   companies: CompanyOrderByRelationAggregateInput
   resume: ResumeOrderByRelationAggregateInput
@@ -4583,7 +4815,7 @@ input FileOrderByWithRelationInput {
   posts: PostOrderByRelationAggregateInput
   company: CompanyOrderByRelationAggregateInput
   resumeTemplates: ResumeTemplateOrderByRelationAggregateInput
-  certificate: CertificateOrderByWithRelationInput
+  Certificate: CertificateOrderByRelationAggregateInput
 }
 
 input ProjectOrderByRelationAggregateInput {
@@ -4594,16 +4826,7 @@ input ResumeTemplateOrderByRelationAggregateInput {
   _count: SortOrder
 }
 
-input CertificateOrderByWithRelationInput {
-  id: SortOrder
-  name: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  deletedAt: SortOrderInput
-  files: FileOrderByRelationAggregateInput
-}
-
-input FileOrderByRelationAggregateInput {
+input CertificateOrderByRelationAggregateInput {
   _count: SortOrder
 }
 
@@ -4616,6 +4839,10 @@ input EducationOrderByRelationAggregateInput {
 }
 
 input ApplicationOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input ReportPostOrderByRelationAggregateInput {
   _count: SortOrder
 }
 
@@ -4680,6 +4907,7 @@ input UserWhereUniqueInput {
   projects: ProjectListRelationFilter
   applications: ApplicationListRelationFilter
   posts: PostListRelationFilter
+  postReports: ReportPostListRelationFilter
   likes: LikePostListRelationFilter
   dislikes: DislikePostListRelationFilter
   comments: CommentListRelationFilter
@@ -4762,6 +4990,177 @@ enum SettingScalarFieldEnum {
   createdAt
   updatedAt
   deletedAt
+}
+
+input PostOrderByWithRelationInput {
+  id: SortOrder
+  title: SortOrder
+  content: SortOrder
+  shareUrl: SortOrder
+  metadata: SortOrderInput
+  slug: SortOrder
+  minRead: SortOrderInput
+  jobCategoryId: SortOrderInput
+  authorId: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrderInput
+  jobCategory: JobCategoryOrderByWithRelationInput
+  author: UserOrderByWithRelationInput
+  thumbnails: FileOrderByRelationAggregateInput
+  categories: PostCategoryOrderByRelationAggregateInput
+  tags: TagOrderByRelationAggregateInput
+  likes: LikePostOrderByRelationAggregateInput
+  dislikes: DislikePostOrderByRelationAggregateInput
+  comments: CommentOrderByRelationAggregateInput
+  bookmarks: BookmarkPostOrderByRelationAggregateInput
+  reports: ReportPostOrderByRelationAggregateInput
+}
+
+input FileOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input PostCategoryOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input TagOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input PostWhereUniqueInput {
+  id: String
+  AND: [PostWhereInput!]
+  OR: [PostWhereInput!]
+  NOT: [PostWhereInput!]
+  title: StringFilter
+  content: StringFilter
+  shareUrl: StringFilter
+  metadata: JsonNullableFilter
+  slug: StringFilter
+  minRead: IntNullableFilter
+  jobCategoryId: StringNullableFilter
+  authorId: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  jobCategory: JobCategoryNullableRelationFilter
+  author: UserRelationFilter
+  thumbnails: FileListRelationFilter
+  categories: PostCategoryListRelationFilter
+  tags: TagListRelationFilter
+  likes: LikePostListRelationFilter
+  dislikes: DislikePostListRelationFilter
+  comments: CommentListRelationFilter
+  bookmarks: BookmarkPostListRelationFilter
+  reports: ReportPostListRelationFilter
+}
+
+enum PostScalarFieldEnum {
+  id
+  title
+  content
+  shareUrl
+  metadata
+  slug
+  minRead
+  jobCategoryId
+  authorId
+  createdAt
+  updatedAt
+  deletedAt
+}
+
+input ReportPostOrderByWithRelationInput {
+  id: SortOrder
+  reason: SortOrder
+  message: SortOrderInput
+  userId: SortOrderInput
+  postId: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrderInput
+  user: UserOrderByWithRelationInput
+  post: PostOrderByWithRelationInput
+}
+
+input ReportPostWhereUniqueInput {
+  id: String
+  AND: [ReportPostWhereInput!]
+  OR: [ReportPostWhereInput!]
+  NOT: [ReportPostWhereInput!]
+  reason: StringFilter
+  message: StringNullableFilter
+  userId: StringNullableFilter
+  postId: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  user: UserNullableRelationFilter
+  post: PostRelationFilter
+}
+
+enum ReportPostScalarFieldEnum {
+  id
+  reason
+  message
+  userId
+  postId
+  createdAt
+  updatedAt
+  deletedAt
+}
+
+input CommentOrderByWithRelationInput {
+  id: SortOrder
+  userId: SortOrderInput
+  content: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrderInput
+  postId: SortOrder
+  isAnonymously: SortOrderInput
+  parentId: SortOrderInput
+  post: PostOrderByWithRelationInput
+  user: UserOrderByWithRelationInput
+  parent: CommentOrderByWithRelationInput
+  replies: CommentOrderByRelationAggregateInput
+  likes: LikePostOrderByRelationAggregateInput
+  dislikes: DislikePostOrderByRelationAggregateInput
+}
+
+input CommentWhereUniqueInput {
+  id: String
+  AND: [CommentWhereInput!]
+  OR: [CommentWhereInput!]
+  NOT: [CommentWhereInput!]
+  userId: StringNullableFilter
+  content: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  postId: StringFilter
+  isAnonymously: BoolNullableFilter
+  parentId: StringNullableFilter
+  post: PostRelationFilter
+  user: UserNullableRelationFilter
+  parent: CommentNullableRelationFilter
+  replies: CommentListRelationFilter
+  likes: LikePostListRelationFilter
+  dislikes: DislikePostListRelationFilter
+}
+
+enum CommentScalarFieldEnum {
+  id
+  userId
+  content
+  createdAt
+  updatedAt
+  deletedAt
+  postId
+  isAnonymously
+  parentId
 }
 
 input CompanyOrderByWithRelationInput {
@@ -4869,6 +5268,7 @@ enum CompanyScalarFieldEnum {
   userId
 }
 
+<<<<<<< HEAD
 input PostOrderByWithRelationInput {
   id: SortOrder
   title: SortOrder
@@ -4943,6 +5343,8 @@ enum PostScalarFieldEnum {
   deletedAt
 }
 
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 input JobOrderByWithRelationInput {
   id: SortOrder
   type: SortOrder
@@ -5230,6 +5632,17 @@ type Mutation {
   create_setting(data: SettingCreateInput!): Setting!
   update_setting(data: SettingUpdateInput!, where: SettingWhereUniqueInput!): Setting!
   delete_setting(where: SettingWhereUniqueInput!): Setting!
+  create_post(data: CreatePostInput!): PostItem!
+  update_post(data: PostUpdateInput!, where: PostWhereUniqueInput!): PostItem!
+  delete_post(where: PostWhereUniqueInput!): PostItem!
+  bookmark_post(postId: String!): BookmarkPostResult!
+  vote_post(postId: String!, commentId: String, action: VoteAction!): CreateVotePostResult!
+  create_report_post(data: ReportPostCreateInput!): ReportPost!
+  update_report_post(data: ReportPostUpdateInput!, where: ReportPostWhereUniqueInput!): ReportPost!
+  delete_report_post(where: ReportPostWhereUniqueInput!): ReportPost!
+  create_comment(data: CreateCommentInput!): CommentItem!
+  update_comment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): CommentItem!
+  delete_comment(where: CommentWhereUniqueInput!): CommentItem!
   auth_login(email: String!, password: String!): LoginResult!
   auth_login_with_google(idToken: String!, role: UserRoleWithoutAdmin = employee, provider: SignInProvider = google, countryCode: String = "VI"): LoginResult!
   auth_register(email: String!, password: String!, role: String!, countryCode: String = "VI"): UserOnly!
@@ -5243,11 +5656,14 @@ type Mutation {
   create_company(data: CompanyCreateInput!): Company!
   update_company(data: CompanyUpdateInput!, where: CompanyWhereUniqueInput!): Company!
   delete_company(where: CompanyWhereUniqueInput!): Company!
+<<<<<<< HEAD
   create_post(data: CreatePostInput!): PostItem!
   update_post(data: PostUpdateInput!, where: PostWhereUniqueInput!): PostItem!
   delete_post(where: PostWhereUniqueInput!): PostItem!
   bookmark_post(postId: String!): BookmarkPostResult!
   vote_post(postId: String!, commentId: String, action: VoteAction!): CreateVotePostResult!
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   create_job(data: JobCreateInput!): Job!
   update_job(data: JobUpdateInput!, where: JobWhereUniqueInput!): Job!
   delete_job(where: JobWhereUniqueInput!): Job!
@@ -5455,6 +5871,7 @@ input UserCreateWithoutAddressInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -5481,14 +5898,13 @@ input FileCreateWithoutUsersInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  resumeTemplateId: String
   companies: CompanyCreateNestedManyWithoutPhotosInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
   posts: PostCreateNestedManyWithoutThumbnailsInput
   company: CompanyCreateNestedManyWithoutAvatarInput
   resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
+  Certificate: CertificateCreateNestedManyWithoutFilesInput
 }
 
 input CompanyCreateNestedManyWithoutPhotosInput {
@@ -5534,14 +5950,13 @@ input FileCreateWithoutCompanyInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   companies: CompanyCreateNestedManyWithoutPhotosInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
   posts: PostCreateNestedManyWithoutThumbnailsInput
   resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
+  Certificate: CertificateCreateNestedManyWithoutFilesInput
 }
 
 input UserCreateNestedManyWithoutAvatarInput {
@@ -5578,6 +5993,7 @@ input UserCreateWithoutAvatarInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -5734,6 +6150,7 @@ input UserCreateWithoutCountryInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -5849,14 +6266,13 @@ input FileCreateWithoutCompaniesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
   posts: PostCreateNestedManyWithoutThumbnailsInput
   company: CompanyCreateNestedManyWithoutAvatarInput
   resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
+  Certificate: CertificateCreateNestedManyWithoutFilesInput
 }
 
 input ResumeCreateNestedManyWithoutAvatarInput {
@@ -5924,6 +6340,7 @@ input UserCreateWithoutResumesInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -6172,14 +6589,13 @@ input FileCreateWithoutResumeInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   companies: CompanyCreateNestedManyWithoutPhotosInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
   posts: PostCreateNestedManyWithoutThumbnailsInput
   company: CompanyCreateNestedManyWithoutAvatarInput
   resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
+  Certificate: CertificateCreateNestedManyWithoutFilesInput
 }
 
 input ProjectCreateNestedManyWithoutThumbnailInput {
@@ -6444,6 +6860,7 @@ input UserCreateWithoutSocialInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -6625,6 +7042,7 @@ input UserCreateWithoutWorkExperiencesInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -6790,6 +7208,7 @@ input PostCreateWithoutTagsInput {
   dislikes: DislikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
 }
 
 input JobCategoryCreateNestedOneWithoutPostsInput {
@@ -6850,6 +7269,7 @@ input UserCreateWithoutPostsInput {
   educations: EducationCreateNestedManyWithoutUserInput
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -7001,14 +7421,13 @@ input FileCreateWithoutProjectsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   companies: CompanyCreateNestedManyWithoutPhotosInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   posts: PostCreateNestedManyWithoutThumbnailsInput
   company: CompanyCreateNestedManyWithoutAvatarInput
   resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
+  Certificate: CertificateCreateNestedManyWithoutFilesInput
 }
 
 input PostCreateNestedManyWithoutThumbnailsInput {
@@ -7036,6 +7455,7 @@ input PostCreateWithoutThumbnailsInput {
   dislikes: DislikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
 }
 
 input PostCategoryCreateNestedManyWithoutPostsInput {
@@ -7132,6 +7552,7 @@ input UserCreateWithoutLikesInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
   bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
@@ -7300,6 +7721,7 @@ input UserCreateWithoutProjectsInput {
   educations: EducationCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -7338,6 +7760,7 @@ input PostCreateWithoutAuthorInput {
   dislikes: DislikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
 }
 
 input FileCreateNestedManyWithoutPostsInput {
@@ -7355,14 +7778,13 @@ input FileCreateWithoutPostsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  resumeTemplateId: String
   users: UserCreateNestedManyWithoutAvatarInput
   companies: CompanyCreateNestedManyWithoutPhotosInput
   resume: ResumeCreateNestedManyWithoutAvatarInput
   projects: ProjectCreateNestedManyWithoutThumbnailInput
   company: CompanyCreateNestedManyWithoutAvatarInput
   resumeTemplates: ResumeTemplateCreateNestedManyWithoutFileInput
-  certificate: CertificateCreateNestedOneWithoutFilesInput
+  Certificate: CertificateCreateNestedManyWithoutFilesInput
 }
 
 input CompanyCreateNestedManyWithoutAvatarInput {
@@ -7502,6 +7924,7 @@ input UserCreateWithoutEducationsInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -7514,29 +7937,30 @@ input UserCreateWithoutEducationsInput {
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
-input LikePostCreateNestedManyWithoutUserInput {
-  create: [LikePostCreateWithoutUserInput!]
-  connectOrCreate: [LikePostCreateOrConnectWithoutUserInput!]
-  createMany: LikePostCreateManyUserInputEnvelope
-  connect: [LikePostWhereUniqueInput!]
+input ReportPostCreateNestedManyWithoutUserInput {
+  create: [ReportPostCreateWithoutUserInput!]
+  connectOrCreate: [ReportPostCreateOrConnectWithoutUserInput!]
+  createMany: ReportPostCreateManyUserInputEnvelope
+  connect: [ReportPostWhereUniqueInput!]
 }
 
-input LikePostCreateWithoutUserInput {
+input ReportPostCreateWithoutUserInput {
   id: String
+  reason: String!
+  message: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  post: PostCreateNestedOneWithoutLikesInput!
-  comment: CommentCreateNestedOneWithoutLikesInput
+  post: PostCreateNestedOneWithoutReportsInput!
 }
 
-input PostCreateNestedOneWithoutLikesInput {
-  create: PostCreateWithoutLikesInput
-  connectOrCreate: PostCreateOrConnectWithoutLikesInput
+input PostCreateNestedOneWithoutReportsInput {
+  create: PostCreateWithoutReportsInput
+  connectOrCreate: PostCreateOrConnectWithoutReportsInput
   connect: PostWhereUniqueInput
 }
 
-input PostCreateWithoutLikesInput {
+input PostCreateWithoutReportsInput {
   id: String
   title: String!
   content: String!
@@ -7552,6 +7976,7 @@ input PostCreateWithoutLikesInput {
   thumbnails: FileCreateNestedManyWithoutPostsInput
   categories: PostCategoryCreateNestedManyWithoutPostsInput
   tags: TagCreateNestedManyWithoutPostsInput
+  likes: LikePostCreateNestedManyWithoutPostInput
   dislikes: DislikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
@@ -7607,6 +8032,7 @@ input UserCreateWithoutDislikesInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
   bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
@@ -7618,34 +8044,33 @@ input UserCreateWithoutDislikesInput {
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
-input CommentCreateNestedManyWithoutUserInput {
-  create: [CommentCreateWithoutUserInput!]
-  connectOrCreate: [CommentCreateOrConnectWithoutUserInput!]
-  createMany: CommentCreateManyUserInputEnvelope
-  connect: [CommentWhereUniqueInput!]
+input LikePostCreateNestedManyWithoutUserInput {
+  create: [LikePostCreateWithoutUserInput!]
+  connectOrCreate: [LikePostCreateOrConnectWithoutUserInput!]
+  createMany: LikePostCreateManyUserInputEnvelope
+  connect: [LikePostWhereUniqueInput!]
 }
 
-input CommentCreateWithoutUserInput {
+input LikePostCreateWithoutUserInput {
   id: String
+<<<<<<< HEAD
   content: String!
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  isAnonymously: Boolean
-  post: PostCreateNestedOneWithoutCommentsInput!
-  parent: CommentCreateNestedOneWithoutRepliesInput
-  replies: CommentCreateNestedManyWithoutParentInput
-  likes: LikePostCreateNestedManyWithoutCommentInput
-  dislikes: DislikePostCreateNestedManyWithoutCommentInput
+  post: PostCreateNestedOneWithoutLikesInput!
+  comment: CommentCreateNestedOneWithoutLikesInput
 }
 
-input PostCreateNestedOneWithoutCommentsInput {
-  create: PostCreateWithoutCommentsInput
-  connectOrCreate: PostCreateOrConnectWithoutCommentsInput
+input PostCreateNestedOneWithoutLikesInput {
+  create: PostCreateWithoutLikesInput
+  connectOrCreate: PostCreateOrConnectWithoutLikesInput
   connect: PostWhereUniqueInput
 }
 
-input PostCreateWithoutCommentsInput {
+input PostCreateWithoutLikesInput {
   id: String
   title: String!
   content: String!
@@ -7659,114 +8084,14 @@ input PostCreateWithoutCommentsInput {
   jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
   author: UserCreateNestedOneWithoutPostsInput!
   thumbnails: FileCreateNestedManyWithoutPostsInput
+<<<<<<< HEAD
+=======
   categories: PostCategoryCreateNestedManyWithoutPostsInput
   tags: TagCreateNestedManyWithoutPostsInput
-  likes: LikePostCreateNestedManyWithoutPostInput
   dislikes: DislikePostCreateNestedManyWithoutPostInput
-  bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
-}
-
-input BookmarkPostCreateNestedManyWithoutPostInput {
-  create: [BookmarkPostCreateWithoutPostInput!]
-  connectOrCreate: [BookmarkPostCreateOrConnectWithoutPostInput!]
-  createMany: BookmarkPostCreateManyPostInputEnvelope
-  connect: [BookmarkPostWhereUniqueInput!]
-}
-
-input BookmarkPostCreateWithoutPostInput {
-  id: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  user: UserCreateNestedOneWithoutBookmarksInput!
-}
-
-input UserCreateNestedOneWithoutBookmarksInput {
-  create: UserCreateWithoutBookmarksInput
-  connectOrCreate: UserCreateOrConnectWithoutBookmarksInput
-  connect: UserWhereUniqueInput
-}
-
-input UserCreateWithoutBookmarksInput {
-  id: String
-  avatarUrl: String
-  firstName: String!
-  lastName: String!
-  email: String!
-  emailVerified: Boolean
-  password: String!
-  phoneNumber: String
-  workingPosition: WorkPosition
-  status: UserStatus
-  signInProvider: SignInProvider
-  color: String
-  role: UserRole
-  addressDetail: String
-  verifyCode: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  avatar: FileCreateNestedOneWithoutUsersInput
-  country: CountryCreateNestedOneWithoutUsersInput
-  social: SocialCreateNestedManyWithoutUserInput
-  resumes: ResumeCreateNestedManyWithoutUserInput
-  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
-  educations: EducationCreateNestedManyWithoutUserInput
-  projects: ProjectCreateNestedManyWithoutUserInput
-  applications: ApplicationCreateNestedManyWithoutCandidateInput
-  posts: PostCreateNestedManyWithoutAuthorInput
-  likes: LikePostCreateNestedManyWithoutUserInput
-  dislikes: DislikePostCreateNestedManyWithoutUserInput
-  comments: CommentCreateNestedManyWithoutUserInput
-  saveJobs: SaveJobCreateNestedManyWithoutUserInput
-  payments: PaymentCreateNestedManyWithoutUserInput
-  address: UsersOnCityCreateNestedManyWithoutUserInput
-  companies: CompanyCreateNestedManyWithoutUserInput
-  authorSettings: SettingCreateNestedManyWithoutAuthorInput
-  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
-}
-
-input DislikePostCreateNestedManyWithoutUserInput {
-  create: [DislikePostCreateWithoutUserInput!]
-  connectOrCreate: [DislikePostCreateOrConnectWithoutUserInput!]
-  createMany: DislikePostCreateManyUserInputEnvelope
-  connect: [DislikePostWhereUniqueInput!]
-}
-
-input DislikePostCreateWithoutUserInput {
-  id: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  post: PostCreateNestedOneWithoutDislikesInput!
-  comment: CommentCreateNestedOneWithoutDislikesInput
-}
-
-input PostCreateNestedOneWithoutDislikesInput {
-  create: PostCreateWithoutDislikesInput
-  connectOrCreate: PostCreateOrConnectWithoutDislikesInput
-  connect: PostWhereUniqueInput
-}
-
-input PostCreateWithoutDislikesInput {
-  id: String
-  title: String!
-  content: String!
-  shareUrl: String!
-  metadata: JSON
-  slug: String!
-  minRead: Int
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
-  author: UserCreateNestedOneWithoutPostsInput!
-  thumbnails: FileCreateNestedManyWithoutPostsInput
-  categories: PostCategoryCreateNestedManyWithoutPostsInput
-  tags: TagCreateNestedManyWithoutPostsInput
-  likes: LikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
 }
 
 input CommentCreateNestedManyWithoutPostInput {
@@ -7824,8 +8149,231 @@ input UserCreateWithoutCommentsInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
+  saveJobs: SaveJobCreateNestedManyWithoutUserInput
+  payments: PaymentCreateNestedManyWithoutUserInput
+  address: UsersOnCityCreateNestedManyWithoutUserInput
+  companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
+}
+
+input DislikePostCreateNestedManyWithoutUserInput {
+  create: [DislikePostCreateWithoutUserInput!]
+  connectOrCreate: [DislikePostCreateOrConnectWithoutUserInput!]
+  createMany: DislikePostCreateManyUserInputEnvelope
+  connect: [DislikePostWhereUniqueInput!]
+}
+
+input DislikePostCreateWithoutUserInput {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  post: PostCreateNestedOneWithoutDislikesInput!
+  comment: CommentCreateNestedOneWithoutDislikesInput
+}
+
+input PostCreateNestedOneWithoutDislikesInput {
+  create: PostCreateWithoutDislikesInput
+  connectOrCreate: PostCreateOrConnectWithoutDislikesInput
+  connect: PostWhereUniqueInput
+}
+
+input PostCreateWithoutDislikesInput {
+  id: String
+  title: String!
+  content: String!
+  shareUrl: String!
+  metadata: JSON
+  slug: String!
+  minRead: Int
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
+  author: UserCreateNestedOneWithoutPostsInput!
+  thumbnails: FileCreateNestedManyWithoutPostsInput
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
+  categories: PostCategoryCreateNestedManyWithoutPostsInput
+  tags: TagCreateNestedManyWithoutPostsInput
+  likes: LikePostCreateNestedManyWithoutPostInput
+  comments: CommentCreateNestedManyWithoutPostInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
+}
+
+input BookmarkPostCreateNestedManyWithoutPostInput {
+  create: [BookmarkPostCreateWithoutPostInput!]
+  connectOrCreate: [BookmarkPostCreateOrConnectWithoutPostInput!]
+  createMany: BookmarkPostCreateManyPostInputEnvelope
+  connect: [BookmarkPostWhereUniqueInput!]
+}
+
+input BookmarkPostCreateWithoutPostInput {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  user: UserCreateNestedOneWithoutBookmarksInput!
+}
+
+input UserCreateNestedOneWithoutBookmarksInput {
+  create: UserCreateWithoutBookmarksInput
+  connectOrCreate: UserCreateOrConnectWithoutBookmarksInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutBookmarksInput {
+  id: String
+  avatarUrl: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean
+  password: String!
+  phoneNumber: String
+  workingPosition: WorkPosition
+  status: UserStatus
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole
+  addressDetail: String
+  verifyCode: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  avatar: FileCreateNestedOneWithoutUsersInput
+  country: CountryCreateNestedOneWithoutUsersInput
+  social: SocialCreateNestedManyWithoutUserInput
+  resumes: ResumeCreateNestedManyWithoutUserInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
+  educations: EducationCreateNestedManyWithoutUserInput
+  projects: ProjectCreateNestedManyWithoutUserInput
+  applications: ApplicationCreateNestedManyWithoutCandidateInput
+  posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
+  likes: LikePostCreateNestedManyWithoutUserInput
+  dislikes: DislikePostCreateNestedManyWithoutUserInput
+  comments: CommentCreateNestedManyWithoutUserInput
+  saveJobs: SaveJobCreateNestedManyWithoutUserInput
+  payments: PaymentCreateNestedManyWithoutUserInput
+  address: UsersOnCityCreateNestedManyWithoutUserInput
+  companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
+}
+
+input CommentCreateNestedManyWithoutUserInput {
+  create: [CommentCreateWithoutUserInput!]
+  connectOrCreate: [CommentCreateOrConnectWithoutUserInput!]
+  createMany: CommentCreateManyUserInputEnvelope
+  connect: [CommentWhereUniqueInput!]
+}
+
+input CommentCreateWithoutUserInput {
+  id: String
+  content: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  isAnonymously: Boolean
+  post: PostCreateNestedOneWithoutCommentsInput!
+  parent: CommentCreateNestedOneWithoutRepliesInput
+  replies: CommentCreateNestedManyWithoutParentInput
+  likes: LikePostCreateNestedManyWithoutCommentInput
+  dislikes: DislikePostCreateNestedManyWithoutCommentInput
+}
+
+input PostCreateNestedOneWithoutCommentsInput {
+  create: PostCreateWithoutCommentsInput
+  connectOrCreate: PostCreateOrConnectWithoutCommentsInput
+  connect: PostWhereUniqueInput
+}
+
+input PostCreateWithoutCommentsInput {
+  id: String
+  title: String!
+  content: String!
+  shareUrl: String!
+  metadata: JSON
+  slug: String!
+  minRead: Int
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
+  author: UserCreateNestedOneWithoutPostsInput!
+  thumbnails: FileCreateNestedManyWithoutPostsInput
+  categories: PostCategoryCreateNestedManyWithoutPostsInput
+  tags: TagCreateNestedManyWithoutPostsInput
+  likes: LikePostCreateNestedManyWithoutPostInput
+  dislikes: DislikePostCreateNestedManyWithoutPostInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
+}
+
+input ReportPostCreateNestedManyWithoutPostInput {
+  create: [ReportPostCreateWithoutPostInput!]
+  connectOrCreate: [ReportPostCreateOrConnectWithoutPostInput!]
+  createMany: ReportPostCreateManyPostInputEnvelope
+  connect: [ReportPostWhereUniqueInput!]
+}
+
+input ReportPostCreateWithoutPostInput {
+  id: String
+<<<<<<< HEAD
+  content: String!
+=======
+  reason: String!
+  message: String
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  user: UserCreateNestedOneWithoutPostReportsInput
+}
+
+input UserCreateNestedOneWithoutPostReportsInput {
+  create: UserCreateWithoutPostReportsInput
+  connectOrCreate: UserCreateOrConnectWithoutPostReportsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutPostReportsInput {
+  id: String
+  avatarUrl: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean
+  password: String!
+  phoneNumber: String
+  workingPosition: WorkPosition
+  status: UserStatus
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole
+  addressDetail: String
+  verifyCode: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  avatar: FileCreateNestedOneWithoutUsersInput
+  country: CountryCreateNestedOneWithoutUsersInput
+  social: SocialCreateNestedManyWithoutUserInput
+  resumes: ResumeCreateNestedManyWithoutUserInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
+  educations: EducationCreateNestedManyWithoutUserInput
+  projects: ProjectCreateNestedManyWithoutUserInput
+  applications: ApplicationCreateNestedManyWithoutCandidateInput
+  posts: PostCreateNestedManyWithoutAuthorInput
+  likes: LikePostCreateNestedManyWithoutUserInput
+  dislikes: DislikePostCreateNestedManyWithoutUserInput
+  comments: CommentCreateNestedManyWithoutUserInput
   bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
   saveJobs: SaveJobCreateNestedManyWithoutUserInput
   payments: PaymentCreateNestedManyWithoutUserInput
@@ -7875,6 +8423,7 @@ input PostCreateWithoutBookmarksInput {
   likes: LikePostCreateNestedManyWithoutPostInput
   dislikes: DislikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
 }
 
 input PostCreateOrConnectWithoutBookmarksInput {
@@ -8010,6 +8559,7 @@ input UserCreateWithoutApplicationsInput {
   educations: EducationCreateNestedManyWithoutUserInput
   projects: ProjectCreateNestedManyWithoutUserInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -8324,6 +8874,7 @@ input UserCreateWithoutSaveJobsInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -8500,6 +9051,7 @@ input UserCreateWithoutUpdatedBySettingsInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -8589,6 +9141,7 @@ input UserCreateWithoutAuthorSettingsInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -9266,9 +9819,34 @@ input SaveJobCreateManyUserInput {
   jobId: String!
 }
 
-input UserCreateOrConnectWithoutCommentsInput {
+input UserCreateOrConnectWithoutPostReportsInput {
   where: UserWhereUniqueInput!
-  create: UserCreateWithoutCommentsInput!
+  create: UserCreateWithoutPostReportsInput!
+}
+
+input ReportPostCreateOrConnectWithoutPostInput {
+  where: ReportPostWhereUniqueInput!
+  create: ReportPostCreateWithoutPostInput!
+}
+
+input ReportPostCreateManyPostInputEnvelope {
+  data: [ReportPostCreateManyPostInput!]!
+  skipDuplicates: Boolean
+}
+
+input ReportPostCreateManyPostInput {
+  id: String
+  reason: String!
+  message: String
+  userId: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input PostCreateOrConnectWithoutCommentsInput {
+  where: PostWhereUniqueInput!
+  create: PostCreateWithoutCommentsInput!
 }
 
 input CommentCreateNestedOneWithoutRepliesInput {
@@ -9440,25 +10018,52 @@ input CommentCreateManyParentInput {
   isAnonymously: Boolean
 }
 
-input CommentCreateOrConnectWithoutPostInput {
+input CommentCreateOrConnectWithoutUserInput {
   where: CommentWhereUniqueInput!
-  create: CommentCreateWithoutPostInput!
+  create: CommentCreateWithoutUserInput!
 }
 
-input CommentCreateManyPostInputEnvelope {
-  data: [CommentCreateManyPostInput!]!
+input CommentCreateManyUserInputEnvelope {
+  data: [CommentCreateManyUserInput!]!
   skipDuplicates: Boolean
 }
 
-input CommentCreateManyPostInput {
+input CommentCreateManyUserInput {
   id: String
+<<<<<<< HEAD
   userId: String
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  postId: String!
   isAnonymously: Boolean
   parentId: String
+}
+
+input UserCreateOrConnectWithoutBookmarksInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutBookmarksInput!
+}
+
+input BookmarkPostCreateOrConnectWithoutPostInput {
+  where: BookmarkPostWhereUniqueInput!
+  create: BookmarkPostCreateWithoutPostInput!
+}
+
+input BookmarkPostCreateManyPostInputEnvelope {
+  data: [BookmarkPostCreateManyPostInput!]!
+  skipDuplicates: Boolean
+}
+
+input BookmarkPostCreateManyPostInput {
+  id: String
+  userId: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
 }
 
 input PostCreateOrConnectWithoutDislikesInput {
@@ -9510,77 +10115,33 @@ input DislikePostCreateManyUserInput {
   commentId: String
 }
 
-input UserCreateOrConnectWithoutBookmarksInput {
+input UserCreateOrConnectWithoutCommentsInput {
   where: UserWhereUniqueInput!
-  create: UserCreateWithoutBookmarksInput!
+  create: UserCreateWithoutCommentsInput!
 }
 
-input BookmarkPostCreateOrConnectWithoutPostInput {
-  where: BookmarkPostWhereUniqueInput!
-  create: BookmarkPostCreateWithoutPostInput!
-}
-
-input BookmarkPostCreateManyPostInputEnvelope {
-  data: [BookmarkPostCreateManyPostInput!]!
-  skipDuplicates: Boolean
-}
-
-input BookmarkPostCreateManyPostInput {
-  id: String
-  userId: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-input PostCreateOrConnectWithoutCommentsInput {
-  where: PostWhereUniqueInput!
-  create: PostCreateWithoutCommentsInput!
-}
-
-input CommentCreateOrConnectWithoutUserInput {
+input CommentCreateOrConnectWithoutPostInput {
   where: CommentWhereUniqueInput!
-  create: CommentCreateWithoutUserInput!
+  create: CommentCreateWithoutPostInput!
 }
 
-input CommentCreateManyUserInputEnvelope {
-  data: [CommentCreateManyUserInput!]!
+input CommentCreateManyPostInputEnvelope {
+  data: [CommentCreateManyPostInput!]!
   skipDuplicates: Boolean
 }
 
-input CommentCreateManyUserInput {
+input CommentCreateManyPostInput {
   id: String
+<<<<<<< HEAD
+=======
+  userId: String
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   content: String!
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  postId: String!
   isAnonymously: Boolean
   parentId: String
-}
-
-input UserCreateOrConnectWithoutDislikesInput {
-  where: UserWhereUniqueInput!
-  create: UserCreateWithoutDislikesInput!
-}
-
-input DislikePostCreateOrConnectWithoutPostInput {
-  where: DislikePostWhereUniqueInput!
-  create: DislikePostCreateWithoutPostInput!
-}
-
-input DislikePostCreateManyPostInputEnvelope {
-  data: [DislikePostCreateManyPostInput!]!
-  skipDuplicates: Boolean
-}
-
-input DislikePostCreateManyPostInput {
-  id: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  userId: String
-  commentId: String
 }
 
 input PostCreateOrConnectWithoutLikesInput {
@@ -9630,6 +10191,55 @@ input LikePostCreateManyUserInput {
   deletedAt: DateTime
   postId: String!
   commentId: String
+}
+
+input UserCreateOrConnectWithoutDislikesInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutDislikesInput!
+}
+
+input DislikePostCreateOrConnectWithoutPostInput {
+  where: DislikePostWhereUniqueInput!
+  create: DislikePostCreateWithoutPostInput!
+}
+
+input DislikePostCreateManyPostInputEnvelope {
+  data: [DislikePostCreateManyPostInput!]!
+  skipDuplicates: Boolean
+}
+
+input DislikePostCreateManyPostInput {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  userId: String
+  commentId: String
+}
+
+input PostCreateOrConnectWithoutReportsInput {
+  where: PostWhereUniqueInput!
+  create: PostCreateWithoutReportsInput!
+}
+
+input ReportPostCreateOrConnectWithoutUserInput {
+  where: ReportPostWhereUniqueInput!
+  create: ReportPostCreateWithoutUserInput!
+}
+
+input ReportPostCreateManyUserInputEnvelope {
+  data: [ReportPostCreateManyUserInput!]!
+  skipDuplicates: Boolean
+}
+
+input ReportPostCreateManyUserInput {
+  id: String
+  reason: String!
+  message: String
+  postId: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
 }
 
 input UserCreateOrConnectWithoutEducationsInput {
@@ -9775,6 +10385,7 @@ input UserCreateWithoutCompaniesInput {
   projects: ProjectCreateNestedManyWithoutUserInput
   applications: ApplicationCreateNestedManyWithoutCandidateInput
   posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
   likes: LikePostCreateNestedManyWithoutUserInput
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
@@ -9865,10 +10476,10 @@ input ResumeTemplateCreateManyFileInput {
   deletedAt: DateTime
 }
 
-input CertificateCreateNestedOneWithoutFilesInput {
-  create: CertificateCreateWithoutFilesInput
-  connectOrCreate: CertificateCreateOrConnectWithoutFilesInput
-  connect: CertificateWhereUniqueInput
+input CertificateCreateNestedManyWithoutFilesInput {
+  create: [CertificateCreateWithoutFilesInput!]
+  connectOrCreate: [CertificateCreateOrConnectWithoutFilesInput!]
+  connect: [CertificateWhereUniqueInput!]
 }
 
 input CertificateCreateWithoutFilesInput {
@@ -9904,7 +10515,6 @@ input FileCreateOrConnectWithoutPostsInput {
 input FileWhereUniqueInput {
   id: String
   storageId: String
-  resumeTemplateId: String
   AND: [FileWhereInput!]
   OR: [FileWhereInput!]
   NOT: [FileWhereInput!]
@@ -9914,7 +10524,6 @@ input FileWhereUniqueInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  certificateId: StringNullableFilter
   users: UserListRelationFilter
   companies: CompanyListRelationFilter
   resume: ResumeListRelationFilter
@@ -9922,7 +10531,7 @@ input FileWhereUniqueInput {
   posts: PostListRelationFilter
   company: CompanyListRelationFilter
   resumeTemplates: ResumeTemplateListRelationFilter
-  certificate: CertificateNullableRelationFilter
+  Certificate: CertificateListRelationFilter
 }
 
 input PostCreateOrConnectWithoutAuthorInput {
@@ -10466,6 +11075,10 @@ input PostCreateWithoutJobCategoryInput {
   dislikes: DislikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+<<<<<<< HEAD
+=======
+  reports: ReportPostCreateNestedManyWithoutPostInput
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input PostCreateOrConnectWithoutJobCategoryInput {
@@ -11293,6 +11906,7 @@ input UserUpdateWithoutAddressInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -11349,14 +11963,13 @@ input FileUpdateWithoutUsersInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
   posts: PostUpdateManyWithoutThumbnailsNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
   resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
+  Certificate: CertificateUpdateManyWithoutFilesNestedInput
 }
 
 input NullableEnumFileProviderFieldUpdateOperationsInput {
@@ -11429,14 +12042,13 @@ input FileUpdateWithoutCompanyInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
   posts: PostUpdateManyWithoutThumbnailsNestedInput
   resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
+  Certificate: CertificateUpdateManyWithoutFilesNestedInput
 }
 
 input UserUpdateManyWithoutAvatarNestedInput {
@@ -11486,6 +12098,7 @@ input UserUpdateWithoutAvatarInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -11701,6 +12314,7 @@ input UserUpdateWithoutCountryInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -11876,14 +12490,13 @@ input FileUpdateWithoutCompaniesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
   posts: PostUpdateManyWithoutThumbnailsNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
   resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
+  Certificate: CertificateUpdateManyWithoutFilesNestedInput
 }
 
 input ResumeUpdateManyWithoutAvatarNestedInput {
@@ -11972,6 +12585,7 @@ input UserUpdateWithoutResumesInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -12327,14 +12941,13 @@ input FileUpdateWithoutResumeInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
   posts: PostUpdateManyWithoutThumbnailsNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
   resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
+  Certificate: CertificateUpdateManyWithoutFilesNestedInput
 }
 
 input ProjectUpdateManyWithoutThumbnailNestedInput {
@@ -12717,6 +13330,7 @@ input UserUpdateWithoutSocialInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -12977,6 +13591,7 @@ input UserUpdateWithoutWorkExperiencesInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -13238,6 +13853,7 @@ input PostUpdateWithoutTagsInput {
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
 }
 
 input JobCategoryUpdateOneWithoutPostsNestedInput {
@@ -13316,6 +13932,7 @@ input UserUpdateWithoutPostsInput {
   educations: EducationUpdateManyWithoutUserNestedInput
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -13537,14 +14154,13 @@ input FileUpdateWithoutProjectsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   posts: PostUpdateManyWithoutThumbnailsNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
   resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
+  Certificate: CertificateUpdateManyWithoutFilesNestedInput
 }
 
 input PostUpdateManyWithoutThumbnailsNestedInput {
@@ -13585,6 +14201,7 @@ input PostUpdateWithoutThumbnailsInput {
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
 }
 
 input PostCategoryUpdateManyWithoutPostsNestedInput {
@@ -13788,6 +14405,7 @@ input UserUpdateWithoutLikesInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
@@ -14021,6 +14639,7 @@ input UserUpdateWithoutProjectsInput {
   educations: EducationUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -14072,6 +14691,7 @@ input PostUpdateWithoutAuthorInput {
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
 }
 
 input FileUpdateManyWithoutPostsNestedInput {
@@ -14102,14 +14722,13 @@ input FileUpdateWithoutPostsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resumeTemplateId: NullableStringFieldUpdateOperationsInput
   users: UserUpdateManyWithoutAvatarNestedInput
   companies: CompanyUpdateManyWithoutPhotosNestedInput
   resume: ResumeUpdateManyWithoutAvatarNestedInput
   projects: ProjectUpdateManyWithoutThumbnailNestedInput
   company: CompanyUpdateManyWithoutAvatarNestedInput
   resumeTemplates: ResumeTemplateUpdateManyWithoutFileNestedInput
-  certificate: CertificateUpdateOneWithoutFilesNestedInput
+  Certificate: CertificateUpdateManyWithoutFilesNestedInput
 }
 
 input CompanyUpdateManyWithoutAvatarNestedInput {
@@ -14306,6 +14925,7 @@ input UserUpdateWithoutEducationsInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -14318,50 +14938,51 @@ input UserUpdateWithoutEducationsInput {
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
-input LikePostUpdateManyWithoutUserNestedInput {
-  create: [LikePostCreateWithoutUserInput!]
-  connectOrCreate: [LikePostCreateOrConnectWithoutUserInput!]
-  upsert: [LikePostUpsertWithWhereUniqueWithoutUserInput!]
-  createMany: LikePostCreateManyUserInputEnvelope
-  set: [LikePostWhereUniqueInput!]
-  disconnect: [LikePostWhereUniqueInput!]
-  delete: [LikePostWhereUniqueInput!]
-  connect: [LikePostWhereUniqueInput!]
-  update: [LikePostUpdateWithWhereUniqueWithoutUserInput!]
-  updateMany: [LikePostUpdateManyWithWhereWithoutUserInput!]
-  deleteMany: [LikePostScalarWhereInput!]
+input ReportPostUpdateManyWithoutUserNestedInput {
+  create: [ReportPostCreateWithoutUserInput!]
+  connectOrCreate: [ReportPostCreateOrConnectWithoutUserInput!]
+  upsert: [ReportPostUpsertWithWhereUniqueWithoutUserInput!]
+  createMany: ReportPostCreateManyUserInputEnvelope
+  set: [ReportPostWhereUniqueInput!]
+  disconnect: [ReportPostWhereUniqueInput!]
+  delete: [ReportPostWhereUniqueInput!]
+  connect: [ReportPostWhereUniqueInput!]
+  update: [ReportPostUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [ReportPostUpdateManyWithWhereWithoutUserInput!]
+  deleteMany: [ReportPostScalarWhereInput!]
 }
 
-input LikePostUpsertWithWhereUniqueWithoutUserInput {
-  where: LikePostWhereUniqueInput!
-  update: LikePostUpdateWithoutUserInput!
-  create: LikePostCreateWithoutUserInput!
+input ReportPostUpsertWithWhereUniqueWithoutUserInput {
+  where: ReportPostWhereUniqueInput!
+  update: ReportPostUpdateWithoutUserInput!
+  create: ReportPostCreateWithoutUserInput!
 }
 
-input LikePostUpdateWithoutUserInput {
+input ReportPostUpdateWithoutUserInput {
   id: StringFieldUpdateOperationsInput
+  reason: StringFieldUpdateOperationsInput
+  message: NullableStringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  post: PostUpdateOneRequiredWithoutLikesNestedInput
-  comment: CommentUpdateOneWithoutLikesNestedInput
+  post: PostUpdateOneRequiredWithoutReportsNestedInput
 }
 
-input PostUpdateOneRequiredWithoutLikesNestedInput {
-  create: PostCreateWithoutLikesInput
-  connectOrCreate: PostCreateOrConnectWithoutLikesInput
-  upsert: PostUpsertWithoutLikesInput
+input PostUpdateOneRequiredWithoutReportsNestedInput {
+  create: PostCreateWithoutReportsInput
+  connectOrCreate: PostCreateOrConnectWithoutReportsInput
+  upsert: PostUpsertWithoutReportsInput
   connect: PostWhereUniqueInput
-  update: PostUpdateToOneWithWhereWithoutLikesInput
+  update: PostUpdateToOneWithWhereWithoutReportsInput
 }
 
-input PostUpsertWithoutLikesInput {
-  update: PostUpdateWithoutLikesInput!
-  create: PostCreateWithoutLikesInput!
+input PostUpsertWithoutReportsInput {
+  update: PostUpdateWithoutReportsInput!
+  create: PostCreateWithoutReportsInput!
   where: PostWhereInput
 }
 
-input PostUpdateWithoutLikesInput {
+input PostUpdateWithoutReportsInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
@@ -14377,6 +14998,7 @@ input PostUpdateWithoutLikesInput {
   thumbnails: FileUpdateManyWithoutPostsNestedInput
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
   tags: TagUpdateManyWithoutPostsNestedInput
+  likes: LikePostUpdateManyWithoutPostNestedInput
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
@@ -14455,6 +15077,7 @@ input UserUpdateWithoutDislikesInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
@@ -14466,55 +15089,54 @@ input UserUpdateWithoutDislikesInput {
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
-input CommentUpdateManyWithoutUserNestedInput {
-  create: [CommentCreateWithoutUserInput!]
-  connectOrCreate: [CommentCreateOrConnectWithoutUserInput!]
-  upsert: [CommentUpsertWithWhereUniqueWithoutUserInput!]
-  createMany: CommentCreateManyUserInputEnvelope
-  set: [CommentWhereUniqueInput!]
-  disconnect: [CommentWhereUniqueInput!]
-  delete: [CommentWhereUniqueInput!]
-  connect: [CommentWhereUniqueInput!]
-  update: [CommentUpdateWithWhereUniqueWithoutUserInput!]
-  updateMany: [CommentUpdateManyWithWhereWithoutUserInput!]
-  deleteMany: [CommentScalarWhereInput!]
+input LikePostUpdateManyWithoutUserNestedInput {
+  create: [LikePostCreateWithoutUserInput!]
+  connectOrCreate: [LikePostCreateOrConnectWithoutUserInput!]
+  upsert: [LikePostUpsertWithWhereUniqueWithoutUserInput!]
+  createMany: LikePostCreateManyUserInputEnvelope
+  set: [LikePostWhereUniqueInput!]
+  disconnect: [LikePostWhereUniqueInput!]
+  delete: [LikePostWhereUniqueInput!]
+  connect: [LikePostWhereUniqueInput!]
+  update: [LikePostUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [LikePostUpdateManyWithWhereWithoutUserInput!]
+  deleteMany: [LikePostScalarWhereInput!]
 }
 
-input CommentUpsertWithWhereUniqueWithoutUserInput {
-  where: CommentWhereUniqueInput!
-  update: CommentUpdateWithoutUserInput!
-  create: CommentCreateWithoutUserInput!
+input LikePostUpsertWithWhereUniqueWithoutUserInput {
+  where: LikePostWhereUniqueInput!
+  update: LikePostUpdateWithoutUserInput!
+  create: LikePostCreateWithoutUserInput!
 }
 
-input CommentUpdateWithoutUserInput {
+input LikePostUpdateWithoutUserInput {
   id: StringFieldUpdateOperationsInput
+<<<<<<< HEAD
   content: StringFieldUpdateOperationsInput
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  isAnonymously: NullableBoolFieldUpdateOperationsInput
-  post: PostUpdateOneRequiredWithoutCommentsNestedInput
-  parent: CommentUpdateOneWithoutRepliesNestedInput
-  replies: CommentUpdateManyWithoutParentNestedInput
-  likes: LikePostUpdateManyWithoutCommentNestedInput
-  dislikes: DislikePostUpdateManyWithoutCommentNestedInput
+  post: PostUpdateOneRequiredWithoutLikesNestedInput
+  comment: CommentUpdateOneWithoutLikesNestedInput
 }
 
-input PostUpdateOneRequiredWithoutCommentsNestedInput {
-  create: PostCreateWithoutCommentsInput
-  connectOrCreate: PostCreateOrConnectWithoutCommentsInput
-  upsert: PostUpsertWithoutCommentsInput
+input PostUpdateOneRequiredWithoutLikesNestedInput {
+  create: PostCreateWithoutLikesInput
+  connectOrCreate: PostCreateOrConnectWithoutLikesInput
+  upsert: PostUpsertWithoutLikesInput
   connect: PostWhereUniqueInput
-  update: PostUpdateToOneWithWhereWithoutCommentsInput
+  update: PostUpdateToOneWithWhereWithoutLikesInput
 }
 
-input PostUpsertWithoutCommentsInput {
-  update: PostUpdateWithoutCommentsInput!
-  create: PostCreateWithoutCommentsInput!
+input PostUpsertWithoutLikesInput {
+  update: PostUpdateWithoutLikesInput!
+  create: PostCreateWithoutLikesInput!
   where: PostWhereInput
 }
 
-input PostUpdateWithoutCommentsInput {
+input PostUpdateWithoutLikesInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
@@ -14528,156 +15150,14 @@ input PostUpdateWithoutCommentsInput {
   jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
   author: UserUpdateOneRequiredWithoutPostsNestedInput
   thumbnails: FileUpdateManyWithoutPostsNestedInput
+<<<<<<< HEAD
+=======
   categories: PostCategoryUpdateManyWithoutPostsNestedInput
   tags: TagUpdateManyWithoutPostsNestedInput
-  likes: LikePostUpdateManyWithoutPostNestedInput
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
-  bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
-}
-
-input BookmarkPostUpdateManyWithoutPostNestedInput {
-  create: [BookmarkPostCreateWithoutPostInput!]
-  connectOrCreate: [BookmarkPostCreateOrConnectWithoutPostInput!]
-  upsert: [BookmarkPostUpsertWithWhereUniqueWithoutPostInput!]
-  createMany: BookmarkPostCreateManyPostInputEnvelope
-  set: [BookmarkPostWhereUniqueInput!]
-  disconnect: [BookmarkPostWhereUniqueInput!]
-  delete: [BookmarkPostWhereUniqueInput!]
-  connect: [BookmarkPostWhereUniqueInput!]
-  update: [BookmarkPostUpdateWithWhereUniqueWithoutPostInput!]
-  updateMany: [BookmarkPostUpdateManyWithWhereWithoutPostInput!]
-  deleteMany: [BookmarkPostScalarWhereInput!]
-}
-
-input BookmarkPostUpsertWithWhereUniqueWithoutPostInput {
-  where: BookmarkPostWhereUniqueInput!
-  update: BookmarkPostUpdateWithoutPostInput!
-  create: BookmarkPostCreateWithoutPostInput!
-}
-
-input BookmarkPostUpdateWithoutPostInput {
-  id: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  user: UserUpdateOneRequiredWithoutBookmarksNestedInput
-}
-
-input UserUpdateOneRequiredWithoutBookmarksNestedInput {
-  create: UserCreateWithoutBookmarksInput
-  connectOrCreate: UserCreateOrConnectWithoutBookmarksInput
-  upsert: UserUpsertWithoutBookmarksInput
-  connect: UserWhereUniqueInput
-  update: UserUpdateToOneWithWhereWithoutBookmarksInput
-}
-
-input UserUpsertWithoutBookmarksInput {
-  update: UserUpdateWithoutBookmarksInput!
-  create: UserCreateWithoutBookmarksInput!
-  where: UserWhereInput
-}
-
-input UserUpdateWithoutBookmarksInput {
-  id: StringFieldUpdateOperationsInput
-  avatarUrl: NullableStringFieldUpdateOperationsInput
-  firstName: StringFieldUpdateOperationsInput
-  lastName: StringFieldUpdateOperationsInput
-  email: StringFieldUpdateOperationsInput
-  emailVerified: BoolFieldUpdateOperationsInput
-  password: StringFieldUpdateOperationsInput
-  phoneNumber: NullableStringFieldUpdateOperationsInput
-  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
-  status: EnumUserStatusFieldUpdateOperationsInput
-  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
-  color: NullableStringFieldUpdateOperationsInput
-  role: EnumUserRoleFieldUpdateOperationsInput
-  addressDetail: NullableStringFieldUpdateOperationsInput
-  verifyCode: NullableStringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  avatar: FileUpdateOneWithoutUsersNestedInput
-  country: CountryUpdateOneWithoutUsersNestedInput
-  social: SocialUpdateManyWithoutUserNestedInput
-  resumes: ResumeUpdateManyWithoutUserNestedInput
-  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
-  educations: EducationUpdateManyWithoutUserNestedInput
-  projects: ProjectUpdateManyWithoutUserNestedInput
-  applications: ApplicationUpdateManyWithoutCandidateNestedInput
-  posts: PostUpdateManyWithoutAuthorNestedInput
-  likes: LikePostUpdateManyWithoutUserNestedInput
-  dislikes: DislikePostUpdateManyWithoutUserNestedInput
-  comments: CommentUpdateManyWithoutUserNestedInput
-  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
-  payments: PaymentUpdateManyWithoutUserNestedInput
-  address: UsersOnCityUpdateManyWithoutUserNestedInput
-  companies: CompanyUpdateManyWithoutUserNestedInput
-  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
-  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
-}
-
-input DislikePostUpdateManyWithoutUserNestedInput {
-  create: [DislikePostCreateWithoutUserInput!]
-  connectOrCreate: [DislikePostCreateOrConnectWithoutUserInput!]
-  upsert: [DislikePostUpsertWithWhereUniqueWithoutUserInput!]
-  createMany: DislikePostCreateManyUserInputEnvelope
-  set: [DislikePostWhereUniqueInput!]
-  disconnect: [DislikePostWhereUniqueInput!]
-  delete: [DislikePostWhereUniqueInput!]
-  connect: [DislikePostWhereUniqueInput!]
-  update: [DislikePostUpdateWithWhereUniqueWithoutUserInput!]
-  updateMany: [DislikePostUpdateManyWithWhereWithoutUserInput!]
-  deleteMany: [DislikePostScalarWhereInput!]
-}
-
-input DislikePostUpsertWithWhereUniqueWithoutUserInput {
-  where: DislikePostWhereUniqueInput!
-  update: DislikePostUpdateWithoutUserInput!
-  create: DislikePostCreateWithoutUserInput!
-}
-
-input DislikePostUpdateWithoutUserInput {
-  id: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  post: PostUpdateOneRequiredWithoutDislikesNestedInput
-  comment: CommentUpdateOneWithoutDislikesNestedInput
-}
-
-input PostUpdateOneRequiredWithoutDislikesNestedInput {
-  create: PostCreateWithoutDislikesInput
-  connectOrCreate: PostCreateOrConnectWithoutDislikesInput
-  upsert: PostUpsertWithoutDislikesInput
-  connect: PostWhereUniqueInput
-  update: PostUpdateToOneWithWhereWithoutDislikesInput
-}
-
-input PostUpsertWithoutDislikesInput {
-  update: PostUpdateWithoutDislikesInput!
-  create: PostCreateWithoutDislikesInput!
-  where: PostWhereInput
-}
-
-input PostUpdateWithoutDislikesInput {
-  id: StringFieldUpdateOperationsInput
-  title: StringFieldUpdateOperationsInput
-  content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
-  metadata: JSON
-  slug: StringFieldUpdateOperationsInput
-  minRead: NullableIntFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
-  author: UserUpdateOneRequiredWithoutPostsNestedInput
-  thumbnails: FileUpdateManyWithoutPostsNestedInput
-  categories: PostCategoryUpdateManyWithoutPostsNestedInput
-  tags: TagUpdateManyWithoutPostsNestedInput
-  likes: LikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
 }
 
 input CommentUpdateManyWithoutPostNestedInput {
@@ -14758,8 +15238,317 @@ input UserUpdateWithoutCommentsInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+input DislikePostUpdateManyWithoutUserNestedInput {
+  create: [DislikePostCreateWithoutUserInput!]
+  connectOrCreate: [DislikePostCreateOrConnectWithoutUserInput!]
+  upsert: [DislikePostUpsertWithWhereUniqueWithoutUserInput!]
+  createMany: DislikePostCreateManyUserInputEnvelope
+  set: [DislikePostWhereUniqueInput!]
+  disconnect: [DislikePostWhereUniqueInput!]
+  delete: [DislikePostWhereUniqueInput!]
+  connect: [DislikePostWhereUniqueInput!]
+  update: [DislikePostUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [DislikePostUpdateManyWithWhereWithoutUserInput!]
+  deleteMany: [DislikePostScalarWhereInput!]
+}
+
+input DislikePostUpsertWithWhereUniqueWithoutUserInput {
+  where: DislikePostWhereUniqueInput!
+  update: DislikePostUpdateWithoutUserInput!
+  create: DislikePostCreateWithoutUserInput!
+}
+
+input DislikePostUpdateWithoutUserInput {
+  id: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  post: PostUpdateOneRequiredWithoutDislikesNestedInput
+  comment: CommentUpdateOneWithoutDislikesNestedInput
+}
+
+input PostUpdateOneRequiredWithoutDislikesNestedInput {
+  create: PostCreateWithoutDislikesInput
+  connectOrCreate: PostCreateOrConnectWithoutDislikesInput
+  upsert: PostUpsertWithoutDislikesInput
+  connect: PostWhereUniqueInput
+  update: PostUpdateToOneWithWhereWithoutDislikesInput
+}
+
+input PostUpsertWithoutDislikesInput {
+  update: PostUpdateWithoutDislikesInput!
+  create: PostCreateWithoutDislikesInput!
+  where: PostWhereInput
+}
+
+input PostUpdateWithoutDislikesInput {
+  id: StringFieldUpdateOperationsInput
+  title: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  shareUrl: StringFieldUpdateOperationsInput
+  metadata: JSON
+  slug: StringFieldUpdateOperationsInput
+  minRead: NullableIntFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
+  author: UserUpdateOneRequiredWithoutPostsNestedInput
+  thumbnails: FileUpdateManyWithoutPostsNestedInput
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
+  categories: PostCategoryUpdateManyWithoutPostsNestedInput
+  tags: TagUpdateManyWithoutPostsNestedInput
+  likes: LikePostUpdateManyWithoutPostNestedInput
+  comments: CommentUpdateManyWithoutPostNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
+}
+
+input BookmarkPostUpdateManyWithoutPostNestedInput {
+  create: [BookmarkPostCreateWithoutPostInput!]
+  connectOrCreate: [BookmarkPostCreateOrConnectWithoutPostInput!]
+  upsert: [BookmarkPostUpsertWithWhereUniqueWithoutPostInput!]
+  createMany: BookmarkPostCreateManyPostInputEnvelope
+  set: [BookmarkPostWhereUniqueInput!]
+  disconnect: [BookmarkPostWhereUniqueInput!]
+  delete: [BookmarkPostWhereUniqueInput!]
+  connect: [BookmarkPostWhereUniqueInput!]
+  update: [BookmarkPostUpdateWithWhereUniqueWithoutPostInput!]
+  updateMany: [BookmarkPostUpdateManyWithWhereWithoutPostInput!]
+  deleteMany: [BookmarkPostScalarWhereInput!]
+}
+
+input BookmarkPostUpsertWithWhereUniqueWithoutPostInput {
+  where: BookmarkPostWhereUniqueInput!
+  update: BookmarkPostUpdateWithoutPostInput!
+  create: BookmarkPostCreateWithoutPostInput!
+}
+
+input BookmarkPostUpdateWithoutPostInput {
+  id: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  user: UserUpdateOneRequiredWithoutBookmarksNestedInput
+}
+
+input UserUpdateOneRequiredWithoutBookmarksNestedInput {
+  create: UserCreateWithoutBookmarksInput
+  connectOrCreate: UserCreateOrConnectWithoutBookmarksInput
+  upsert: UserUpsertWithoutBookmarksInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateToOneWithWhereWithoutBookmarksInput
+}
+
+input UserUpsertWithoutBookmarksInput {
+  update: UserUpdateWithoutBookmarksInput!
+  create: UserCreateWithoutBookmarksInput!
+  where: UserWhereInput
+}
+
+input UserUpdateWithoutBookmarksInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+input CommentUpdateManyWithoutUserNestedInput {
+  create: [CommentCreateWithoutUserInput!]
+  connectOrCreate: [CommentCreateOrConnectWithoutUserInput!]
+  upsert: [CommentUpsertWithWhereUniqueWithoutUserInput!]
+  createMany: CommentCreateManyUserInputEnvelope
+  set: [CommentWhereUniqueInput!]
+  disconnect: [CommentWhereUniqueInput!]
+  delete: [CommentWhereUniqueInput!]
+  connect: [CommentWhereUniqueInput!]
+  update: [CommentUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [CommentUpdateManyWithWhereWithoutUserInput!]
+  deleteMany: [CommentScalarWhereInput!]
+}
+
+input CommentUpsertWithWhereUniqueWithoutUserInput {
+  where: CommentWhereUniqueInput!
+  update: CommentUpdateWithoutUserInput!
+  create: CommentCreateWithoutUserInput!
+}
+
+input CommentUpdateWithoutUserInput {
+  id: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  isAnonymously: NullableBoolFieldUpdateOperationsInput
+  post: PostUpdateOneRequiredWithoutCommentsNestedInput
+  parent: CommentUpdateOneWithoutRepliesNestedInput
+  replies: CommentUpdateManyWithoutParentNestedInput
+  likes: LikePostUpdateManyWithoutCommentNestedInput
+  dislikes: DislikePostUpdateManyWithoutCommentNestedInput
+}
+
+input PostUpdateOneRequiredWithoutCommentsNestedInput {
+  create: PostCreateWithoutCommentsInput
+  connectOrCreate: PostCreateOrConnectWithoutCommentsInput
+  upsert: PostUpsertWithoutCommentsInput
+  connect: PostWhereUniqueInput
+  update: PostUpdateToOneWithWhereWithoutCommentsInput
+}
+
+input PostUpsertWithoutCommentsInput {
+  update: PostUpdateWithoutCommentsInput!
+  create: PostCreateWithoutCommentsInput!
+  where: PostWhereInput
+}
+
+input PostUpdateWithoutCommentsInput {
+  id: StringFieldUpdateOperationsInput
+  title: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  shareUrl: StringFieldUpdateOperationsInput
+  metadata: JSON
+  slug: StringFieldUpdateOperationsInput
+  minRead: NullableIntFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
+  author: UserUpdateOneRequiredWithoutPostsNestedInput
+  thumbnails: FileUpdateManyWithoutPostsNestedInput
+  categories: PostCategoryUpdateManyWithoutPostsNestedInput
+  tags: TagUpdateManyWithoutPostsNestedInput
+  likes: LikePostUpdateManyWithoutPostNestedInput
+  dislikes: DislikePostUpdateManyWithoutPostNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
+}
+
+input ReportPostUpdateManyWithoutPostNestedInput {
+  create: [ReportPostCreateWithoutPostInput!]
+  connectOrCreate: [ReportPostCreateOrConnectWithoutPostInput!]
+  upsert: [ReportPostUpsertWithWhereUniqueWithoutPostInput!]
+  createMany: ReportPostCreateManyPostInputEnvelope
+  set: [ReportPostWhereUniqueInput!]
+  disconnect: [ReportPostWhereUniqueInput!]
+  delete: [ReportPostWhereUniqueInput!]
+  connect: [ReportPostWhereUniqueInput!]
+  update: [ReportPostUpdateWithWhereUniqueWithoutPostInput!]
+  updateMany: [ReportPostUpdateManyWithWhereWithoutPostInput!]
+  deleteMany: [ReportPostScalarWhereInput!]
+}
+
+input ReportPostUpsertWithWhereUniqueWithoutPostInput {
+  where: ReportPostWhereUniqueInput!
+  update: ReportPostUpdateWithoutPostInput!
+  create: ReportPostCreateWithoutPostInput!
+}
+
+input ReportPostUpdateWithoutPostInput {
+  id: StringFieldUpdateOperationsInput
+<<<<<<< HEAD
+  content: StringFieldUpdateOperationsInput
+=======
+  reason: StringFieldUpdateOperationsInput
+  message: NullableStringFieldUpdateOperationsInput
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  user: UserUpdateOneWithoutPostReportsNestedInput
+}
+
+input UserUpdateOneWithoutPostReportsNestedInput {
+  create: UserCreateWithoutPostReportsInput
+  connectOrCreate: UserCreateOrConnectWithoutPostReportsInput
+  upsert: UserUpsertWithoutPostReportsInput
+  disconnect: UserWhereInput
+  delete: UserWhereInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateToOneWithWhereWithoutPostReportsInput
+}
+
+input UserUpsertWithoutPostReportsInput {
+  update: UserUpdateWithoutPostReportsInput!
+  create: UserCreateWithoutPostReportsInput!
+  where: UserWhereInput
+}
+
+input UserUpdateWithoutPostReportsInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
   saveJobs: SaveJobUpdateManyWithoutUserNestedInput
   payments: PaymentUpdateManyWithoutUserNestedInput
@@ -14830,6 +15619,7 @@ input PostUpdateWithoutBookmarksInput {
   likes: LikePostUpdateManyWithoutPostNestedInput
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
 }
 
 input PostUpdateToOneWithWhereWithoutBookmarksInput {
@@ -15004,6 +15794,7 @@ input UserUpdateWithoutApplicationsInput {
   educations: EducationUpdateManyWithoutUserNestedInput
   projects: ProjectUpdateManyWithoutUserNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -15431,6 +16222,7 @@ input UserUpdateWithoutSaveJobsInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -15671,6 +16463,7 @@ input UserUpdateWithoutUpdatedBySettingsInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -15797,6 +16590,7 @@ input UserUpdateWithoutAuthorSettingsInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -16508,9 +17302,47 @@ input SaveJobUpdateManyWithWhereWithoutUserInput {
   data: SaveJobUpdateManyMutationInput!
 }
 
-input UserUpdateToOneWithWhereWithoutCommentsInput {
+input UserUpdateToOneWithWhereWithoutPostReportsInput {
   where: UserWhereInput
-  data: UserUpdateWithoutCommentsInput!
+  data: UserUpdateWithoutPostReportsInput!
+}
+
+input ReportPostUpdateWithWhereUniqueWithoutPostInput {
+  where: ReportPostWhereUniqueInput!
+  data: ReportPostUpdateWithoutPostInput!
+}
+
+input ReportPostUpdateManyWithWhereWithoutPostInput {
+  where: ReportPostScalarWhereInput!
+  data: ReportPostUpdateManyMutationInput!
+}
+
+input ReportPostScalarWhereInput {
+  AND: [ReportPostScalarWhereInput!]
+  OR: [ReportPostScalarWhereInput!]
+  NOT: [ReportPostScalarWhereInput!]
+  id: StringFilter
+  reason: StringFilter
+  message: StringNullableFilter
+  userId: StringNullableFilter
+  postId: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+}
+
+input ReportPostUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  reason: StringFieldUpdateOperationsInput
+  message: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input PostUpdateToOneWithWhereWithoutCommentsInput {
+  where: PostWhereInput
+  data: PostUpdateWithoutCommentsInput!
 }
 
 input CommentUpdateOneWithoutRepliesNestedInput {
@@ -16734,14 +17566,29 @@ input CommentUpdateManyMutationInput {
   isAnonymously: NullableBoolFieldUpdateOperationsInput
 }
 
-input CommentUpdateWithWhereUniqueWithoutPostInput {
+input CommentUpdateWithWhereUniqueWithoutUserInput {
   where: CommentWhereUniqueInput!
-  data: CommentUpdateWithoutPostInput!
+  data: CommentUpdateWithoutUserInput!
 }
 
-input CommentUpdateManyWithWhereWithoutPostInput {
+input CommentUpdateManyWithWhereWithoutUserInput {
   where: CommentScalarWhereInput!
   data: CommentUpdateManyMutationInput!
+}
+
+input UserUpdateToOneWithWhereWithoutBookmarksInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutBookmarksInput!
+}
+
+input BookmarkPostUpdateWithWhereUniqueWithoutPostInput {
+  where: BookmarkPostWhereUniqueInput!
+  data: BookmarkPostUpdateWithoutPostInput!
+}
+
+input BookmarkPostUpdateManyWithWhereWithoutPostInput {
+  where: BookmarkPostScalarWhereInput!
+  data: BookmarkPostUpdateManyMutationInput!
 }
 
 input PostUpdateToOneWithWhereWithoutDislikesInput {
@@ -16794,49 +17641,19 @@ input DislikePostUpdateManyWithWhereWithoutUserInput {
   data: DislikePostUpdateManyMutationInput!
 }
 
-input UserUpdateToOneWithWhereWithoutBookmarksInput {
+input UserUpdateToOneWithWhereWithoutCommentsInput {
   where: UserWhereInput
-  data: UserUpdateWithoutBookmarksInput!
+  data: UserUpdateWithoutCommentsInput!
 }
 
-input BookmarkPostUpdateWithWhereUniqueWithoutPostInput {
-  where: BookmarkPostWhereUniqueInput!
-  data: BookmarkPostUpdateWithoutPostInput!
-}
-
-input BookmarkPostUpdateManyWithWhereWithoutPostInput {
-  where: BookmarkPostScalarWhereInput!
-  data: BookmarkPostUpdateManyMutationInput!
-}
-
-input PostUpdateToOneWithWhereWithoutCommentsInput {
-  where: PostWhereInput
-  data: PostUpdateWithoutCommentsInput!
-}
-
-input CommentUpdateWithWhereUniqueWithoutUserInput {
+input CommentUpdateWithWhereUniqueWithoutPostInput {
   where: CommentWhereUniqueInput!
-  data: CommentUpdateWithoutUserInput!
+  data: CommentUpdateWithoutPostInput!
 }
 
-input CommentUpdateManyWithWhereWithoutUserInput {
+input CommentUpdateManyWithWhereWithoutPostInput {
   where: CommentScalarWhereInput!
   data: CommentUpdateManyMutationInput!
-}
-
-input UserUpdateToOneWithWhereWithoutDislikesInput {
-  where: UserWhereInput
-  data: UserUpdateWithoutDislikesInput!
-}
-
-input DislikePostUpdateWithWhereUniqueWithoutPostInput {
-  where: DislikePostWhereUniqueInput!
-  data: DislikePostUpdateWithoutPostInput!
-}
-
-input DislikePostUpdateManyWithWhereWithoutPostInput {
-  where: DislikePostScalarWhereInput!
-  data: DislikePostUpdateManyMutationInput!
 }
 
 input PostUpdateToOneWithWhereWithoutLikesInput {
@@ -16887,6 +17704,36 @@ input LikePostUpdateWithWhereUniqueWithoutUserInput {
 input LikePostUpdateManyWithWhereWithoutUserInput {
   where: LikePostScalarWhereInput!
   data: LikePostUpdateManyMutationInput!
+}
+
+input UserUpdateToOneWithWhereWithoutDislikesInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutDislikesInput!
+}
+
+input DislikePostUpdateWithWhereUniqueWithoutPostInput {
+  where: DislikePostWhereUniqueInput!
+  data: DislikePostUpdateWithoutPostInput!
+}
+
+input DislikePostUpdateManyWithWhereWithoutPostInput {
+  where: DislikePostScalarWhereInput!
+  data: DislikePostUpdateManyMutationInput!
+}
+
+input PostUpdateToOneWithWhereWithoutReportsInput {
+  where: PostWhereInput
+  data: PostUpdateWithoutReportsInput!
+}
+
+input ReportPostUpdateWithWhereUniqueWithoutUserInput {
+  where: ReportPostWhereUniqueInput!
+  data: ReportPostUpdateWithoutUserInput!
+}
+
+input ReportPostUpdateManyWithWhereWithoutUserInput {
+  where: ReportPostScalarWhereInput!
+  data: ReportPostUpdateManyMutationInput!
 }
 
 input UserUpdateToOneWithWhereWithoutEducationsInput {
@@ -17034,6 +17881,7 @@ input UserUpdateWithoutCompaniesInput {
   projects: ProjectUpdateManyWithoutUserNestedInput
   applications: ApplicationUpdateManyWithoutCandidateNestedInput
   posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
   likes: LikePostUpdateManyWithoutUserNestedInput
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
@@ -17125,20 +17973,23 @@ input ResumeTemplateUpdateManyMutationInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
 }
 
-input CertificateUpdateOneWithoutFilesNestedInput {
-  create: CertificateCreateWithoutFilesInput
-  connectOrCreate: CertificateCreateOrConnectWithoutFilesInput
-  upsert: CertificateUpsertWithoutFilesInput
-  disconnect: CertificateWhereInput
-  delete: CertificateWhereInput
-  connect: CertificateWhereUniqueInput
-  update: CertificateUpdateToOneWithWhereWithoutFilesInput
+input CertificateUpdateManyWithoutFilesNestedInput {
+  create: [CertificateCreateWithoutFilesInput!]
+  connectOrCreate: [CertificateCreateOrConnectWithoutFilesInput!]
+  upsert: [CertificateUpsertWithWhereUniqueWithoutFilesInput!]
+  set: [CertificateWhereUniqueInput!]
+  disconnect: [CertificateWhereUniqueInput!]
+  delete: [CertificateWhereUniqueInput!]
+  connect: [CertificateWhereUniqueInput!]
+  update: [CertificateUpdateWithWhereUniqueWithoutFilesInput!]
+  updateMany: [CertificateUpdateManyWithWhereWithoutFilesInput!]
+  deleteMany: [CertificateScalarWhereInput!]
 }
 
-input CertificateUpsertWithoutFilesInput {
+input CertificateUpsertWithWhereUniqueWithoutFilesInput {
+  where: CertificateWhereUniqueInput!
   update: CertificateUpdateWithoutFilesInput!
   create: CertificateCreateWithoutFilesInput!
-  where: CertificateWhereInput
 }
 
 input CertificateUpdateWithoutFilesInput {
@@ -17149,11 +18000,38 @@ input CertificateUpdateWithoutFilesInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
 }
 
-input CertificateUpdateToOneWithWhereWithoutFilesInput {
-  where: CertificateWhereInput
+input CertificateUpdateWithWhereUniqueWithoutFilesInput {
+  where: CertificateWhereUniqueInput!
   data: CertificateUpdateWithoutFilesInput!
 }
 
+<<<<<<< HEAD
+=======
+input CertificateUpdateManyWithWhereWithoutFilesInput {
+  where: CertificateScalarWhereInput!
+  data: CertificateUpdateManyMutationInput!
+}
+
+input CertificateScalarWhereInput {
+  AND: [CertificateScalarWhereInput!]
+  OR: [CertificateScalarWhereInput!]
+  NOT: [CertificateScalarWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+}
+
+input CertificateUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 input FileUpdateWithWhereUniqueWithoutPostsInput {
   where: FileWhereUniqueInput!
   data: FileUpdateWithoutPostsInput!
@@ -17176,8 +18054,11 @@ input FileScalarWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
+<<<<<<< HEAD
   resumeTemplateId: StringNullableFilter
   certificateId: StringNullableFilter
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input FileUpdateManyMutationInput {
@@ -17189,7 +18070,10 @@ input FileUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+<<<<<<< HEAD
   resumeTemplateId: NullableStringFieldUpdateOperationsInput
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input PostUpdateWithWhereUniqueWithoutAuthorInput {
@@ -17619,6 +18503,10 @@ input PostUpdateWithoutJobCategoryInput {
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+<<<<<<< HEAD
+=======
+  reports: ReportPostUpdateManyWithoutPostNestedInput
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }
 
 input PostUpdateWithWhereUniqueWithoutJobCategoryInput {
@@ -18078,6 +18966,7 @@ input PostCreateWithoutCategoriesInput {
   dislikes: DislikePostCreateNestedManyWithoutPostInput
   comments: CommentCreateNestedManyWithoutPostInput
   bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
 }
 
 input PostCreateOrConnectWithoutCategoriesInput {
@@ -18133,6 +19022,7 @@ input PostUpdateWithoutCategoriesInput {
   dislikes: DislikePostUpdateManyWithoutPostNestedInput
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
 }
 
 input PostUpdateWithWhereUniqueWithoutCategoriesInput {
@@ -18223,6 +19113,101 @@ input SettingUpdateInput {
   updatedBy: UserUpdateOneWithoutUpdatedBySettingsNestedInput
 }
 
+input CreatePostInput {
+  id: String
+  title: String!
+  content: String!
+  shareUrl: String!
+  metadata: JSON
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  jobCategory: JobCategoryCreateNestedOneWithoutPostsInput
+  thumbnails: FileCreateNestedManyWithoutPostsInput
+  categories: PostCategoryCreateNestedManyWithoutPostsInput
+  tags: TagCreateNestedManyWithoutPostsInput
+  likes: LikePostCreateNestedManyWithoutPostInput
+  dislikes: DislikePostCreateNestedManyWithoutPostInput
+  comments: CommentCreateNestedManyWithoutPostInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutPostInput
+  reports: ReportPostCreateNestedManyWithoutPostInput
+  thumbnailIds: [String!] = []
+}
+
+input PostUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  title: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  shareUrl: StringFieldUpdateOperationsInput
+  metadata: JSON
+  slug: StringFieldUpdateOperationsInput
+  minRead: NullableIntFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  jobCategory: JobCategoryUpdateOneWithoutPostsNestedInput
+  author: UserUpdateOneRequiredWithoutPostsNestedInput
+  thumbnails: FileUpdateManyWithoutPostsNestedInput
+  categories: PostCategoryUpdateManyWithoutPostsNestedInput
+  tags: TagUpdateManyWithoutPostsNestedInput
+  likes: LikePostUpdateManyWithoutPostNestedInput
+  dislikes: DislikePostUpdateManyWithoutPostNestedInput
+  comments: CommentUpdateManyWithoutPostNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
+  reports: ReportPostUpdateManyWithoutPostNestedInput
+}
+
+input ReportPostCreateInput {
+  id: String
+  reason: String!
+  message: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  user: UserCreateNestedOneWithoutPostReportsInput
+  post: PostCreateNestedOneWithoutReportsInput!
+}
+
+input ReportPostUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  reason: StringFieldUpdateOperationsInput
+  message: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  user: UserUpdateOneWithoutPostReportsNestedInput
+  post: PostUpdateOneRequiredWithoutReportsNestedInput
+}
+
+input CreateCommentInput {
+  id: String
+  content: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  isAnonymously: Boolean
+  replies: CommentCreateNestedManyWithoutParentInput
+  likes: LikePostCreateNestedManyWithoutCommentInput
+  dislikes: DislikePostCreateNestedManyWithoutCommentInput
+  postId: String!
+  parentId: String
+}
+
+input CommentUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  isAnonymously: NullableBoolFieldUpdateOperationsInput
+  post: PostUpdateOneRequiredWithoutCommentsNestedInput
+  user: UserUpdateOneWithoutCommentsNestedInput
+  parent: CommentUpdateOneWithoutRepliesNestedInput
+  replies: CommentUpdateManyWithoutParentNestedInput
+  likes: LikePostUpdateManyWithoutCommentNestedInput
+  dislikes: DislikePostUpdateManyWithoutCommentNestedInput
+}
+
 enum UserRoleWithoutAdmin {
   employee
   employer
@@ -18274,6 +19259,7 @@ input CompanyUpdateInput {
   user: UserUpdateOneWithoutCompaniesNestedInput
 }
 
+<<<<<<< HEAD
 input CreatePostInput {
   id: String
   title: String!
@@ -18316,6 +19302,8 @@ input PostUpdateInput {
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
 }
 
+=======
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 input JobCreateInput {
   id: String
   type: JobType!
@@ -18644,6 +19632,7 @@ input CompanyUpdateManyWithWhereWithoutSizeInput {
   data: CompanyUpdateManyMutationInput!
 }
 
+<<<<<<< HEAD
 input CommentCreateInput {
   id: String
   content: String!
@@ -18676,4 +19665,9 @@ input CommentUpdateInput {
 
 type Subscription {
   vote_post: CreateVotePostResult!
+=======
+type Subscription {
+  vote_post: CreateVotePostResult!
+  post_comment: CommentItem!
+>>>>>>> eaa3063 (feat: app-003 career post manager (#7))
 }

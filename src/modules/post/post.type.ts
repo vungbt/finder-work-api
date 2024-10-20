@@ -65,4 +65,7 @@ export class PostItem extends OmitType(Post, [
 
   @Field(() => UserVote, { nullable: true })
   userVote?: UserVote;
+
+  @Field(() => UserOnly, { nullable: true })
+  userReport?: UserOnly;
 }

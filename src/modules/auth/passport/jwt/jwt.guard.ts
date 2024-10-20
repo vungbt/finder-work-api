@@ -59,7 +59,7 @@ export class AuthRolesGuard extends AuthGuard('jwt') {
           {
             key: 'error.forbidden'
           },
-          HttpStatus.UNAUTHORIZED
+          HttpStatus.FORBIDDEN
         );
     }
     return user;
