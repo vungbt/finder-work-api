@@ -2734,6 +2734,11 @@ type AllCompanyTypeResult {
   metadata: Metadata
 }
 
+type AllSkillResult {
+  data: [Skill!]!
+  metadata: Metadata
+}
+
 type Query {
   upload_url(name: String!): String!
   upload_urls(names: [String!]!): [String!]!
@@ -2763,7 +2768,7 @@ type Query {
   one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
   all_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): [Job!]!
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
-  all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): [Skill!]!
+  all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllSkillResult!
   one_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): Skill!
   all_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyTypeResult!
   one_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!]): CompanyType!
@@ -5295,10 +5300,10 @@ input ActivityOrderByRelationAggregateInput {
 
 input SkillWhereUniqueInput {
   id: String
+  content: String
   AND: [SkillWhereInput!]
   OR: [SkillWhereInput!]
   NOT: [SkillWhereInput!]
-  content: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
