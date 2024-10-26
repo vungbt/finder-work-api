@@ -13,6 +13,7 @@ import * as cities4 from './address/cities/cities4.json';
 import * as cities5 from './address/cities/cities5.json';
 import * as cities6 from './address/cities/cities6.json';
 import * as cities7 from './address/cities/cities7.json';
+import * as skill from './workingSkill/skill.json';
 
 // post
 import * as postCategories from './post/categories.json';
@@ -52,6 +53,35 @@ const importingCities = async (cities) => {
     });
   }
 };
+const importingSkill = async (data) => {
+  if (!Array.isArray(data.skill)) {
+    console.error("The 'skill' property is not an array.");
+    return;
+  }
+
+  for (const iterator of data.skill) {
+    const { id, skill: skillContent } = iterator;
+
+    const existingSkill = await prisma.skill.findFirst({
+      where: {
+        content: skillContent
+      }
+    });
+
+    if (!existingSkill) {
+      const newData = {
+        id: id,
+        content: String(skillContent)
+      };
+      await prisma.skill.create({
+        data: newData
+      });
+    } else {
+      console.log(`Skill with content "${skillContent}" already exists. Skipping.`);
+    }
+  }
+};
+
 async function main() {
   console.log('---> importing countries <---');
   for (const iterator of countries) {
@@ -107,7 +137,8 @@ async function main() {
     importingCities(cities4),
     importingCities(cities5),
     importingCities(cities6),
-    importingCities(cities7)
+    importingCities(cities7),
+    importingSkill(skill)
   ]);
 
   console.log('---> importing post categories <---');

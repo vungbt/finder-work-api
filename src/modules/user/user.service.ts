@@ -1,10 +1,10 @@
+import { UserWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BaseService } from '@/utils/base/base.service';
+import { responseHelper } from '@/utils/helpers';
 import { Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
 import { AllUserArgs, MeArgs } from './user.type';
-import { UpdateOneUserArgs, UserWhereInput } from '@/prisma/graphql';
-import { responseHelper } from '@/utils/helpers';
 
 @Injectable()
 export class UserService implements BaseService {
