@@ -37,18 +37,6 @@ export class AppConfig {
 
   @IsString()
   @IsNotEmpty()
-  FIREBASE_CREDENTIAL: string;
-
-  @IsString()
-  @IsNotEmpty()
-  FIREBASE_WEB_API_KEY: string;
-
-  @IsString()
-  @IsNotEmpty()
-  FIREBASE_LOGIN_DATA_TEST: string;
-
-  @IsString()
-  @IsNotEmpty()
   REDIS_HOST: string;
 
   @IsNumber()
