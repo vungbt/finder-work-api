@@ -3,5 +3,7 @@
   "valid": "{label} valid",
   "password_invalid": "Password must have both upper, lower and at least one special character",
   "conflict": "{label} conflict",
-  "incorrect": "{label} incorrect"
+  "incorrect": "{label} incorrect",
+  "email_noverify": "Please verify your email by entering the code we sent.",
+  "email_inactive": "Your account is currently inactive, please contact admin to support."
 }

@@ -5,7 +5,7 @@ import { comparePassword, hashPassword, strGenerate } from '@/utils/helpers';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { User, UserRole } from '@prisma/client';
+import { User, UserRole, UserStatus } from '@prisma/client';
 import { add } from 'date-fns';
 import slug from 'slug';
 import { UserService } from '../user/user.service';
@@ -27,6 +27,7 @@ import { I18nService } from 'nestjs-i18n';
 import { AddressService } from '../address/address.service';
 import { OAuth2Client } from 'google-auth-library';
 import { EmailSendingProducer } from '../common/queue/producer/email-sending.producer';
+import { UserWhereInput } from '@/prisma/graphql';
 
 @Injectable()
 export class AuthService {
@@ -53,21 +54,28 @@ export class AuthService {
 
   async login(args: LoginArgs): Promise<LoginResult> {
     try {
+      const role = args.role;
+      const whereClause: UserWhereInput = { email: { equals: args.email } };
+      if (role && ![UserRole.admin, UserRole.super_admin].includes(role as any)) {
+        whereClause.role = { equals: role };
+      }
+      whereClause.email = { equals: args.email };
       const user = await this.userService.findFirst({
-        where: {
-          email: {
-            equals: args.email
-          },
-          emailVerified: true,
-          status: 'active'
-        }
+        where: whereClause
       });
-
       if (!user)
         throw new HttpException(
           { key: 'validation.invalid', args: { label: this.i18n.t('common.user.title') } },
           HttpStatus.BAD_REQUEST
         );
+
+      // checking account status
+      if (!user.emailVerified) {
+        await this.resendVerifyCode({ email: user.email, userId: user.id });
+        throw new HttpException({ key: 'error.user_not_verified' }, HttpStatus.UNAUTHORIZED);
+      }
+      if (user.status === UserStatus.inactive)
+        throw new HttpException({ key: 'validation.email_inactive' }, HttpStatus.BAD_REQUEST);
 
       if (user.signInProvider)
         throw new HttpException(
@@ -190,7 +198,6 @@ export class AuthService {
           where: { iso2: String(countryCode).toUpperCase() }
         });
         const hashedPassword = await hashPassword(password);
-
         const newUser = await prisma.user.create({
           data: {
             ...reset,
@@ -206,9 +213,8 @@ export class AuthService {
         });
 
         // send verify code to client email
-        await this.sendVerifyCodeToClient(newUser.id, email);
-
-        return newUser;
+        const verifyCode = await this.sendVerifyCodeToClient(newUser.email);
+        return await prisma.user.update({ where: { id: newUser.id }, data: { verifyCode } });
       });
     } catch (error) {
       throw error;
@@ -306,15 +312,22 @@ export class AuthService {
 
   async verifyAccount(args: VerifyAccountArgs): Promise<User> {
     try {
-      const { verifyCode, userId } = args;
-      return this.prismaService.$transaction(async (prisma) => {
-        const user = await prisma.user.findFirst({
-          where: {
-            id: userId,
-            emailVerified: false
-          }
-        });
+      const { verifyCode, userId, email } = args;
+      if (!userId && !email)
+        throw new HttpException({ key: 'error.valid_error' }, HttpStatus.BAD_REQUEST);
 
+      return this.prismaService.$transaction(async (prisma) => {
+        const whereClause: UserWhereInput = { emailVerified: { equals: false } };
+        if (email) {
+          whereClause.email = { equals: email };
+        }
+        if (userId) {
+          whereClause.id = { equals: userId };
+        }
+        const user = await prisma.user.findFirst({
+          where: whereClause
+        });
+        console.log('user=-===>', user);
         if (!user)
           throw new HttpException(
             { key: 'validation.invalid', args: { label: this.i18n.t('common.user.title') } },
@@ -400,7 +413,8 @@ export class AuthService {
 
       // check user valid but email verify is false
       if (user && !user.emailVerified) {
-        await this.sendVerifyCodeToClient(user.id, user.email);
+        const verifyCode = await this.sendVerifyCodeToClient(user.email);
+        await this.userService.update({ where: { id: user.id }, data: { verifyCode } });
         throw new HttpException({ key: 'error.user_not_verified' }, HttpStatus.CONFLICT);
       }
 
@@ -416,10 +430,9 @@ export class AuthService {
     }
   }
 
-  async sendVerifyCodeToClient(userId: string, email: string) {
+  async sendVerifyCodeToClient(email: string) {
     try {
       const verifyCode = strGenerate({ length: 6 });
-      await this.userService.update({ where: { id: userId }, data: { verifyCode } });
       await this.emailSendingProducer.sendingCodeToVerify({
         to: email,
         subject: this.i18n.t('common.email_template.subject.verify_code'),
@@ -434,6 +447,7 @@ export class AuthService {
           }
         }
       });
+      return verifyCode;
     } catch (error) {
       throw error;
     }
@@ -458,9 +472,8 @@ export class AuthService {
           { key: 'validation.invalid', args: { label: this.i18n.t('common.user.title') } },
           HttpStatus.BAD_REQUEST
         );
-
-      await this.sendVerifyCodeToClient(user.id, user.email);
-
+      const verifyCode = await this.sendVerifyCodeToClient(user.email);
+      await this.userService.update({ where: { id: user.id }, data: { verifyCode } });
       return user;
     } catch (error) {
       throw error;
@@ -485,7 +498,8 @@ export class AuthService {
           { key: 'validation.invalid', args: { label: this.i18n.t('common.user.title') } },
           HttpStatus.BAD_REQUEST
         );
-      await this.sendVerifyCodeToClient(user.id, user.email);
+      const verifyCode = await this.sendVerifyCodeToClient(user.email);
+      await this.userService.update({ where: { id: user.id }, data: { verifyCode } });
       return true;
     } catch (error) {
       throw error;
