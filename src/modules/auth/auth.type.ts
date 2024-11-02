@@ -18,6 +18,9 @@ export class LoginArgs {
 
   @Field()
   password: string;
+
+  @Field(() => UserRole, { nullable: true })
+  role?: UserRole;
 }
 
 @ArgsType()
@@ -54,6 +57,9 @@ export class RegisterEmployeeArgs {
 
   @Field()
   phoneNumber: string;
+
+  @Field({ nullable: true })
+  role?: UserRole;
 }
 
 @ArgsType()
@@ -90,6 +96,9 @@ export class RegisterEmployerArgs {
 
   @Field()
   addressDetail: string;
+
+  @Field({ nullable: true })
+  role?: UserRole;
 }
 
 @ArgsType()
@@ -97,8 +106,11 @@ export class VerifyAccountArgs {
   @Field()
   verifyCode: string;
 
-  @Field()
-  userId: string;
+  @Field({ nullable: true })
+  userId?: string;
+
+  @Field({ nullable: true })
+  email?: string;
 }
 
 @ArgsType()
@@ -114,6 +126,9 @@ export class ResendVerifyCodeArgs {
 export class ForgotPasswordArgs {
   @Field()
   email: string;
+
+  @Field(() => UserRole, { nullable: true })
+  role?: UserRole;
 }
 
 @ArgsType()

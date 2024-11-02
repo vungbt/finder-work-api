@@ -5398,14 +5398,14 @@ type Mutation {
   create_comment(data: CreateCommentInput!): CommentItem!
   update_comment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): CommentItem!
   delete_comment(where: CommentWhereUniqueInput!): CommentItem!
-  auth_login(email: String!, password: String!): LoginResult!
+  auth_login(email: String!, password: String!, role: UserRole): LoginResult!
   auth_login_with_google(idToken: String!, role: UserRoleWithoutAdmin = employee, provider: SignInProvider = google, countryCode: String = "VI"): LoginResult!
   auth_register(email: String!, password: String!, role: String!, countryCode: String = "VI"): UserOnly!
-  auth_employee_register(email: String!, password: String!, firstName: String!, lastName: String!, countryCode: String = "VI", phoneNumber: String!): UserOnly!
-  auth_employer_register(email: String!, password: String!, firstName: String!, lastName: String!, countryCode: String = "VI", phoneNumber: String!, companyName: String!, industryIds: [String!]!, companyTypeId: String!, cityId: Float!, addressDetail: String!): UserOnly!
-  auth_verify_account(verifyCode: String!, userId: String!): UserOnly!
+  auth_employee_register(email: String!, password: String!, firstName: String!, lastName: String!, countryCode: String = "VI", phoneNumber: String!, role: String): UserOnly!
+  auth_employer_register(email: String!, password: String!, firstName: String!, lastName: String!, countryCode: String = "VI", phoneNumber: String!, companyName: String!, industryIds: [String!]!, companyTypeId: String!, cityId: Float!, addressDetail: String!, role: String): UserOnly!
+  auth_verify_account(verifyCode: String!, userId: String, email: String): UserOnly!
   auth_resend_verify_code(userId: String!, email: String!): UserOnly!
-  auth_request_forgot_password(email: String!): Boolean!
+  auth_request_forgot_password(email: String!, role: UserRole): Boolean!
   auth_saved_password(verifyCode: String!, userId: String!, email: String!, password: String!): UserOnly!
   auth_refresh_token(refreshToken: String!): RefreshTokenResult!
   create_company(data: CompanyCreateInput!): Company!

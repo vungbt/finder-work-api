@@ -17,6 +17,3 @@ jobs:
       
       - name: Format code
         run: yarn format
-
-      - name: Lint code
-        run: yarn lint

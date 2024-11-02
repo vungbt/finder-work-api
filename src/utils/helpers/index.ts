@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { readFileSync } from 'fs';
 import * as slug from 'slug';
 import { formatDate } from './formatter';
