@@ -1,10 +1,10 @@
-import { FindManySettingArgs, SettingCreateInput, SettingUpdateInput } from '@/prisma/graphql';
+import { SettingCreateInput, SettingUpdateInput, SettingWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentUser, ESettingKey } from '@/types';
+import { responseHelper } from '@/utils/helpers';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
 import { AllSettingLandingPageArgs, AllSettingPortalArgs } from './setting.type';
-import { responseHelper } from '@/utils/helpers';
 
 @Injectable()
 export class SettingService {
@@ -67,67 +67,67 @@ export class SettingService {
   }
 
   async findAllSettingPortal(args: AllSettingPortalArgs, currentUser: CurrentUser) {
-    const { searchValue, isInit, pagination, ...reset } = args;
+    const { searchValue, isInit, pagination, where, ...reset } = args;
     const role = currentUser.role;
     const showWith: any = [`${role}`];
-    const queries: FindManySettingArgs = {};
-    queries.where = {
-      ...reset.where
-    };
+    let whereClause: SettingWhereInput = {};
 
     if (isInit) {
-      queries.where = {
-        showWith: { hasSome: showWith }
-      };
+      whereClause.showWith = { hasSome: showWith };
     }
 
     if (searchValue && searchValue.length > 0) {
-      queries.where = {
-        OR: [
-          { key: { contains: searchValue } },
-          { type: { contains: searchValue } },
-          {
-            author: {
-              is: {
-                OR: [
-                  { firstName: { contains: searchValue } },
-                  { lastName: { contains: searchValue } }
-                ]
-              }
-            }
-          },
-          {
-            updatedBy: {
-              is: {
-                OR: [
-                  { firstName: { contains: searchValue } },
-                  { lastName: { contains: searchValue } }
-                ]
-              }
+      whereClause.OR = [
+        { key: { contains: searchValue } },
+        { type: { contains: searchValue } },
+        {
+          author: {
+            is: {
+              OR: [
+                { firstName: { contains: searchValue } },
+                { lastName: { contains: searchValue } }
+              ]
             }
           }
-        ]
+        },
+        {
+          updatedBy: {
+            is: {
+              OR: [
+                { firstName: { contains: searchValue } },
+                { lastName: { contains: searchValue } }
+              ]
+            }
+          }
+        }
+      ];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
       };
     }
 
-    delete reset.where;
+    console.log('whereClause====>', whereClause);
 
-    const total = await this.count(queries);
-    const data = await this.findMany({ ...queries, ...reset });
+    const total = await this.count({ where: whereClause });
+    const data = await this.findMany({ where: whereClause, ...reset });
     return responseHelper(data, { total, ...pagination });
   }
 
   async findAllSettingLandingPage(args: AllSettingLandingPageArgs) {
-    const { pagination, ...reset } = args;
-    const queries: FindManySettingArgs = {};
-    queries.where = {
-      ...reset.where,
-      key: { equals: ESettingKey.landing_page }
-    };
-    delete reset.where;
+    const { pagination, where, ...reset } = args;
+    let whereClause: SettingWhereInput = {};
+    whereClause.key = { equals: ESettingKey.landing_page };
 
-    const total = await this.count(queries);
-    const data = await this.findMany({ ...queries, ...reset });
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
+      };
+    }
+    const total = await this.count({ where: whereClause });
+    const data = await this.findMany({ where: whereClause, ...reset });
     return responseHelper(data, { total, ...pagination });
   }
 }
