@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
+import * as fs from 'fs';
 import { readFileSync } from 'fs';
 import * as slug from 'slug';
 import { formatDate } from './formatter';
@@ -134,4 +135,10 @@ export const calculateReadingTime = (content: string) => {
   const readingTimeInMinutes = Math.ceil(wordCount / wordsPerMinute);
 
   return readingTimeInMinutes;
+};
+
+export const createFolderIfNotExists = (dir: string) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 };

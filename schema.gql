@@ -2560,28 +2560,8 @@ type RefreshTokenResult {
   expireTime: DateTime!
 }
 
-type AllJobTitleResult {
-  data: [JobTitle!]!
-  metadata: Metadata
-}
-
-type AllPostCategoryResult {
-  data: [PostCategory!]!
-  metadata: Metadata
-}
-
-type AllSettingResult {
-  data: [Setting!]!
-  metadata: Metadata
-}
-
-type AllTagResult {
-  data: [Tag!]!
-  metadata: Metadata
-}
-
-type AllJobCategoryResult {
-  data: [JobCategory!]!
+type BookmarkPostResult {
+  data: BookmarkPost!
   metadata: Metadata
 }
 
@@ -2689,16 +2669,6 @@ type PostItem {
   userReport: UserOnly
 }
 
-type BookmarkPostResult {
-  data: BookmarkPost!
-  metadata: Metadata
-}
-
-type AllReportPostResult {
-  data: [ReportPost!]!
-  metadata: Metadata
-}
-
 type AllCommentResult {
   data: [CommentItem!]!
   metadata: Metadata
@@ -2722,6 +2692,36 @@ type CommentItem {
   dislikes: [DislikePost!]
   _count: CommentCount!
   totalReplies: Float!
+}
+
+type AllJobTitleResult {
+  data: [JobTitle!]!
+  metadata: Metadata
+}
+
+type AllPostCategoryResult {
+  data: [PostCategory!]!
+  metadata: Metadata
+}
+
+type AllSettingResult {
+  data: [Setting!]!
+  metadata: Metadata
+}
+
+type AllTagResult {
+  data: [Tag!]!
+  metadata: Metadata
+}
+
+type AllJobCategoryResult {
+  data: [JobCategory!]!
+  metadata: Metadata
+}
+
+type AllReportPostResult {
+  data: [ReportPost!]!
+  metadata: Metadata
 }
 
 type AllCompanySizeResult {
@@ -2770,6 +2770,7 @@ type Query {
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllSkillResult!
   one_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): Skill!
+  test_pdf: Boolean!
   all_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyTypeResult!
   one_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!]): CompanyType!
   all_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanySizeResult!

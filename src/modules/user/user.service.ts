@@ -2,13 +2,17 @@ import { UserWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BaseService } from '@/utils/base/base.service';
 import { responseHelper } from '@/utils/helpers';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma, UserRole } from '@prisma/client';
 import { AllUserArgs, MeArgs } from './user.type';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class UserService implements BaseService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly i18n: I18nService
+  ) {}
 
   create(args: Prisma.UserCreateArgs) {
     return this.prismaService.user.create(args);
@@ -63,7 +67,14 @@ export class UserService implements BaseService {
     return this.prismaService.user.delete(args);
   }
 
-  me(args: MeArgs) {
-    return this.prismaService.user.findFirst({ where: { id: args.userId } });
+  async me(args: MeArgs) {
+    const user = await this.prismaService.user.findFirst({ where: { id: args.userId } });
+    if (!user)
+      throw new HttpException(
+        { key: 'validation.invalid', args: { label: this.i18n.t('common.user.title') } },
+        HttpStatus.NOT_FOUND
+      );
+
+    return user;
   }
 }
