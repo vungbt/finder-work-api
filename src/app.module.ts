@@ -9,6 +9,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import * as redisStore from 'cache-manager-ioredis';
 import { GraphQLError } from 'graphql';
+import { PubSub } from 'graphql-subscriptions';
 import {
   AcceptLanguageResolver,
   GraphQLWebsocketResolver,
@@ -21,6 +22,8 @@ import { AppConfig } from './configs/type';
 import { validate } from './configs/validation';
 import { AddressModule } from './modules/address/address.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { BookmarkPostModule } from './modules/bookmark-post/bookmark-post.module';
+import { CommentModule } from './modules/comment/comment.module';
 import { DataloaderModule } from './modules/common/dataloader/dataloader.module';
 import { DataloaderService } from './modules/common/dataloader/dataloader.service';
 import { QueueModule } from './modules/common/queue/queue.module';
@@ -31,18 +34,16 @@ import { FileModule } from './modules/file/file.module';
 import { JobCategoryModule } from './modules/job-category/job-category.module';
 import { JobTitleModule } from './modules/job-title/job-title.module';
 import { JobModule } from './modules/job/job.module';
-import { PostModule } from './modules/post/post.module';
-import { SkillModule } from './modules/skill/skill.module';
-import { UserModule } from './modules/user/user.module';
-import { HttpExceptionFilter } from './utils/exception/http-exception.filter';
 import { PostCategoryModule } from './modules/post-category/post-category.module';
-import { TagModule } from './modules/tag/tag.module';
-import { SettingModule } from './modules/setting/setting.module';
-import { BookmarkPostModule } from './modules/bookmark-post/bookmark-post.module';
-import { VotePostModule } from './modules/vote-post/vote-post.module';
-import { PubSub } from 'graphql-subscriptions';
-import { CommentModule } from './modules/comment/comment.module';
+import { PostModule } from './modules/post/post.module';
 import { ReportPostModule } from './modules/report-post/report-post.module';
+import { SettingModule } from './modules/setting/setting.module';
+import { SkillModule } from './modules/skill/skill.module';
+import { TagModule } from './modules/tag/tag.module';
+import { UserModule } from './modules/user/user.module';
+import { VotePostModule } from './modules/vote-post/vote-post.module';
+import { HttpExceptionFilter } from './utils/exception/http-exception.filter';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 export const pubSub = new PubSub();
 @Module({
@@ -63,6 +64,10 @@ export const pubSub = new PubSub();
         port: configService.get<number>('REDIS_PORT'),
         ttl: configService.get<number>('REDIS_TTL')
       })
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/public/'
     }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
