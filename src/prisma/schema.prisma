@@ -682,7 +682,7 @@ enum WorkPosition {
   staff
   team_leader
   vice_of_department
-  head_of_epartment
+  head_of_department
   vice_director
   director
   general_director

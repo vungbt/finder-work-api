@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { PrismaClient, TagType } from '@prisma/client';
+import { PrismaClient, TagType, UserRole } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import * as slug from 'slug';
 
@@ -25,6 +25,7 @@ import * as jobCategories from './job/categories.json';
 // company
 import * as companySizes from './company/size.json';
 import * as companyTypes from './company/type.json';
+import * as companies from './company/company.json';
 
 const prisma = new PrismaClient();
 
@@ -196,6 +197,38 @@ async function main() {
       }
     });
   }
+
+  console.log('---> importing companies <---');
+  const cType = await prisma.companyType.findFirst();
+  const cSize = await prisma.companySize.findFirst();
+  const cCity = await prisma.city.findFirst();
+  const cUserSuper = await prisma.user.findFirst({ where: { role: UserRole.super_admin } });
+  for (const iterator of companies) {
+    await prisma.company.create({
+      data: {
+        companyTypeId: cType.id,
+        companySizeId: cSize.id,
+        name: iterator.name,
+        slug: slug(iterator.name),
+        cityId: cCity.id,
+        userId: cUserSuper.id,
+        addressDetail: cCity.name,
+        description: iterator.description
+      }
+    });
+  }
+  // await prisma.company.createMany({
+  //   data: [
+  //     { }
+  //   ]
+  // })
+  // await prisma.company.create({
+  //   data: {
+  //     key: iterator,
+  //     value: slug(iterator),
+  //     isDefault: true
+  //   }
+  // });
 
   return {
     file: 0,
