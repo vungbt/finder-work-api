@@ -22,7 +22,7 @@ export class ReportPostResolver {
   }
 
   @Mutation(() => ReportPost, { name: 'update_report_post' })
-  @AuthRoles({ roles: [UserRole.admin] })
+  @AuthRoles({ roles: [UserRole.admin, UserRole.super_admin] })
   update(@Args() args: UpdateOneReportPostArgs) {
     return this.reportPostService.update(args);
   }
@@ -35,7 +35,7 @@ export class ReportPostResolver {
 
   @Query(() => AllReportPostResult, { name: 'all_report_post' })
   all(@Args(new TakeLimit()) args: AllReportPostArgs) {
-    return this.reportPostService.findAll(args);
+    return this.reportPostService.findMany(args);
   }
 
   @Query(() => ReportPost, { name: 'one_report_post' })

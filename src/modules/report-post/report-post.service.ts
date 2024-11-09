@@ -3,8 +3,8 @@ import { BaseService } from '@/utils/base/base.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { AllReportPostArgs } from './report-post.type';
-import { FindManyReportPostArgs } from '@/prisma/graphql';
 import { responseHelper } from '@/utils/helpers';
+import { FindManyReportPostArgs, ReportPostWhereInput } from '@/prisma/graphql';
 
 @Injectable()
 export class ReportPostService implements BaseService {
@@ -34,8 +34,39 @@ export class ReportPostService implements BaseService {
     const total = await this.count(queries);
     return responseHelper(data, { total, ...pagination });
   }
-  findMany(args: Prisma.ReportPostFindManyArgs) {
-    return this.prismaService.reportPost.findMany(args);
+
+  async findMany(args: AllReportPostArgs) {
+    const { searchValue, pagination, where, ...reset } = args;
+    let whereClause: ReportPostWhereInput = {};
+    if (searchValue && searchValue.length > 0) {
+      whereClause.OR = [
+        { reason: { contains: searchValue, mode: 'insensitive' } },
+        { message: { contains: searchValue, mode: 'insensitive' } },
+        { post: { is: { slug: { contains: searchValue, mode: 'insensitive' } } } }
+      ];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
+      };
+    }
+    const data = this.prismaService.reportPost.findMany({
+      where: whereClause,
+      orderBy: { createdAt: 'desc' },
+      ...reset,
+      include: {
+        user: true,
+        post: {
+          select: {
+            id: true,
+            slug: true
+          }
+        }
+      }
+    });
+    const total = await this.count({ where: whereClause });
+    return responseHelper(data, { total, ...pagination });
   }
   count(args: Prisma.ReportPostCountArgs) {
     return this.prismaService.reportPost.count(args);
