@@ -2288,7 +2288,7 @@ enum WorkPosition {
   staff
   team_leader
   vice_of_department
-  head_of_department
+  head_of_epartment
   vice_director
   director
   general_director
@@ -2748,6 +2748,10 @@ type AllSkillResult {
   metadata: Metadata
 }
 
+type OpenAIGenResult {
+  data: String!
+}
+
 type Query {
   upload_url(name: String!): String!
   upload_urls(names: [String!]!): [String!]!
@@ -2779,7 +2783,6 @@ type Query {
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllSkillResult!
   one_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): Skill!
-  test_pdf: Boolean!
   all_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyTypeResult!
   one_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!]): CompanyType!
   all_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanySizeResult!
@@ -5451,6 +5454,9 @@ type Mutation {
   create_company_size(data: CompanySizeCreateInput!): CompanySize!
   update_company_size(data: CompanySizeUpdateInput!, where: CompanySizeWhereUniqueInput!): CompanySize!
   delete_company_size(where: CompanySizeWhereUniqueInput!): CompanySize!
+  openai_job_description(args: GenerateJDParams!, potentialCV: String): OpenAIGenResult!
+  openai_resume_description(args: GenerateResumeParams!): OpenAIGenResult!
+  openai_resume_keyword(args: GenerateResumeParams!): OpenAIGenResult!
 }
 
 input TagCreateInput {
@@ -19365,6 +19371,40 @@ input CompanyUpdateWithWhereUniqueWithoutSizeInput {
 input CompanyUpdateManyWithWhereWithoutSizeInput {
   where: CompanyScalarWhereInput!
   data: CompanyUpdateManyMutationInput!
+}
+
+input GenerateJDParams {
+  platform: String
+  type: String!
+  level: String!
+  language: String!
+  category: String!
+  role: String
+  responsibility: String
+  qualification: String
+  benefit: String
+  tone: String!
+  title: String
+}
+
+input GenerateResumeParams {
+  type: ResumeType!
+  jobTitle: String!
+  language: String!
+  companyName: String
+  location: String
+  startDate: DateTime
+  endDate: DateTime
+  isCurrentlyWork: Boolean
+  yearsOfExperience: Float
+  keywords: String
+  careerGoals: String
+}
+
+enum ResumeType {
+  SUMMARY
+  OBJECTIVE
+  WORK_EXPERIENCE
 }
 
 type Subscription {

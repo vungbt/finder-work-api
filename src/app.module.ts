@@ -44,6 +44,7 @@ import { UserModule } from './modules/user/user.module';
 import { VotePostModule } from './modules/vote-post/vote-post.module';
 import { HttpExceptionFilter } from './utils/exception/http-exception.filter';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { OpenAiModule } from './modules/open-ai/open-ai.module';
 
 export const pubSub = new PubSub();
 @Module({
@@ -167,7 +168,8 @@ export const pubSub = new PubSub();
     BookmarkPostModule,
     VotePostModule,
     CommentModule,
-    ReportPostModule
+    ReportPostModule,
+    OpenAiModule
   ],
   controllers: [],
   providers: [
