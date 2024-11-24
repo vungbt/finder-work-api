@@ -1,10 +1,10 @@
-import { FindManyJobCategoryArgs } from '@/prisma/graphql';
+import { JobCategoryWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BaseService } from '@/utils/base/base.service';
+import { responseHelper } from '@/utils/helpers';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { AllJobCategoryArgs } from './job-category.type';
-import { responseHelper } from '@/utils/helpers';
 
 @Injectable()
 export class JobCategoryService implements BaseService {
@@ -20,20 +20,25 @@ export class JobCategoryService implements BaseService {
     return this.prismaService.jobCategory.findFirst(args);
   }
   async findMany(args: AllJobCategoryArgs) {
-    const { searchValue, pagination, ...reset } = args;
-    const queries: FindManyJobCategoryArgs = {};
+    const { searchValue, pagination, where, ...reset } = args;
+    let whereClause: JobCategoryWhereInput = {};
+
     if (searchValue && searchValue.length > 0) {
-      queries.where = {
-        OR: [{ name: { contains: searchValue } }]
+      whereClause.OR = [{ name: { contains: searchValue, mode: 'insensitive' } }];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
       };
     }
 
     const data = this.prismaService.jobCategory.findMany({
       orderBy: { createdAt: 'desc' },
-      ...queries,
+      where: whereClause,
       ...reset
     });
-    const total = await this.count(queries);
+    const total = await this.count({ where: whereClause });
     return responseHelper(data, { total, ...pagination });
   }
   count(args: Prisma.JobCategoryCountArgs) {

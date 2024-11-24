@@ -1,13 +1,12 @@
 import { DEFAULT_COLOR, DEFAULT_PHONE, SITE_NAME, SOCIAL_SITE } from '@/configs/constant';
 import { AppConfig } from '@/configs/type';
 import { PrismaService } from '@/prisma/prisma.service';
-import { comparePassword, hashPassword, strGenerate } from '@/utils/helpers';
+import { comparePassword, genSlug, hashPassword, strGenerate } from '@/utils/helpers';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User, UserRole, UserStatus } from '@prisma/client';
 import { add } from 'date-fns';
-import slug from 'slug';
 import { UserService } from '../user/user.service';
 import {
   ForgotPasswordArgs,
@@ -227,11 +226,14 @@ export class AuthService {
         email,
         password,
         companyName,
+        companyId,
         companyTypeId,
+        companySizeId,
         industryIds,
         cityId,
         addressDetail,
         countryCode,
+        workingPosition,
         ...reset
       } = args;
 
@@ -242,24 +244,31 @@ export class AuthService {
       return this.prismaService.$transaction(async (prisma) => {
         // Hash the password
         const hashedPassword = await hashPassword(password);
+        let newCompany = null;
+        if (!companyId) {
+          // Create a slug for the company
+          const companySlug = genSlug(companyName);
 
-        // Create a slug for the company
-        const companySlug = slug(companyName);
-
-        // Create a new company
-        const newCompany = await prisma.company.create({
-          data: {
-            name: companyName,
-            slug: companySlug,
-            type: {
-              connect: { id: companyTypeId }
-            },
-            address: {
-              connect: { id: cityId }
-            },
-            addressDetail
-          }
-        });
+          // Create a new company
+          newCompany = await prisma.company.create({
+            data: {
+              name: companyName,
+              slug: companySlug,
+              type: {
+                connect: { id: companyTypeId }
+              },
+              size: {
+                connect: { id: companySizeId }
+              },
+              address: {
+                connect: { id: cityId }
+              },
+              addressDetail
+            }
+          });
+        } else {
+          newCompany = await prisma.company.findUnique({ where: { id: companyId } });
+        }
 
         // get country by country code
         const country = await this.addressService.findFirstCountry({
@@ -274,6 +283,7 @@ export class AuthService {
             password: hashedPassword,
             role: UserRole.employer,
             color: DEFAULT_COLOR,
+            workingPosition,
             country: {
               connect: { id: country.id }
             }
@@ -302,8 +312,9 @@ export class AuthService {
             }
           }
         });
-
-        return newUser;
+        // send verify code to client email
+        const verifyCode = await this.sendVerifyCodeToClient(newUser.email);
+        return await prisma.user.update({ where: { id: newUser.id }, data: { verifyCode } });
       });
     } catch (error) {
       throw error;
