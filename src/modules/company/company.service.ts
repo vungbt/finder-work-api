@@ -1,4 +1,4 @@
-import { FindManyCompanyArgs } from '@/prisma/graphql';
+import { CompanyWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BaseService } from '@/utils/base/base.service';
 import { responseHelper } from '@/utils/helpers';
@@ -20,21 +20,25 @@ export class CompanyService implements BaseService {
   }
 
   async findMany(args: AllCompanyArgs) {
-    const { pagination, searchValue, ...reset } = args;
-    const queries: FindManyCompanyArgs = {};
+    const { pagination, searchValue, where, ...reset } = args;
+    let whereClause: CompanyWhereInput = {};
 
     if (searchValue && searchValue.length > 0) {
-      queries.where = {
-        OR: [{ name: { contains: searchValue } }]
+      whereClause.OR = [{ name: { contains: searchValue } }];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
       };
     }
 
     const data = this.prismaService.company.findMany({
       orderBy: { createdAt: 'desc' },
-      ...queries,
+      where: whereClause,
       ...reset
     });
-    const total = await this.count(queries);
+    const total = await this.count({ where: whereClause });
     return responseHelper(data, { total, ...pagination });
   }
 

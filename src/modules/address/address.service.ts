@@ -1,30 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { CityWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AllAddressArgs } from './address.type';
-import { Prisma } from '@prisma/client';
 import { responseHelper } from '@/utils/helpers';
-import { FindManyCityArgs } from '@/prisma/graphql';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { AllAddressArgs } from './address.type';
 
 @Injectable()
 export class AddressService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findAll(args: AllAddressArgs) {
-    const { searchValue, pagination, ...reset } = args;
-    const queries: FindManyCityArgs = {};
+    const { searchValue, pagination, where, ...reset } = args;
+    let whereClause: CityWhereInput = {};
 
     if (searchValue && searchValue.length > 0) {
-      queries.where = {
-        OR: [
-          { name: { contains: searchValue } },
-          { stateName: { contains: searchValue } },
-          { countryName: { contains: searchValue } }
-        ]
-      };
+      whereClause.OR = [
+        { name: { contains: searchValue, mode: 'insensitive' } },
+        { stateName: { contains: searchValue, mode: 'insensitive' } },
+        { countryName: { contains: searchValue, mode: 'insensitive' } }
+      ];
     }
 
-    const total = await this.count(queries);
-    const data = await this.prismaService.city.findMany({ ...queries, ...reset });
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
+      };
+    }
+    const total = await this.count({ where: whereClause });
+    const data = await this.prismaService.city.findMany({ where: whereClause, ...reset });
     return responseHelper(data, { total, ...pagination });
   }
 

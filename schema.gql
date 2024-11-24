@@ -2288,7 +2288,7 @@ enum WorkPosition {
   staff
   team_leader
   vice_of_department
-  head_of_epartment
+  head_of_department
   vice_director
   director
   general_director
@@ -5433,7 +5433,7 @@ type Mutation {
   auth_login_with_google(idToken: String!, role: UserRoleWithoutAdmin = employee, provider: SignInProvider = google, countryCode: String = "VI"): LoginResult!
   auth_register(email: String!, password: String!, role: String!, countryCode: String = "VI"): UserOnly!
   auth_employee_register(email: String!, password: String!, firstName: String!, lastName: String!, countryCode: String = "VI", phoneNumber: String!, role: String): UserOnly!
-  auth_employer_register(email: String!, password: String!, firstName: String!, lastName: String!, countryCode: String = "VI", phoneNumber: String!, companyName: String!, industryIds: [String!]!, companyTypeId: String!, cityId: Float!, addressDetail: String!, role: String): UserOnly!
+  auth_employer_register(email: String!, password: String!, firstName: String!, lastName: String!, workingPosition: String!, countryCode: String = "VI", phoneNumber: String!, companyName: String!, companyId: String, industryIds: [String!]!, companyTypeId: String!, companySizeId: String!, cityId: Float!, addressDetail: String!, role: String): UserOnly!
   auth_verify_account(verifyCode: String!, userId: String, email: String): UserOnly!
   auth_resend_verify_code(userId: String!, email: String!): UserOnly!
   auth_request_forgot_password(email: String!, role: UserRole): Boolean!

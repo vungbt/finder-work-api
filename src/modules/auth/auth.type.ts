@@ -2,6 +2,7 @@ import { SignInProvider, UserRole } from '@/prisma/graphql';
 import { ArgsType, Field, InputType, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { UserOnly } from '../user/user.type';
 import { COUNTRY_CODE_DEFAULT, SITE_NAME } from '@/configs/constant';
+import { WorkPosition } from '@prisma/client';
 
 export enum UserRoleWithoutAdmin {
   employee = UserRole.employee,
@@ -76,6 +77,9 @@ export class RegisterEmployerArgs {
   @Field()
   lastName: string;
 
+  @Field()
+  workingPosition: WorkPosition;
+
   @Field({ nullable: true, defaultValue: COUNTRY_CODE_DEFAULT })
   countryCode: string;
 
@@ -85,11 +89,17 @@ export class RegisterEmployerArgs {
   @Field()
   companyName: string;
 
+  @Field({ nullable: true })
+  companyId?: string;
+
   @Field(() => [String])
   industryIds: string[];
 
   @Field()
   companyTypeId: string;
+
+  @Field()
+  companySizeId: string;
 
   @Field()
   cityId: number;
