@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 
 export enum EFormatType {
-  yyyyMMddHHmmss = 'yyyyMMddHHmmss'
+  yyyyMMddHHmmss = 'yyyyMMddHHmmss',
+  MMM_DD_YYYY = 'MMM DD, YYYY'
 }
 
 /**

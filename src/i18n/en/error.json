@@ -2,7 +2,7 @@
   "username_or_password_invalid": "Username or password invalid",
   "entry_not_found": "Entry not found",
   "input_valid_error": "Input valid error",
-  "not_found": "not_found",
+  "not_found": "Not found",
   "token_invalid": "Token invalid",
   "unauthorized": "Unauthorized",
   "forbidden": "Forbidden",

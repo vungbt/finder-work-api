@@ -102,4 +102,8 @@ export class AppConfig {
   @IsString()
   @IsNotEmpty()
   WEB_DOMAIN: string;
+
+  @IsString()
+  @IsNotEmpty()
+  OPENAI_API_KEY: string;
 }

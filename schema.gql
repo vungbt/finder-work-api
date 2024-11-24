@@ -1677,6 +1677,7 @@ type ReportPostCountAggregate {
   createdAt: Int!
   updatedAt: Int!
   deletedAt: Int!
+  status: Int!
   _all: Int!
 }
 
@@ -1689,6 +1690,12 @@ type ReportPostMaxAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: ReportPostStatus
+}
+
+enum ReportPostStatus {
+  resolve
+  unsolved
 }
 
 type ReportPostMinAggregate {
@@ -1700,6 +1707,7 @@ type ReportPostMinAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: ReportPostStatus
 }
 
 type ReportPost {
@@ -1711,6 +1719,7 @@ type ReportPost {
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
+  status: ReportPostStatus!
   user: User
   post: Post!
 }
@@ -2279,7 +2288,7 @@ enum WorkPosition {
   staff
   team_leader
   vice_of_department
-  head_of_department
+  head_of_epartment
   vice_director
   director
   general_director
@@ -2739,6 +2748,10 @@ type AllSkillResult {
   metadata: Metadata
 }
 
+type OpenAIGenResult {
+  data: String!
+}
+
 type Query {
   upload_url(name: String!): String!
   upload_urls(names: [String!]!): [String!]!
@@ -2770,7 +2783,6 @@ type Query {
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllSkillResult!
   one_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): Skill!
-  test_pdf: Boolean!
   all_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyTypeResult!
   one_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!]): CompanyType!
   all_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanySizeResult!
@@ -4053,8 +4065,23 @@ input ReportPostWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
+  status: EnumReportPostStatusFilter
   user: UserNullableRelationFilter
   post: PostRelationFilter
+}
+
+input EnumReportPostStatusFilter {
+  equals: ReportPostStatus
+  in: [ReportPostStatus!]
+  notIn: [ReportPostStatus!]
+  not: NestedEnumReportPostStatusFilter
+}
+
+input NestedEnumReportPostStatusFilter {
+  equals: ReportPostStatus
+  in: [ReportPostStatus!]
+  notIn: [ReportPostStatus!]
+  not: NestedEnumReportPostStatusFilter
 }
 
 input SaveJobListRelationFilter {
@@ -4964,6 +4991,7 @@ input ReportPostOrderByWithRelationInput {
   createdAt: SortOrder
   updatedAt: SortOrder
   deletedAt: SortOrderInput
+  status: SortOrder
   user: UserOrderByWithRelationInput
   post: PostOrderByWithRelationInput
 }
@@ -4980,6 +5008,7 @@ input ReportPostWhereUniqueInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
+  status: EnumReportPostStatusFilter
   user: UserNullableRelationFilter
   post: PostRelationFilter
 }
@@ -4993,6 +5022,7 @@ enum ReportPostScalarFieldEnum {
   createdAt
   updatedAt
   deletedAt
+  status
 }
 
 input CommentOrderByWithRelationInput {
@@ -5424,6 +5454,9 @@ type Mutation {
   create_company_size(data: CompanySizeCreateInput!): CompanySize!
   update_company_size(data: CompanySizeUpdateInput!, where: CompanySizeWhereUniqueInput!): CompanySize!
   delete_company_size(where: CompanySizeWhereUniqueInput!): CompanySize!
+  openai_job_description(args: GenerateJDParams!, potentialCV: String): OpenAIGenResult!
+  openai_resume_description(args: GenerateResumeParams!): OpenAIGenResult!
+  openai_resume_keyword(args: GenerateResumeParams!): OpenAIGenResult!
 }
 
 input TagCreateInput {
@@ -7696,6 +7729,7 @@ input ReportPostCreateWithoutUserInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: ReportPostStatus
   post: PostCreateNestedOneWithoutReportsInput!
 }
 
@@ -8068,6 +8102,7 @@ input ReportPostCreateWithoutPostInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: ReportPostStatus
   user: UserCreateNestedOneWithoutPostReportsInput
 }
 
@@ -9576,6 +9611,7 @@ input ReportPostCreateManyPostInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: ReportPostStatus
 }
 
 input PostCreateOrConnectWithoutCommentsInput {
@@ -9967,6 +10003,7 @@ input ReportPostCreateManyUserInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: ReportPostStatus
 }
 
 input UserCreateOrConnectWithoutEducationsInput {
@@ -14689,7 +14726,12 @@ input ReportPostUpdateWithoutUserInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: EnumReportPostStatusFieldUpdateOperationsInput
   post: PostUpdateOneRequiredWithoutReportsNestedInput
+}
+
+input EnumReportPostStatusFieldUpdateOperationsInput {
+  set: ReportPostStatus
 }
 
 input PostUpdateOneRequiredWithoutReportsNestedInput {
@@ -15212,6 +15254,7 @@ input ReportPostUpdateWithoutPostInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: EnumReportPostStatusFieldUpdateOperationsInput
   user: UserUpdateOneWithoutPostReportsNestedInput
 }
 
@@ -17042,6 +17085,7 @@ input ReportPostScalarWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
+  status: EnumReportPostStatusFilter
 }
 
 input ReportPostUpdateManyMutationInput {
@@ -17051,6 +17095,7 @@ input ReportPostUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: EnumReportPostStatusFieldUpdateOperationsInput
 }
 
 input PostUpdateToOneWithWhereWithoutCommentsInput {
@@ -18903,6 +18948,7 @@ input ReportPostCreateInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: ReportPostStatus
   user: UserCreateNestedOneWithoutPostReportsInput
   post: PostCreateNestedOneWithoutReportsInput!
 }
@@ -18914,6 +18960,7 @@ input ReportPostUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: EnumReportPostStatusFieldUpdateOperationsInput
   user: UserUpdateOneWithoutPostReportsNestedInput
   post: PostUpdateOneRequiredWithoutReportsNestedInput
 }
@@ -19324,6 +19371,40 @@ input CompanyUpdateWithWhereUniqueWithoutSizeInput {
 input CompanyUpdateManyWithWhereWithoutSizeInput {
   where: CompanyScalarWhereInput!
   data: CompanyUpdateManyMutationInput!
+}
+
+input GenerateJDParams {
+  platform: String
+  type: String!
+  level: String!
+  language: String!
+  category: String!
+  role: String
+  responsibility: String
+  qualification: String
+  benefit: String
+  tone: String!
+  title: String
+}
+
+input GenerateResumeParams {
+  type: ResumeType!
+  jobTitle: String!
+  language: String!
+  companyName: String
+  location: String
+  startDate: DateTime
+  endDate: DateTime
+  isCurrentlyWork: Boolean
+  yearsOfExperience: Float
+  keywords: String
+  careerGoals: String
+}
+
+enum ResumeType {
+  SUMMARY
+  OBJECTIVE
+  WORK_EXPERIENCE
 }
 
 type Subscription {
