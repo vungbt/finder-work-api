@@ -121,6 +121,7 @@ model Company {
   references      Reference[]
   userId          String?
   user            User?            @relation(fields: [userId], references: [id])
+  isDefault       Boolean?         @default(false)
 }
 
 model CompanySize {

@@ -407,6 +407,7 @@ type CompanyCountAggregate {
   updatedAt: Int!
   deletedAt: Int!
   userId: Int!
+  idDefault: Int!
   _all: Int!
 }
 
@@ -434,6 +435,7 @@ type CompanyMaxAggregate {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  idDefault: Boolean
 }
 
 type CompanyMinAggregate {
@@ -450,6 +452,7 @@ type CompanyMinAggregate {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  idDefault: Boolean
 }
 
 type CompanySumAggregate {
@@ -470,6 +473,7 @@ type Company {
   updatedAt: DateTime!
   deletedAt: DateTime
   userId: String
+  idDefault: Boolean
   avatar: File
   type: CompanyType
   size: CompanySize
@@ -3250,6 +3254,7 @@ input CompanyWhereInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
+  idDefault: BoolNullableFilter
   avatar: FileNullableRelationFilter
   type: CompanyTypeNullableRelationFilter
   size: CompanySizeNullableRelationFilter
@@ -3262,6 +3267,16 @@ input CompanyWhereInput {
   projects: ProjectListRelationFilter
   references: ReferenceListRelationFilter
   user: UserNullableRelationFilter
+}
+
+input BoolNullableFilter {
+  equals: Boolean
+  not: NestedBoolNullableFilter
+}
+
+input NestedBoolNullableFilter {
+  equals: Boolean
+  not: NestedBoolNullableFilter
 }
 
 input CompanyTypeNullableRelationFilter {
@@ -3281,16 +3296,6 @@ input CompanyTypeWhereInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   companies: CompanyListRelationFilter
-}
-
-input BoolNullableFilter {
-  equals: Boolean
-  not: NestedBoolNullableFilter
-}
-
-input NestedBoolNullableFilter {
-  equals: Boolean
-  not: NestedBoolNullableFilter
 }
 
 input CompanySizeNullableRelationFilter {
@@ -5090,6 +5095,7 @@ input CompanyOrderByWithRelationInput {
   updatedAt: SortOrder
   deletedAt: SortOrderInput
   userId: SortOrderInput
+  idDefault: SortOrderInput
   avatar: FileOrderByWithRelationInput
   type: CompanyTypeOrderByWithRelationInput
   size: CompanySizeOrderByWithRelationInput
@@ -5151,6 +5157,7 @@ input CompanyWhereUniqueInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
+  idDefault: BoolNullableFilter
   avatar: FileNullableRelationFilter
   type: CompanyTypeNullableRelationFilter
   size: CompanySizeNullableRelationFilter
@@ -5179,6 +5186,7 @@ enum CompanyScalarFieldEnum {
   updatedAt
   deletedAt
   userId
+  idDefault
 }
 
 input JobOrderByWithRelationInput {
@@ -5439,7 +5447,7 @@ type Mutation {
   auth_request_forgot_password(email: String!, role: UserRole): Boolean!
   auth_saved_password(verifyCode: String!, userId: String!, email: String!, password: String!): UserOnly!
   auth_refresh_token(refreshToken: String!): RefreshTokenResult!
-  create_company(data: CompanyCreateInput!): Company!
+  create_company(data: CreateCompanyInput!): Company!
   update_company(data: CompanyUpdateInput!, where: CompanyWhereUniqueInput!): Company!
   delete_company(where: CompanyWhereUniqueInput!): Company!
   create_job(data: JobCreateInput!): Job!
@@ -5700,6 +5708,7 @@ input CompanyCreateWithoutPhotosInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -5974,6 +5983,7 @@ input CompanyCreateWithoutSocialInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -6236,6 +6246,7 @@ input CompanyCreateWithoutIndustriesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -6495,6 +6506,7 @@ input CompanyCreateWithoutAddressInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -6574,6 +6586,7 @@ input CompanyCreateWithoutJobsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -7100,6 +7113,7 @@ input CompanyCreateWithoutProjectsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -7428,6 +7442,7 @@ input CompanyCreateWithoutWorkExperiencesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -7581,6 +7596,7 @@ input CompanyCreateWithoutAvatarInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
@@ -8671,6 +8687,7 @@ input CompanyCreateWithoutUserInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -8762,6 +8779,7 @@ input CompanyCreateManyUserInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
 }
 
 input SettingCreateNestedManyWithoutAuthorInput {
@@ -10189,6 +10207,7 @@ input CompanyCreateManyAvatarInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  idDefault: Boolean
 }
 
 input ResumeTemplateCreateNestedManyWithoutFileInput {
@@ -10894,6 +10913,7 @@ input CompanyCreateManyAddressInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  idDefault: Boolean
 }
 
 input CityCreateOrConnectWithoutResumesInput {
@@ -11765,6 +11785,7 @@ input CompanyUpdateWithoutPhotosInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -12148,6 +12169,7 @@ input CompanyUpdateWithoutSocialInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -12519,6 +12541,7 @@ input CompanyUpdateWithoutIndustriesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -12891,6 +12914,7 @@ input CompanyUpdateWithoutAddressInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -13004,6 +13028,7 @@ input CompanyUpdateWithoutJobsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -13767,6 +13792,7 @@ input CompanyUpdateWithoutProjectsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -14308,6 +14334,7 @@ input CompanyUpdateWithoutWorkExperiencesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -14521,6 +14548,7 @@ input CompanyUpdateWithoutAvatarInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
@@ -16019,6 +16047,7 @@ input CompanyUpdateWithoutUserInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -16126,6 +16155,7 @@ input CompanyScalarWhereInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
+  idDefault: BoolNullableFilter
 }
 
 input CompanyUpdateManyMutationInput {
@@ -16137,6 +16167,7 @@ input CompanyUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
 }
 
 input SettingUpdateManyWithoutAuthorNestedInput {
@@ -18999,15 +19030,15 @@ enum UserRoleWithoutAdmin {
   employer
 }
 
-input CompanyCreateInput {
+input CreateCompanyInput {
   id: String
   name: String!
-  slug: String!
   addressDetail: String!
   description: String
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -19020,6 +19051,9 @@ input CompanyCreateInput {
   projects: ProjectCreateNestedManyWithoutCompanyInput
   references: ReferenceCreateNestedManyWithoutCompanyInput
   user: UserCreateNestedOneWithoutCompaniesInput
+  avatarPath: String
+  photosIds: [String!] = []
+  jobCategoriesIds: [String!]
 }
 
 input CompanyUpdateInput {
@@ -19031,6 +19065,7 @@ input CompanyUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -19144,6 +19179,7 @@ input CompanyCreateWithoutTypeInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
@@ -19180,6 +19216,7 @@ input CompanyCreateManyTypeInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  idDefault: Boolean
 }
 
 input CompanyTypeUpdateInput {
@@ -19222,6 +19259,7 @@ input CompanyUpdateWithoutTypeInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
@@ -19272,6 +19310,7 @@ input CompanyCreateWithoutSizeInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  idDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
@@ -19308,6 +19347,7 @@ input CompanyCreateManySizeInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  idDefault: Boolean
 }
 
 input CompanySizeUpdateInput {
@@ -19350,6 +19390,7 @@ input CompanyUpdateWithoutSizeInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  idDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput

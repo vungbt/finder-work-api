@@ -1,0 +1,175 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <style>
+      @import
+      url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;700;800&display=swap');
+      @import
+      url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700&display=swap');
+      body { /* font-family: 'EB Garamond', serif; */ font-family: 'Nunito Sans', sans-serif;
+      margin: 0; padding: 0; font-size: 15px; color: #0d0c0c; background-color: #fff; font-weight:
+      400; width: 795px; scrollbar-width: none; margin-bottom: 100%; } body::-webkit-scrollbar {
+      display: none; } p { margin: 0; } a { font-style: italic; color: #0d0c0c; }
+    </style>
+    <link
+      rel='stylesheet'
+      href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
+    />
+  </head>
+  <body>
+    <div style='padding: 37px 60px'>
+      <div style='margin-bottom: 8px; text-align: center'>
+        <p
+          style='font-size: 26px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase ma '
+        >
+          {{seekerName}}
+        </p>
+        <p style='font-size: 16px; font-weight: 600; margin: 4px 0 7px 0'>
+          {{jobPosition}}
+        </p>
+        <p style='font-size: 13px'>{{location}}</p>
+      </div>
+      <div style='display: flex; justify-content: space-between; align-items: center'>
+        <p style='font-size: 15px; font-weight: 500'>{{phone}}</p>
+        <p style='font-size: 15px; font-weight: 500'>{{email}}</p>
+      </div>
+      <div style='margin-top: 8px; border-bottom: 1px solid #0d0c0c; margin-bottom: 17px'>
+        <div style='height: 2px; background-color: #0d0c0c; margin-bottom: 2px'></div>
+      </div>
+      <div style='display: flex; flex-direction: column; gap: 19px'>
+        <div style='width: 100%'>
+          <div
+            style='
+              background-color: #f2f2f2;
+              display: flex;
+              justify-content: center;
+              padding-bottom: 6px;
+              margin-bottom: 15px;
+            '
+          >
+            <p
+              style='
+                font-size: 16px;
+                border-bottom: 1px solid #0d0c0c;
+                padding-bottom: 2px;
+                letter-spacing: 1.5px;
+                font-weight: 600;
+              '
+            >
+              LINKS
+            </p>
+          </div>
+          <p style='text-align: center; font-size: 14px'>
+            <a href='/'>Website</a>,
+            <a href='/'>Linkedin</a>
+          </p>
+        </div>
+        <div style='width: 100%'>
+          <div
+            style='
+              background-color: #f2f2f2;
+              display: flex;
+              justify-content: center;
+              padding-bottom: 6px;
+              margin-bottom: 15px;
+            '
+          >
+            <p
+              style='
+                font-size: 16px;
+                border-bottom: 1px solid #0d0c0c;
+                padding-bottom: 2px;
+                letter-spacing: 1.5px;
+                font-weight: 600;
+              '
+            >
+              PROFILES
+            </p>
+          </div>
+          <p style='text-align: center; font-size: 14px'>
+            {{profileSummary}}
+          </p>
+        </div>
+      </div>
+      <div style='margin-top: 17px; border-bottom: 1px solid #0d0c0c; margin-bottom: 17px'>
+        <div style='height: 2px; background-color: #0d0c0c; margin-bottom: 2px'></div>
+      </div>
+      <div style='display: flex; flex-direction: column; gap: 19px'>
+        <div style='width: 100%'>
+          <div
+            style='
+              background-color: #f2f2f2;
+              display: flex;
+              justify-content: center;
+              padding-bottom: 6px;
+              margin-bottom: 15px;
+            '
+          >
+            <p
+              style='
+                font-size: 16px;
+                border-bottom: 1px solid #0d0c0c;
+                padding-bottom: 2px;
+                letter-spacing: 1.5px;
+                font-weight: 600;
+              '
+            >
+              EXPERIENCES
+            </p>
+          </div>
+          <div style='display: flex; flex-direction: column; gap: 13px'>
+            {{#each experiences}}
+              <div>
+                <div style='display: flex; gap: 4px'>
+                  <div style='width: 20px; height: 20px; transform: rotate(45deg); margin-top: 3px'>
+                    <svg
+                      width='15'
+                      height='15'
+                      xmlns='http://www.w3.org/2000/svg'
+                      viewBox='0 0 256 256'
+                    >
+                      <rect width='256' height='256' fill='none' />
+                      <circle cx='76' cy='76' r='44' />
+                      <circle cx='180' cy='76' r='44' />
+                      <circle cx='76' cy='180' r='44' />
+                      <circle cx='180' cy='180' r='44' />
+                    </svg>
+                  </div>
+                  <p style='max-width: 64%; font-weight: 600'>
+                    {{companyName}}
+                    |
+                    {{jobTitle}}
+                  </p>
+                  <div
+                    style='
+          flex: 1;
+          background-image: linear-gradient(to right, #0d0c0c 10%, rgb(255 255 255 / 0%) 0%);
+          background-position: bottom;
+          background-size: 6px 1px;
+          background-repeat: repeat-x;
+          height: 17px;
+        '
+                  ></div>
+                  <p style='font-size: 13px; margin-top: 4px'>{{startDate}}-{{endDate}}</p>
+                </div>
+                <div style='display: flex; justify-content: space-between'>
+                  <p style='font-size: 11px'>{{location.name}}</p>
+                </div>
+
+                <div style='max-width: 100%; margin-top: 12px'>
+                  <p style='line-height: 17px; font-size: 14px; margin-bottom: 5px'>
+                    {{#each summary}}
+                      <span>- {{this}} <br /></span>
+                    {{/each}}
+                  </p>
+                </div>
+              </div>
+            {{/each}}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
