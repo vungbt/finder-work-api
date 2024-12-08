@@ -1,6 +1,7 @@
-import { Company, FindManyCompanyArgs } from '@/prisma/graphql';
+import { Company, CompanyCreateInput, FindManyCompanyArgs } from '@/prisma/graphql';
 import { Metadata, PaginationInput } from '@/types';
-import { ArgsType, Field, ObjectType } from '@nestjs/graphql';
+import { ArgsType, Field, InputType, ObjectType, OmitType } from '@nestjs/graphql';
+import { Type } from 'class-transformer';
 
 @ObjectType()
 export class AllCompanyResult {
@@ -18,4 +19,28 @@ export class AllCompanyArgs extends FindManyCompanyArgs {
 
   @Field(() => PaginationInput, { nullable: true })
   pagination?: PaginationInput;
+}
+
+@ArgsType()
+export class MyCompanyArgs extends AllCompanyArgs {
+  @Field(() => String, { nullable: true })
+  userId?: string;
+}
+@InputType()
+export class CreateCompanyInput extends OmitType(CompanyCreateInput, ['slug']) {
+  @Field(() => String, { nullable: true })
+  avatarPath: string;
+
+  @Field(() => [String], { nullable: true, defaultValue: [] })
+  photosIds: string[];
+
+  @Field(() => [String], { nullable: true })
+  jobCategoriesIds: string[];
+}
+
+@ArgsType()
+export class CreateCompanyArgs {
+  @Field(() => CreateCompanyInput, { nullable: false })
+  @Type(() => CreateCompanyInput)
+  data!: InstanceType<typeof CreateCompanyInput>;
 }
