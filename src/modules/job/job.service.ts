@@ -1,19 +1,61 @@
+import { JobTitleService } from '@/modules/job-title/job-title.service';
+import { JobWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
+import { CurrentUser } from '@/types';
 import { BaseService } from '@/utils/base/base.service';
+import { genSlug, responseHelper } from '@/utils/helpers';
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { JobType, Prisma } from '@prisma/client';
+import { CreateJobArgs, MyJobArgs } from './job.type';
 
 @Injectable()
 export class JobService implements BaseService {
-  constructor(private readonly prismaService: PrismaService) {}
-  create(args: Prisma.JobCreateArgs) {
-    return this.prismaService.job.create(args);
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly jobTitleService: JobTitleService
+  ) {}
+  async create(args: CreateJobArgs, user: CurrentUser) {
+    const data = args.data;
+    const createdJob = await this.prismaService.job.create({
+      data: {
+        jobTitle: {
+          connectOrCreate: {
+            where: { name: data.jobTitleName },
+            create: { name: data.jobTitleName }
+          }
+        },
+        slug: genSlug(`${data.jobTitleName}-${data.type}`),
+        tags: data.tags,
+        description: data.description,
+        type: data.type as JobType,
+        salary: data.salary,
+        company: data.company,
+        addressDetail: data.addressDetail,
+        skills: { connect: data.skillIds.map((id) => ({ id })) },
+        level: data.level,
+        address: data.address,
+        jobCategory: data.jobCategory,
+        salaryMetadata: data.salaryMetadata,
+        user: { connect: { id: user.id } }
+      }
+    });
+
+    return { status: 'success', job: createdJob };
   }
   findUnique(args: Prisma.JobFindUniqueArgs) {
     return this.prismaService.job.findUnique(args);
   }
   findFirst(args: Prisma.JobFindFirstArgs) {
-    return this.prismaService.job.findFirst(args);
+    return this.prismaService.job.findFirst({
+      ...args,
+      include: {
+        jobTitle: true,
+        company: true,
+        address: true,
+        jobCategory: true,
+        skills: true
+      }
+    });
   }
   findMany(args: Prisma.JobFindManyArgs) {
     return this.prismaService.job.findMany(args);
@@ -26,5 +68,35 @@ export class JobService implements BaseService {
   }
   delete(args: Prisma.JobDeleteArgs) {
     return this.prismaService.job.delete(args);
+  }
+
+  async myJob(args: MyJobArgs) {
+    const { searchValue, pagination, userId, where, ...reset } = args;
+    let whereClause: JobWhereInput = {};
+
+    if (searchValue && searchValue.length > 0) {
+      whereClause.OR = [];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
+      };
+    }
+
+    const data = this.prismaService.job.findMany({
+      orderBy: { createdAt: 'desc' },
+      where: { userId: userId, ...whereClause },
+      include: {
+        jobTitle: true,
+        company: true,
+        address: true,
+        jobCategory: true,
+        skills: true
+      },
+      ...reset
+    });
+    const total = await this.count({ where: whereClause });
+    return responseHelper(data, { total, ...pagination });
   }
 }

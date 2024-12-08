@@ -407,7 +407,7 @@ type CompanyCountAggregate {
   updatedAt: Int!
   deletedAt: Int!
   userId: Int!
-  idDefault: Int!
+  isDefault: Int!
   _all: Int!
 }
 
@@ -435,7 +435,7 @@ type CompanyMaxAggregate {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
-  idDefault: Boolean
+  isDefault: Boolean
 }
 
 type CompanyMinAggregate {
@@ -452,7 +452,7 @@ type CompanyMinAggregate {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
-  idDefault: Boolean
+  isDefault: Boolean
 }
 
 type CompanySumAggregate {
@@ -473,12 +473,12 @@ type Company {
   updatedAt: DateTime!
   deletedAt: DateTime
   userId: String
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: File
   type: CompanyType
   size: CompanySize
   photos: [File!]
-  address: City!
+  address: City
   industries: [JobCategory!]
   social: [Social!]
   jobs: [Job!]
@@ -979,6 +979,7 @@ type JobCountAggregate {
   createdAt: Int!
   updatedAt: Int!
   deletedAt: Int!
+  userId: Int!
   _all: Int!
 }
 
@@ -1007,6 +1008,7 @@ type JobMaxAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  userId: String
 }
 
 enum JobType {
@@ -1054,6 +1056,7 @@ type JobMinAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  userId: String
 }
 
 type JobSumAggregate {
@@ -1065,29 +1068,31 @@ type Job {
   id: ID!
   type: JobType!
   level: JobLevel!
-  slug: String!
+  slug: String
   addressDetail: String
-  jobTitleId: String!
+  jobTitleId: String
   jobCategoryId: String!
-  companyId: String!
+  companyId: String
   cityId: Int!
   salary: JobSalary!
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int!
   applicationDeadline: DateTime!
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
-  address: City!
-  jobTitle: JobTitle!
-  jobCategory: JobCategory!
-  company: Company!
+  userId: String
+  address: City
+  jobTitle: JobTitle
+  jobCategory: JobCategory
+  company: Company
   tags: [Tag!]
   skills: [Skill!]
   applications: [Application!]
   saveJobs: [SaveJob!]
+  user: User
   _count: JobCount!
 }
 
@@ -2261,6 +2266,7 @@ type UserCount {
   payments: Int!
   address: Int!
   companies: Int!
+  jobs: Int!
   authorSettings: Int!
   updatedBySettings: Int!
 }
@@ -2368,6 +2374,7 @@ type User {
   payments: [Payment!]
   address: [UsersOnCity!]
   companies: [Company!]
+  jobs: [Job!]
   authorSettings: [Setting!]
   updatedBySettings: [Setting!]
   _count: UserCount!
@@ -2551,6 +2558,7 @@ type UserOnly {
   payments: [Payment!]
   address: [UsersOnCity!]
   companies: [Company!]
+  jobs: [Job!]
   authorSettings: [Setting!]
   updatedBySettings: [Setting!]
   _count: UserCount!
@@ -2644,6 +2652,7 @@ type UserVote {
   payments: [Payment!]
   address: [UsersOnCity!]
   companies: [Company!]
+  jobs: [Job!]
   authorSettings: [Setting!]
   updatedBySettings: [Setting!]
   _count: UserCount!
@@ -2747,6 +2756,11 @@ type AllCompanyTypeResult {
   metadata: Metadata
 }
 
+type AllJobResult {
+  data: [Job!]!
+  metadata: Metadata
+}
+
 type AllSkillResult {
   data: [Skill!]!
   metadata: Metadata
@@ -2783,8 +2797,10 @@ type Query {
   one_comment(where: CommentWhereInput, orderBy: [CommentOrderByWithRelationInput!], cursor: CommentWhereUniqueInput, take: Int, skip: Int, distinct: [CommentScalarFieldEnum!]): CommentItem!
   all_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
   one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
+  my_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
   all_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): [Job!]!
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
+  my_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllJobResult!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllSkillResult!
   one_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): Skill!
   all_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyTypeResult!
@@ -3060,6 +3076,7 @@ input UserWhereInput {
   payments: PaymentListRelationFilter
   address: UsersOnCityListRelationFilter
   companies: CompanyListRelationFilter
+  jobs: JobListRelationFilter
   authorSettings: SettingListRelationFilter
   updatedBySettings: SettingListRelationFilter
 }
@@ -3254,12 +3271,12 @@ input CompanyWhereInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
-  idDefault: BoolNullableFilter
+  isDefault: BoolNullableFilter
   avatar: FileNullableRelationFilter
   type: CompanyTypeNullableRelationFilter
   size: CompanySizeNullableRelationFilter
   photos: FileListRelationFilter
-  address: CityRelationFilter
+  address: CityNullableRelationFilter
   industries: JobCategoryListRelationFilter
   social: SocialListRelationFilter
   jobs: JobListRelationFilter
@@ -3323,7 +3340,7 @@ input FileListRelationFilter {
   none: FileWhereInput
 }
 
-input CityRelationFilter {
+input CityNullableRelationFilter {
   is: CityWhereInput
   isNot: CityWhereInput
 }
@@ -3365,29 +3382,31 @@ input JobWhereInput {
   id: StringFilter
   type: EnumJobTypeFilter
   level: EnumJobLevelFilter
-  slug: StringFilter
+  slug: StringNullableFilter
   addressDetail: StringNullableFilter
-  jobTitleId: StringFilter
+  jobTitleId: StringNullableFilter
   jobCategoryId: StringFilter
-  companyId: StringFilter
+  companyId: StringNullableFilter
   cityId: IntFilter
   salary: EnumJobSalaryFilter
   salaryMetadata: JsonNullableFilter
-  description: StringFilter
+  description: StringNullableFilter
   isBoot: BoolNullableFilter
   numberOfRecruits: IntFilter
   applicationDeadline: DateTimeFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  address: CityRelationFilter
-  jobTitle: JobTitleRelationFilter
-  jobCategory: JobCategoryRelationFilter
-  company: CompanyRelationFilter
+  userId: StringNullableFilter
+  address: CityNullableRelationFilter
+  jobTitle: JobTitleNullableRelationFilter
+  jobCategory: JobCategoryNullableRelationFilter
+  company: CompanyNullableRelationFilter
   tags: TagListRelationFilter
   skills: SkillListRelationFilter
   applications: ApplicationListRelationFilter
   saveJobs: SaveJobListRelationFilter
+  user: UserNullableRelationFilter
 }
 
 input EnumJobTypeFilter {
@@ -3432,7 +3451,7 @@ input NestedEnumJobSalaryFilter {
   not: NestedEnumJobSalaryFilter
 }
 
-input JobTitleRelationFilter {
+input JobTitleNullableRelationFilter {
   is: JobTitleWhereInput
   isNot: JobTitleWhereInput
 }
@@ -3495,11 +3514,6 @@ input ResumeWhereInput {
 input UserRelationFilter {
   is: UserWhereInput
   isNot: UserWhereInput
-}
-
-input CityNullableRelationFilter {
-  is: CityWhereInput
-  isNot: CityWhereInput
 }
 
 input LanguageNullableRelationFilter {
@@ -3566,6 +3580,11 @@ input LanguageRelationFilter {
 input ResumeNullableRelationFilter {
   is: ResumeWhereInput
   isNot: ResumeWhereInput
+}
+
+input JobTitleRelationFilter {
+  is: JobTitleWhereInput
+  isNot: JobTitleWhereInput
 }
 
 input ApplicationListRelationFilter {
@@ -3851,7 +3870,7 @@ input ActivityWhereInput {
   resume: ResumeNullableRelationFilter
 }
 
-input JobCategoryRelationFilter {
+input JobCategoryNullableRelationFilter {
   is: JobCategoryWhereInput
   isNot: JobCategoryWhereInput
 }
@@ -3925,11 +3944,6 @@ input PostWhereInput {
   comments: CommentListRelationFilter
   bookmarks: BookmarkPostListRelationFilter
   reports: ReportPostListRelationFilter
-}
-
-input JobCategoryNullableRelationFilter {
-  is: JobCategoryWhereInput
-  isNot: JobCategoryWhereInput
 }
 
 input PostCategoryListRelationFilter {
@@ -4263,6 +4277,11 @@ input UsersOnCityWhereInput {
   deletedAt: DateTimeNullableFilter
   user: UserRelationFilter
   city: CityRelationFilter
+}
+
+input CityRelationFilter {
+  is: CityWhereInput
+  isNot: CityWhereInput
 }
 
 input SettingListRelationFilter {
@@ -4710,6 +4729,7 @@ input UserOrderByWithRelationInput {
   payments: PaymentOrderByRelationAggregateInput
   address: UsersOnCityOrderByRelationAggregateInput
   companies: CompanyOrderByRelationAggregateInput
+  jobs: JobOrderByRelationAggregateInput
   authorSettings: SettingOrderByRelationAggregateInput
   updatedBySettings: SettingOrderByRelationAggregateInput
 }
@@ -4831,6 +4851,7 @@ input UserWhereUniqueInput {
   payments: PaymentListRelationFilter
   address: UsersOnCityListRelationFilter
   companies: CompanyListRelationFilter
+  jobs: JobListRelationFilter
   authorSettings: SettingListRelationFilter
   updatedBySettings: SettingListRelationFilter
 }
@@ -5095,7 +5116,7 @@ input CompanyOrderByWithRelationInput {
   updatedAt: SortOrder
   deletedAt: SortOrderInput
   userId: SortOrderInput
-  idDefault: SortOrderInput
+  isDefault: SortOrderInput
   avatar: FileOrderByWithRelationInput
   type: CompanyTypeOrderByWithRelationInput
   size: CompanySizeOrderByWithRelationInput
@@ -5157,12 +5178,12 @@ input CompanyWhereUniqueInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
-  idDefault: BoolNullableFilter
+  isDefault: BoolNullableFilter
   avatar: FileNullableRelationFilter
   type: CompanyTypeNullableRelationFilter
   size: CompanySizeNullableRelationFilter
   photos: FileListRelationFilter
-  address: CityRelationFilter
+  address: CityNullableRelationFilter
   industries: JobCategoryListRelationFilter
   social: SocialListRelationFilter
   jobs: JobListRelationFilter
@@ -5186,28 +5207,29 @@ enum CompanyScalarFieldEnum {
   updatedAt
   deletedAt
   userId
-  idDefault
+  isDefault
 }
 
 input JobOrderByWithRelationInput {
   id: SortOrder
   type: SortOrder
   level: SortOrder
-  slug: SortOrder
+  slug: SortOrderInput
   addressDetail: SortOrderInput
-  jobTitleId: SortOrder
+  jobTitleId: SortOrderInput
   jobCategoryId: SortOrder
-  companyId: SortOrder
+  companyId: SortOrderInput
   cityId: SortOrder
   salary: SortOrder
   salaryMetadata: SortOrderInput
-  description: SortOrder
+  description: SortOrderInput
   isBoot: SortOrderInput
   numberOfRecruits: SortOrder
   applicationDeadline: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
   deletedAt: SortOrderInput
+  userId: SortOrderInput
   address: CityOrderByWithRelationInput
   jobTitle: JobTitleOrderByWithRelationInput
   jobCategory: JobCategoryOrderByWithRelationInput
@@ -5216,6 +5238,7 @@ input JobOrderByWithRelationInput {
   skills: SkillOrderByRelationAggregateInput
   applications: ApplicationOrderByRelationAggregateInput
   saveJobs: SaveJobOrderByRelationAggregateInput
+  user: UserOrderByWithRelationInput
 }
 
 input SkillOrderByRelationAggregateInput {
@@ -5229,29 +5252,31 @@ input JobWhereUniqueInput {
   NOT: [JobWhereInput!]
   type: EnumJobTypeFilter
   level: EnumJobLevelFilter
-  slug: StringFilter
+  slug: StringNullableFilter
   addressDetail: StringNullableFilter
-  jobTitleId: StringFilter
+  jobTitleId: StringNullableFilter
   jobCategoryId: StringFilter
-  companyId: StringFilter
+  companyId: StringNullableFilter
   cityId: IntFilter
   salary: EnumJobSalaryFilter
   salaryMetadata: JsonNullableFilter
-  description: StringFilter
+  description: StringNullableFilter
   isBoot: BoolNullableFilter
   numberOfRecruits: IntFilter
   applicationDeadline: DateTimeFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
-  address: CityRelationFilter
-  jobTitle: JobTitleRelationFilter
-  jobCategory: JobCategoryRelationFilter
-  company: CompanyRelationFilter
+  userId: StringNullableFilter
+  address: CityNullableRelationFilter
+  jobTitle: JobTitleNullableRelationFilter
+  jobCategory: JobCategoryNullableRelationFilter
+  company: CompanyNullableRelationFilter
   tags: TagListRelationFilter
   skills: SkillListRelationFilter
   applications: ApplicationListRelationFilter
   saveJobs: SaveJobListRelationFilter
+  user: UserNullableRelationFilter
 }
 
 enum JobScalarFieldEnum {
@@ -5273,6 +5298,7 @@ enum JobScalarFieldEnum {
   createdAt
   updatedAt
   deletedAt
+  userId
 }
 
 input SkillOrderByWithRelationInput {
@@ -5450,7 +5476,7 @@ type Mutation {
   create_company(data: CreateCompanyInput!): Company!
   update_company(data: CompanyUpdateInput!, where: CompanyWhereUniqueInput!): Company!
   delete_company(where: CompanyWhereUniqueInput!): Company!
-  create_job(data: JobCreateInput!): Job!
+  create_job(data: CreateJobInput!): Job!
   update_job(data: JobUpdateInput!, where: JobWhereUniqueInput!): Job!
   delete_job(where: JobWhereUniqueInput!): Job!
   create_skill(data: SkillCreateInput!): Skill!
@@ -5489,26 +5515,27 @@ input JobCreateNestedManyWithoutTagsInput {
 
 input JobCreateWithoutTagsInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  address: CityCreateNestedOneWithoutJobsInput!
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput!
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput!
-  company: CompanyCreateNestedOneWithoutJobsInput!
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
   applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
 }
 
 input CityCreateNestedOneWithoutJobsInput {
@@ -5665,6 +5692,7 @@ input UserCreateWithoutAddressInput {
   saveJobs: SaveJobCreateNestedManyWithoutUserInput
   payments: PaymentCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -5708,11 +5736,11 @@ input CompanyCreateWithoutPhotosInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
@@ -5789,6 +5817,7 @@ input UserCreateWithoutAvatarInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -5946,6 +5975,7 @@ input UserCreateWithoutCountryInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -5983,12 +6013,12 @@ input CompanyCreateWithoutSocialInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   jobs: JobCreateNestedManyWithoutCompanyInput
   workExperiences: WorkExperienceCreateNestedManyWithoutCompanyInput
@@ -6137,6 +6167,7 @@ input UserCreateWithoutResumesInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -6189,26 +6220,27 @@ input JobCreateNestedManyWithoutJobTitleInput {
 
 input JobCreateWithoutJobTitleInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  address: CityCreateNestedOneWithoutJobsInput!
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput!
-  company: CompanyCreateNestedOneWithoutJobsInput!
+  address: CityCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
   applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
 }
 
 input JobCategoryCreateNestedOneWithoutJobsInput {
@@ -6246,12 +6278,12 @@ input CompanyCreateWithoutIndustriesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
   workExperiences: WorkExperienceCreateNestedManyWithoutCompanyInput
@@ -6292,26 +6324,27 @@ input JobCreateNestedManyWithoutAddressInput {
 
 input JobCreateWithoutAddressInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput!
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput!
-  company: CompanyCreateNestedOneWithoutJobsInput!
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
   applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
 }
 
 input JobTitleCreateNestedOneWithoutJobsInput {
@@ -6506,7 +6539,7 @@ input CompanyCreateWithoutAddressInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
@@ -6549,26 +6582,27 @@ input JobCreateNestedManyWithoutJobCategoryInput {
 
 input JobCreateWithoutJobCategoryInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  address: CityCreateNestedOneWithoutJobsInput!
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput!
-  company: CompanyCreateNestedOneWithoutJobsInput!
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
   applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
 }
 
 input CompanyCreateNestedOneWithoutJobsInput {
@@ -6586,12 +6620,12 @@ input CompanyCreateWithoutJobsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   workExperiences: WorkExperienceCreateNestedManyWithoutCompanyInput
@@ -6660,6 +6694,7 @@ input UserCreateWithoutSocialInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -6842,6 +6877,7 @@ input UserCreateWithoutWorkExperiencesInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -6933,26 +6969,27 @@ input JobCreateNestedOneWithoutApplicationsInput {
 
 input JobCreateWithoutApplicationsInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  address: CityCreateNestedOneWithoutJobsInput!
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput!
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput!
-  company: CompanyCreateNestedOneWithoutJobsInput!
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
 }
 
 input TagCreateNestedManyWithoutJobsInput {
@@ -7069,6 +7106,7 @@ input UserCreateWithoutPostsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -7113,12 +7151,12 @@ input CompanyCreateWithoutProjectsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
@@ -7136,26 +7174,27 @@ input JobCreateNestedManyWithoutCompanyInput {
 
 input JobCreateWithoutCompanyInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  address: CityCreateNestedOneWithoutJobsInput!
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput!
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput!
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
   applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
 }
 
 input SkillCreateNestedManyWithoutJobsInput {
@@ -7352,6 +7391,7 @@ input UserCreateWithoutLikesInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -7442,12 +7482,12 @@ input CompanyCreateWithoutWorkExperiencesInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
@@ -7523,6 +7563,7 @@ input UserCreateWithoutProjectsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -7596,11 +7637,11 @@ input CompanyCreateWithoutAvatarInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
@@ -7727,6 +7768,7 @@ input UserCreateWithoutEducationsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -7835,6 +7877,7 @@ input UserCreateWithoutDislikesInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -7946,6 +7989,7 @@ input UserCreateWithoutCommentsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -8051,6 +8095,7 @@ input UserCreateWithoutBookmarksInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -8164,6 +8209,7 @@ input UserCreateWithoutPostReportsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -8271,26 +8317,27 @@ input JobCreateNestedOneWithoutSaveJobsInput {
 
 input JobCreateWithoutSaveJobsInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  address: CityCreateNestedOneWithoutJobsInput!
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput!
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput!
-  company: CompanyCreateNestedOneWithoutJobsInput!
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
   applications: ApplicationCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
 }
 
 input ApplicationCreateNestedManyWithoutJobInput {
@@ -8353,6 +8400,7 @@ input UserCreateWithoutApplicationsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -8588,26 +8636,27 @@ input JobCreateNestedManyWithoutSkillsInput {
 
 input JobCreateWithoutSkillsInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  address: CityCreateNestedOneWithoutJobsInput!
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput!
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput!
-  company: CompanyCreateNestedOneWithoutJobsInput!
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
 }
 
 input SaveJobCreateNestedManyWithoutJobInput {
@@ -8667,6 +8716,7 @@ input UserCreateWithoutSaveJobsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -8687,12 +8737,12 @@ input CompanyCreateWithoutUserInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
@@ -8779,7 +8829,70 @@ input CompanyCreateManyUserInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
+}
+
+input JobCreateNestedManyWithoutUserInput {
+  create: [JobCreateWithoutUserInput!]
+  connectOrCreate: [JobCreateOrConnectWithoutUserInput!]
+  createMany: JobCreateManyUserInputEnvelope
+  connect: [JobWhereUniqueInput!]
+}
+
+input JobCreateWithoutUserInput {
+  id: String
+  type: JobType
+  level: JobLevel
+  slug: String
+  addressDetail: String
+  salary: JobSalary
+  salaryMetadata: JSON
+  description: String
+  isBoot: Boolean
+  numberOfRecruits: Int
+  applicationDeadline: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
+  tags: TagCreateNestedManyWithoutJobsInput
+  skills: SkillCreateNestedManyWithoutJobsInput
+  applications: ApplicationCreateNestedManyWithoutJobInput
+  saveJobs: SaveJobCreateNestedManyWithoutJobInput
+}
+
+input JobCreateOrConnectWithoutUserInput {
+  where: JobWhereUniqueInput!
+  create: JobCreateWithoutUserInput!
+}
+
+input JobCreateManyUserInputEnvelope {
+  data: [JobCreateManyUserInput!]!
+  skipDuplicates: Boolean
+}
+
+input JobCreateManyUserInput {
+  id: String
+  type: JobType
+  level: JobLevel
+  slug: String
+  addressDetail: String
+  jobTitleId: String
+  jobCategoryId: String!
+  companyId: String
+  cityId: Int!
+  salary: JobSalary
+  salaryMetadata: JSON
+  description: String
+  isBoot: Boolean
+  numberOfRecruits: Int
+  applicationDeadline: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
 }
 
 input SettingCreateNestedManyWithoutAuthorInput {
@@ -8847,6 +8960,7 @@ input UserCreateWithoutUpdatedBySettingsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
 }
 
@@ -8937,6 +9051,7 @@ input UserCreateWithoutAuthorSettingsInput {
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -9001,6 +9116,58 @@ input SaveJobCreateManyJobInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+}
+
+input UserCreateNestedOneWithoutJobsInput {
+  create: UserCreateWithoutJobsInput
+  connectOrCreate: UserCreateOrConnectWithoutJobsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutJobsInput {
+  id: String
+  avatarUrl: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean
+  password: String!
+  phoneNumber: String
+  workingPosition: WorkPosition
+  status: UserStatus
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole
+  addressDetail: String
+  verifyCode: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  avatar: FileCreateNestedOneWithoutUsersInput
+  country: CountryCreateNestedOneWithoutUsersInput
+  social: SocialCreateNestedManyWithoutUserInput
+  resumes: ResumeCreateNestedManyWithoutUserInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
+  educations: EducationCreateNestedManyWithoutUserInput
+  projects: ProjectCreateNestedManyWithoutUserInput
+  applications: ApplicationCreateNestedManyWithoutCandidateInput
+  posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
+  likes: LikePostCreateNestedManyWithoutUserInput
+  dislikes: DislikePostCreateNestedManyWithoutUserInput
+  comments: CommentCreateNestedManyWithoutUserInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
+  saveJobs: SaveJobCreateNestedManyWithoutUserInput
+  payments: PaymentCreateNestedManyWithoutUserInput
+  address: UsersOnCityCreateNestedManyWithoutUserInput
+  companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
+}
+
+input UserCreateOrConnectWithoutJobsInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutJobsInput!
 }
 
 input JobCreateOrConnectWithoutSkillsInput {
@@ -10175,6 +10342,7 @@ input UserCreateWithoutCompaniesInput {
   saveJobs: SaveJobCreateNestedManyWithoutUserInput
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -10207,7 +10375,7 @@ input CompanyCreateManyAvatarInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
-  idDefault: Boolean
+  isDefault: Boolean
 }
 
 input ResumeTemplateCreateNestedManyWithoutFileInput {
@@ -10521,22 +10689,23 @@ input JobCreateManyCompanyInputEnvelope {
 
 input JobCreateManyCompanyInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
-  jobTitleId: String!
+  jobTitleId: String
   jobCategoryId: String!
   cityId: Int!
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  userId: String
 }
 
 input CompanyCreateOrConnectWithoutProjectsInput {
@@ -10814,22 +10983,23 @@ input JobCreateManyJobCategoryInputEnvelope {
 
 input JobCreateManyJobCategoryInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
-  jobTitleId: String!
-  companyId: String!
+  jobTitleId: String
+  companyId: String
   cityId: Int!
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  userId: String
 }
 
 input PostCreateNestedManyWithoutJobCategoryInput {
@@ -10913,7 +11083,7 @@ input CompanyCreateManyAddressInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
-  idDefault: Boolean
+  isDefault: Boolean
 }
 
 input CityCreateOrConnectWithoutResumesInput {
@@ -11007,22 +11177,23 @@ input JobCreateManyAddressInputEnvelope {
 
 input JobCreateManyAddressInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
-  jobTitleId: String!
+  jobTitleId: String
   jobCategoryId: String!
-  companyId: String!
+  companyId: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  userId: String
 }
 
 input CityCreateOrConnectWithoutCompaniesInput {
@@ -11052,22 +11223,23 @@ input JobCreateManyJobTitleInputEnvelope {
 
 input JobCreateManyJobTitleInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
+  slug: String
   addressDetail: String
   jobCategoryId: String!
-  companyId: String!
+  companyId: String
   cityId: Int!
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  userId: String
 }
 
 input JobTitleCreateOrConnectWithoutWorkExperiencesInput {
@@ -11439,24 +11611,25 @@ input JobUpdateWithoutTagsInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  address: CityUpdateOneRequiredWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneRequiredWithoutJobsNestedInput
-  company: CompanyUpdateOneRequiredWithoutJobsNestedInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
 input EnumJobTypeFieldUpdateOperationsInput {
@@ -11479,10 +11652,12 @@ input IntFieldUpdateOperationsInput {
   divide: Int
 }
 
-input CityUpdateOneRequiredWithoutJobsNestedInput {
+input CityUpdateOneWithoutJobsNestedInput {
   create: CityCreateWithoutJobsInput
   connectOrCreate: CityCreateOrConnectWithoutJobsInput
   upsert: CityUpsertWithoutJobsInput
+  disconnect: CityWhereInput
+  delete: CityWhereInput
   connect: CityWhereUniqueInput
   update: CityUpdateToOneWithWhereWithoutJobsInput
 }
@@ -11695,6 +11870,7 @@ input UserUpdateWithoutAddressInput {
   saveJobs: SaveJobUpdateManyWithoutUserNestedInput
   payments: PaymentUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -11785,11 +11961,11 @@ input CompanyUpdateWithoutPhotosInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
@@ -11889,6 +12065,7 @@ input UserUpdateWithoutAvatarInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -12105,6 +12282,7 @@ input UserUpdateWithoutCountryInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -12169,12 +12347,12 @@ input CompanyUpdateWithoutSocialInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
   workExperiences: WorkExperienceUpdateManyWithoutCompanyNestedInput
@@ -12377,6 +12555,7 @@ input UserUpdateWithoutResumesInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -12465,30 +12644,33 @@ input JobUpdateWithoutJobTitleInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  address: CityUpdateOneRequiredWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneRequiredWithoutJobsNestedInput
-  company: CompanyUpdateOneRequiredWithoutJobsNestedInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
-input JobCategoryUpdateOneRequiredWithoutJobsNestedInput {
+input JobCategoryUpdateOneWithoutJobsNestedInput {
   create: JobCategoryCreateWithoutJobsInput
   connectOrCreate: JobCategoryCreateOrConnectWithoutJobsInput
   upsert: JobCategoryUpsertWithoutJobsInput
+  disconnect: JobCategoryWhereInput
+  delete: JobCategoryWhereInput
   connect: JobCategoryWhereUniqueInput
   update: JobCategoryUpdateToOneWithWhereWithoutJobsInput
 }
@@ -12541,12 +12723,12 @@ input CompanyUpdateWithoutIndustriesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
   workExperiences: WorkExperienceUpdateManyWithoutCompanyNestedInput
@@ -12555,10 +12737,12 @@ input CompanyUpdateWithoutIndustriesInput {
   user: UserUpdateOneWithoutCompaniesNestedInput
 }
 
-input CityUpdateOneRequiredWithoutCompaniesNestedInput {
+input CityUpdateOneWithoutCompaniesNestedInput {
   create: CityCreateWithoutCompaniesInput
   connectOrCreate: CityCreateOrConnectWithoutCompaniesInput
   upsert: CityUpsertWithoutCompaniesInput
+  disconnect: CityWhereInput
+  delete: CityWhereInput
   connect: CityWhereUniqueInput
   update: CityUpdateToOneWithWhereWithoutCompaniesInput
 }
@@ -12610,30 +12794,33 @@ input JobUpdateWithoutAddressInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneRequiredWithoutJobsNestedInput
-  company: CompanyUpdateOneRequiredWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
-input JobTitleUpdateOneRequiredWithoutJobsNestedInput {
+input JobTitleUpdateOneWithoutJobsNestedInput {
   create: JobTitleCreateWithoutJobsInput
   connectOrCreate: JobTitleCreateOrConnectWithoutJobsInput
   upsert: JobTitleUpsertWithoutJobsInput
+  disconnect: JobTitleWhereInput
+  delete: JobTitleWhereInput
   connect: JobTitleWhereUniqueInput
   update: JobTitleUpdateToOneWithWhereWithoutJobsInput
 }
@@ -12914,7 +13101,7 @@ input CompanyUpdateWithoutAddressInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
@@ -12985,30 +13172,33 @@ input JobUpdateWithoutJobCategoryInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  address: CityUpdateOneRequiredWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutJobsNestedInput
-  company: CompanyUpdateOneRequiredWithoutJobsNestedInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
-input CompanyUpdateOneRequiredWithoutJobsNestedInput {
+input CompanyUpdateOneWithoutJobsNestedInput {
   create: CompanyCreateWithoutJobsInput
   connectOrCreate: CompanyCreateOrConnectWithoutJobsInput
   upsert: CompanyUpsertWithoutJobsInput
+  disconnect: CompanyWhereInput
+  delete: CompanyWhereInput
   connect: CompanyWhereUniqueInput
   update: CompanyUpdateToOneWithWhereWithoutJobsInput
 }
@@ -13028,12 +13218,12 @@ input CompanyUpdateWithoutJobsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   workExperiences: WorkExperienceUpdateManyWithoutCompanyNestedInput
@@ -13125,6 +13315,7 @@ input UserUpdateWithoutSocialInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -13386,6 +13577,7 @@ input UserUpdateWithoutWorkExperiencesInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -13549,24 +13741,25 @@ input JobUpdateWithoutApplicationsInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  address: CityUpdateOneRequiredWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneRequiredWithoutJobsNestedInput
-  company: CompanyUpdateOneRequiredWithoutJobsNestedInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
 input TagUpdateManyWithoutJobsNestedInput {
@@ -13727,6 +13920,7 @@ input UserUpdateWithoutPostsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -13792,12 +13986,12 @@ input CompanyUpdateWithoutProjectsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
@@ -13830,24 +14024,25 @@ input JobUpdateWithoutCompanyInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  address: CityUpdateOneRequiredWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneRequiredWithoutJobsNestedInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
 input SkillUpdateManyWithoutJobsNestedInput {
@@ -14200,6 +14395,7 @@ input UserUpdateWithoutLikesInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -14334,12 +14530,12 @@ input CompanyUpdateWithoutWorkExperiencesInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
@@ -14436,6 +14632,7 @@ input UserUpdateWithoutProjectsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -14548,11 +14745,11 @@ input CompanyUpdateWithoutAvatarInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
@@ -14723,6 +14920,7 @@ input UserUpdateWithoutEducationsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -14879,6 +15077,7 @@ input UserUpdateWithoutDislikesInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -15034,6 +15233,7 @@ input UserUpdateWithoutCommentsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -15181,6 +15381,7 @@ input UserUpdateWithoutBookmarksInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -15338,6 +15539,7 @@ input UserUpdateWithoutPostReportsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -15486,24 +15688,25 @@ input JobUpdateWithoutSaveJobsInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  address: CityUpdateOneRequiredWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneRequiredWithoutJobsNestedInput
-  company: CompanyUpdateOneRequiredWithoutJobsNestedInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
 input ApplicationUpdateManyWithoutJobNestedInput {
@@ -15587,6 +15790,7 @@ input UserUpdateWithoutApplicationsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -15916,24 +16120,25 @@ input JobUpdateWithoutSkillsInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  address: CityUpdateOneRequiredWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneRequiredWithoutJobsNestedInput
-  company: CompanyUpdateOneRequiredWithoutJobsNestedInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
 input SaveJobUpdateManyWithoutJobNestedInput {
@@ -16014,6 +16219,7 @@ input UserUpdateWithoutSaveJobsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -16047,12 +16253,12 @@ input CompanyUpdateWithoutUserInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
@@ -16155,7 +16361,7 @@ input CompanyScalarWhereInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
-  idDefault: BoolNullableFilter
+  isDefault: BoolNullableFilter
 }
 
 input CompanyUpdateManyMutationInput {
@@ -16167,7 +16373,104 @@ input CompanyUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
+}
+
+input JobUpdateManyWithoutUserNestedInput {
+  create: [JobCreateWithoutUserInput!]
+  connectOrCreate: [JobCreateOrConnectWithoutUserInput!]
+  upsert: [JobUpsertWithWhereUniqueWithoutUserInput!]
+  createMany: JobCreateManyUserInputEnvelope
+  set: [JobWhereUniqueInput!]
+  disconnect: [JobWhereUniqueInput!]
+  delete: [JobWhereUniqueInput!]
+  connect: [JobWhereUniqueInput!]
+  update: [JobUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [JobUpdateManyWithWhereWithoutUserInput!]
+  deleteMany: [JobScalarWhereInput!]
+}
+
+input JobUpsertWithWhereUniqueWithoutUserInput {
+  where: JobWhereUniqueInput!
+  update: JobUpdateWithoutUserInput!
+  create: JobCreateWithoutUserInput!
+}
+
+input JobUpdateWithoutUserInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumJobTypeFieldUpdateOperationsInput
+  level: EnumJobLevelFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  salary: EnumJobSalaryFieldUpdateOperationsInput
+  salaryMetadata: JSON
+  description: NullableStringFieldUpdateOperationsInput
+  isBoot: NullableBoolFieldUpdateOperationsInput
+  numberOfRecruits: IntFieldUpdateOperationsInput
+  applicationDeadline: DateTimeFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
+  tags: TagUpdateManyWithoutJobsNestedInput
+  skills: SkillUpdateManyWithoutJobsNestedInput
+  applications: ApplicationUpdateManyWithoutJobNestedInput
+  saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+}
+
+input JobUpdateWithWhereUniqueWithoutUserInput {
+  where: JobWhereUniqueInput!
+  data: JobUpdateWithoutUserInput!
+}
+
+input JobUpdateManyWithWhereWithoutUserInput {
+  where: JobScalarWhereInput!
+  data: JobUpdateManyMutationInput!
+}
+
+input JobScalarWhereInput {
+  AND: [JobScalarWhereInput!]
+  OR: [JobScalarWhereInput!]
+  NOT: [JobScalarWhereInput!]
+  id: StringFilter
+  type: EnumJobTypeFilter
+  level: EnumJobLevelFilter
+  slug: StringNullableFilter
+  addressDetail: StringNullableFilter
+  jobTitleId: StringNullableFilter
+  jobCategoryId: StringFilter
+  companyId: StringNullableFilter
+  cityId: IntFilter
+  salary: EnumJobSalaryFilter
+  salaryMetadata: JsonNullableFilter
+  description: StringNullableFilter
+  isBoot: BoolNullableFilter
+  numberOfRecruits: IntFilter
+  applicationDeadline: DateTimeFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  userId: StringNullableFilter
+}
+
+input JobUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumJobTypeFieldUpdateOperationsInput
+  level: EnumJobLevelFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  salary: EnumJobSalaryFieldUpdateOperationsInput
+  salaryMetadata: JSON
+  description: NullableStringFieldUpdateOperationsInput
+  isBoot: NullableBoolFieldUpdateOperationsInput
+  numberOfRecruits: IntFieldUpdateOperationsInput
+  applicationDeadline: DateTimeFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
 }
 
 input SettingUpdateManyWithoutAuthorNestedInput {
@@ -16259,6 +16562,7 @@ input UserUpdateWithoutUpdatedBySettingsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
 }
 
@@ -16386,6 +16690,7 @@ input UserUpdateWithoutAuthorSettingsInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -16438,6 +16743,68 @@ input SaveJobUpdateManyMutationInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
 }
 
+input UserUpdateOneWithoutJobsNestedInput {
+  create: UserCreateWithoutJobsInput
+  connectOrCreate: UserCreateOrConnectWithoutJobsInput
+  upsert: UserUpsertWithoutJobsInput
+  disconnect: UserWhereInput
+  delete: UserWhereInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateToOneWithWhereWithoutJobsInput
+}
+
+input UserUpsertWithoutJobsInput {
+  update: UserUpdateWithoutJobsInput!
+  create: UserCreateWithoutJobsInput!
+  where: UserWhereInput
+}
+
+input UserUpdateWithoutJobsInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+input UserUpdateToOneWithWhereWithoutJobsInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutJobsInput!
+}
+
 input JobUpdateWithWhereUniqueWithoutSkillsInput {
   where: JobWhereUniqueInput!
   data: JobUpdateWithoutSkillsInput!
@@ -16446,47 +16813,6 @@ input JobUpdateWithWhereUniqueWithoutSkillsInput {
 input JobUpdateManyWithWhereWithoutSkillsInput {
   where: JobScalarWhereInput!
   data: JobUpdateManyMutationInput!
-}
-
-input JobScalarWhereInput {
-  AND: [JobScalarWhereInput!]
-  OR: [JobScalarWhereInput!]
-  NOT: [JobScalarWhereInput!]
-  id: StringFilter
-  type: EnumJobTypeFilter
-  level: EnumJobLevelFilter
-  slug: StringFilter
-  addressDetail: StringNullableFilter
-  jobTitleId: StringFilter
-  jobCategoryId: StringFilter
-  companyId: StringFilter
-  cityId: IntFilter
-  salary: EnumJobSalaryFilter
-  salaryMetadata: JsonNullableFilter
-  description: StringFilter
-  isBoot: BoolNullableFilter
-  numberOfRecruits: IntFilter
-  applicationDeadline: DateTimeFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-}
-
-input JobUpdateManyMutationInput {
-  id: StringFieldUpdateOperationsInput
-  type: EnumJobTypeFieldUpdateOperationsInput
-  level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
-  addressDetail: NullableStringFieldUpdateOperationsInput
-  salary: EnumJobSalaryFieldUpdateOperationsInput
-  salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
-  isBoot: NullableBoolFieldUpdateOperationsInput
-  numberOfRecruits: IntFieldUpdateOperationsInput
-  applicationDeadline: DateTimeFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
 }
 
 input SkillUpdateWithWhereUniqueWithoutResumeInput {
@@ -17678,6 +18004,7 @@ input UserUpdateWithoutCompaniesInput {
   saveJobs: SaveJobUpdateManyWithoutUserNestedInput
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -18900,6 +19227,7 @@ input UserUpdateInput {
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -19038,12 +19366,12 @@ input CreateCompanyInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
@@ -19065,12 +19393,12 @@ input CompanyUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
@@ -19080,54 +19408,58 @@ input CompanyUpdateInput {
   user: UserUpdateOneWithoutCompaniesNestedInput
 }
 
-input JobCreateInput {
+input CreateJobInput {
   id: String
-  type: JobType!
-  level: JobLevel!
-  slug: String!
+  type: JobType
+  level: JobLevel
   addressDetail: String
   salary: JobSalary
   salaryMetadata: JSON
-  description: String!
+  description: String
   isBoot: Boolean
   numberOfRecruits: Int
   applicationDeadline: DateTime
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  address: CityCreateNestedOneWithoutJobsInput!
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput!
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput!
-  company: CompanyCreateNestedOneWithoutJobsInput!
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
   applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
+  skillIds: [String!] = []
+  companyId: String
+  jobTitleName: String
 }
 
 input JobUpdateInput {
   id: StringFieldUpdateOperationsInput
   type: EnumJobTypeFieldUpdateOperationsInput
   level: EnumJobLevelFieldUpdateOperationsInput
-  slug: StringFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
   salaryMetadata: JSON
-  description: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
   numberOfRecruits: IntFieldUpdateOperationsInput
   applicationDeadline: DateTimeFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  address: CityUpdateOneRequiredWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneRequiredWithoutJobsNestedInput
-  company: CompanyUpdateOneRequiredWithoutJobsNestedInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
   applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
 }
 
 input SkillCreateInput {
@@ -19179,11 +19511,11 @@ input CompanyCreateWithoutTypeInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   size: CompanySizeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
@@ -19216,7 +19548,7 @@ input CompanyCreateManyTypeInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
-  idDefault: Boolean
+  isDefault: Boolean
 }
 
 input CompanyTypeUpdateInput {
@@ -19259,11 +19591,11 @@ input CompanyUpdateWithoutTypeInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   size: CompanySizeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput
@@ -19310,11 +19642,11 @@ input CompanyCreateWithoutSizeInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  idDefault: Boolean
+  isDefault: Boolean
   avatar: FileCreateNestedOneWithoutCompanyInput
   type: CompanyTypeCreateNestedOneWithoutCompaniesInput
   photos: FileCreateNestedManyWithoutCompaniesInput
-  address: CityCreateNestedOneWithoutCompaniesInput!
+  address: CityCreateNestedOneWithoutCompaniesInput
   industries: JobCategoryCreateNestedManyWithoutCompaniesInput
   social: SocialCreateNestedManyWithoutCompanyInput
   jobs: JobCreateNestedManyWithoutCompanyInput
@@ -19347,7 +19679,7 @@ input CompanyCreateManySizeInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
-  idDefault: Boolean
+  isDefault: Boolean
 }
 
 input CompanySizeUpdateInput {
@@ -19390,11 +19722,11 @@ input CompanyUpdateWithoutSizeInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  idDefault: NullableBoolFieldUpdateOperationsInput
+  isDefault: NullableBoolFieldUpdateOperationsInput
   avatar: FileUpdateOneWithoutCompanyNestedInput
   type: CompanyTypeUpdateOneWithoutCompaniesNestedInput
   photos: FileUpdateManyWithoutCompaniesNestedInput
-  address: CityUpdateOneRequiredWithoutCompaniesNestedInput
+  address: CityUpdateOneWithoutCompaniesNestedInput
   industries: JobCategoryUpdateManyWithoutCompaniesNestedInput
   social: SocialUpdateManyWithoutCompanyNestedInput
   jobs: JobUpdateManyWithoutCompanyNestedInput

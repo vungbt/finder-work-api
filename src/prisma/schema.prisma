@@ -59,6 +59,7 @@ model User {
   payments          Payment[]
   address           UsersOnCity[]
   companies         Company[]
+  jobs              Job[]
   authorSettings    Setting[]        @relation("AuthorSettings")
   updatedBySettings Setting[]        @relation("UpdatedBySettings")
 }
@@ -106,7 +107,7 @@ model Company {
   size            CompanySize?     @relation(fields: [companySizeId], references: [id])
   companySizeId   String?
   photos          File[]           @relation("CompanyPhotos")
-  address         City             @relation(fields: [cityId], references: [id])
+  address         City?             @relation(fields: [cityId], references: [id])
   addressDetail   String
   cityId          Int
   industries      JobCategory[]
@@ -163,21 +164,21 @@ model Social {
 
 model Job {
   id                  String        @id @default(uuid())
-  type                JobType
-  level               JobLevel
-  slug                String
-  address             City          @relation(fields: [cityId], references: [id])
+  type                JobType      @default(full_time)
+  level               JobLevel      @default(entry)
+  slug                String?
+  address             City?          @relation(fields: [cityId], references: [id])
   addressDetail       String?
-  jobTitle            JobTitle      @relation(fields: [jobTitleId], references: [id])
-  jobTitleId          String
-  jobCategory         JobCategory   @relation(fields: [jobCategoryId], references: [id])
+  jobTitle            JobTitle?     @relation(fields: [jobTitleId], references: [id])
+  jobTitleId          String?
+  jobCategory         JobCategory?   @relation(fields: [jobCategoryId], references: [id])
   jobCategoryId       String
-  company             Company       @relation(fields: [companyId], references: [id])
-  companyId           String
+  company             Company?       @relation(fields: [companyId], references: [id])
+  companyId           String?
   cityId              Int
   salary              JobSalary     @default(discuss)
   salaryMetadata      Json?
-  description         String
+  description         String?
   tags                Tag[]
   skills              Skill[]
   isBoot              Boolean?      @default(false)
@@ -188,6 +189,8 @@ model Job {
   deletedAt           DateTime?
   applications        Application[]
   saveJobs            SaveJob[]
+  userId              String?
+  user                User?         @relation(fields: [userId], references: [id])
 }
 
 model Application {

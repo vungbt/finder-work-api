@@ -43,4 +43,9 @@ export class CompanyResolver {
   findOne(@Args() args: FindFirstCompanyArgs) {
     return this.companyService.findFirst(args);
   }
+
+  @Query(() => AllCompanyResult, { name: 'my_company' })
+  myCompany(@Args(new TakeLimit()) args: AllCompanyArgs) {
+    return this.companyService.myCompany(args);
+  }
 }

@@ -21,6 +21,11 @@ export class AllCompanyArgs extends FindManyCompanyArgs {
   pagination?: PaginationInput;
 }
 
+@ArgsType()
+export class MyCompanyArgs extends AllCompanyArgs {
+  @Field(() => String, { nullable: true })
+  userId?: string;
+}
 @InputType()
 export class CreateCompanyInput extends OmitType(CompanyCreateInput, ['slug']) {
   @Field(() => String, { nullable: true })

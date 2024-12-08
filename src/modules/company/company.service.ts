@@ -7,7 +7,7 @@ import { genSlug, responseHelper } from '@/utils/helpers';
 import { HttpException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { FileService } from '../file/file.service';
-import { AllCompanyArgs, CreateCompanyArgs } from './company.type';
+import { AllCompanyArgs, CreateCompanyArgs, MyCompanyArgs } from './company.type';
 
 @Injectable()
 export class CompanyService implements BaseService {
@@ -19,6 +19,12 @@ export class CompanyService implements BaseService {
     const data = args.data;
     let avatar;
     let files;
+    if (!data.name) {
+      throw new HttpException('Company name is required', 400);
+    }
+    if (!data.address) {
+      throw new HttpException('Company address is required', 400);
+    }
     try {
       avatar = await this.fileService.createFromStorageId(data.avatarPath, {
         folder: STORE_FOLDER
@@ -51,7 +57,17 @@ export class CompanyService implements BaseService {
     return this.prismaService.company.findUnique(args);
   }
   findFirst(args: Prisma.CompanyFindFirstArgs) {
-    return this.prismaService.company.findFirst(args);
+    return this.prismaService.company.findFirst({
+      ...args,
+      include: {
+        avatar: true,
+        photos: true,
+        address: true,
+        industries: true,
+        type: true,
+        size: true
+      }
+    });
   }
 
   async findMany(args: AllCompanyArgs) {
@@ -85,5 +101,34 @@ export class CompanyService implements BaseService {
   }
   delete(args: Prisma.CompanyDeleteArgs) {
     return this.prismaService.company.delete(args);
+  }
+
+  async myCompany(args: MyCompanyArgs) {
+    const { searchValue, pagination, userId, where, ...reset } = args;
+    let whereClause: CompanyWhereInput = {};
+
+    if (searchValue && searchValue.length > 0) {
+      whereClause.OR = [{ name: { contains: searchValue } }];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
+      };
+    }
+
+    const data = this.prismaService.company.findMany({
+      orderBy: { createdAt: 'desc' },
+      where: { userId: userId, ...whereClause },
+      include: {
+        avatar: true,
+        address: true,
+        type: true,
+        size: true
+      },
+      ...reset
+    });
+    const total = await this.count({ where: whereClause });
+    return responseHelper(data, { total, ...pagination });
   }
 }
