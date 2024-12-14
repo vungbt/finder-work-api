@@ -1,4 +1,4 @@
-export const SITE_NAME = 'Jobcadu';
+export const SITE_NAME = 'Finder';
 export const MAX_LIMIT = 100;
 export const DEFAULT_COLOR = '#586EE0';
 export const COUNTRY_CODE_DEFAULT = 'VI';
@@ -15,7 +15,7 @@ export const CACHE_KEYS = {
 
 // TODO: Improve dynamic
 export const SOCIAL_SITE = {
-  facebook: 'https://jobcadu.com',
-  instagram: 'https://jobcadu.com',
-  tiktok: 'https://jobcadu.com'
+  facebook: 'https://finder.vung.dev',
+  instagram: 'https://finder.vung.dev',
+  tiktok: 'https://finder.vung.dev'
 };

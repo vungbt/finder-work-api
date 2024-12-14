@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { PrismaClient, TagType, UserRole } from '@prisma/client';
+import { PrismaClient, ProficiencyLevel, TagType, UserRole } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import * as slug from 'slug';
 
@@ -21,11 +21,15 @@ import * as tagCategories from './post/tags.json';
 
 // job
 import * as jobCategories from './job/categories.json';
+import * as jobTitles from './job/titles.json';
 
 // company
 import * as companySizes from './company/size.json';
 import * as companyTypes from './company/type.json';
 import * as companies from './company/company.json';
+
+// language
+import * as languages from './language/index.json';
 
 const prisma = new PrismaClient();
 
@@ -138,9 +142,46 @@ async function main() {
     importingCities(cities4),
     importingCities(cities5),
     importingCities(cities6),
-    importingCities(cities7),
-    importingSkill(skill)
+    importingCities(cities7)
   ]);
+
+  console.log('---> importing skill <---');
+  importingSkill(skill);
+
+  console.log('---> importing languages <---');
+  const languagesResult = await Promise.all(
+    languages.map((item) =>
+      prisma.language.create({
+        data: {
+          name: item.name,
+          locale: item.code
+        }
+      })
+    )
+  );
+
+  console.log('---> importing languages skill <---');
+  const proficiencyLevel = [
+    ProficiencyLevel.beginner,
+    ProficiencyLevel.intermediate,
+    ProficiencyLevel.fluent,
+    ProficiencyLevel.professional,
+    ProficiencyLevel.native
+  ];
+  for (const iterator of languagesResult) {
+    await Promise.all(
+      proficiencyLevel.map((level) =>
+        prisma.languageSkill.create({
+          data: {
+            name: iterator.name,
+            locale: iterator.locale,
+            proficiencyLevel: level,
+            languageId: iterator.id
+          }
+        })
+      )
+    );
+  }
 
   console.log('---> importing post categories <---');
   for (const iterator of postCategories) {
@@ -217,18 +258,19 @@ async function main() {
       }
     });
   }
-  // await prisma.company.createMany({
-  //   data: [
-  //     { }
-  //   ]
-  // })
-  // await prisma.company.create({
-  //   data: {
-  //     key: iterator,
-  //     value: slug(iterator),
-  //     isDefault: true
-  //   }
-  // });
+
+  console.log('---> importing job title <---');
+  for (const iterator of jobTitles) {
+    const formattedText = iterator
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    await prisma.jobTitle.create({
+      data: {
+        name: formattedText
+      }
+    });
+  }
 
   return {
     file: 0,

@@ -65,35 +65,36 @@ model User {
 }
 
 model File {
-  id              String           @id @default(uuid())
-  url             String
-  storageId       String           @unique()
-  provider        FileProvider?    @default(cloudinary)
-  metadata        Json?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  deletedAt       DateTime?
-  users           User[]
-  companies       Company[]        @relation("CompanyPhotos")
-  resume          Resume[]
-  projects        Project[]
-  posts           Post[]
-  company         Company[]
-  resumeTemplates ResumeTemplate[]
+  id        String        @id @default(uuid())
+  url       String
+  storageId String        @unique()
+  provider  FileProvider? @default(cloudinary)
+  metadata  Json?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  deletedAt DateTime?
+  users     User[]
+  companies Company[]     @relation("CompanyPhotos")
+  projects  Project[]
+  posts     Post[]
+  company   Company[]
 
-  Certificate Certificate[]
+  certificate     Certificate[]
+  resumeAvatar    Resume[]      @relation("ResumeAvatar")
+  resumeThumbnail Resume[]      @relation("ResumeThumbnail")
+  resumePdf       Resume[]      @relation("ResumePdf")
 }
 
 model Skill {
-  id        String    @id @default(uuid())
-  content   String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  resume    Resume?   @relation(fields: [resumeId], references: [id])
-  resumeId  String?
-  projects  Project[]
-  jobs      Job[]
+  id         String      @id @default(uuid())
+  content    String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
+  resumes    Resume[]
+  projects   Project[]
+  jobs       Job[]
+  educations Education[]
 }
 
 model Company {
@@ -212,19 +213,20 @@ model Resume {
   id            String   @id @default(uuid())
   name          String
   user          User     @relation(fields: [userId], references: [id])
-  avatar        File?    @relation(fields: [fileId], references: [id])
+  avatar        File?    @relation("ResumeAvatar", fields: [avatarId], references: [id])
+  thumbnail     File?    @relation("ResumeThumbnail", fields: [thumbnailId], references: [id])
+  pdf           File?    @relation("ResumePdf", fields: [pdfId], references: [id])
   fullName      String?
   email         String?
+  phoneNumber String?
   address       City?    @relation(fields: [cityId], references: [id])
   addressDetail String?
   description   String
   isSummary     Boolean? @default(false)
 
-  language        Language?        @relation(fields: [languageId], references: [id])
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
-  languageId      String
   jobTitle        JobTitle         @relation(fields: [jobTitleId], references: [id])
   jobTitleId      String
   applications    Application[]
@@ -232,10 +234,13 @@ model Resume {
   educations      Education[]
   skills          Skill[]
   userId          String
-  fileId          String?
+  avatarId        String?
+  pdfId           String?
+  thumbnailId     String?
   cityId          Int?
   projects        Project[]
   socials         Social[]
+  certificates    Certificate[]
   languageSkills  LanguageSkill[]
   activities      Activity[]
 }
@@ -253,79 +258,74 @@ model Reference {
   companyId   String
 }
 
-model ResumeTemplate {
-  id        String      @id @default(uuid())
-  raw       String
-  file      File?       @relation(fields: [fileId], references: [id])
-  status    UserStatus? @default(active)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  deletedAt DateTime?
-  fileId    String?
-}
-
 model Certificate {
   id        String    @id @default(uuid())
   name      String
-  files     File[]
+  file      File?     @relation(fields: [fileId], references: [id])
+  fileId    String?
+  resume    Resume?   @relation(fields: [resumeId], references: [id])
+  resumeId  String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
 
 model Project {
-  id          String    @id @default(uuid())
-  title       String
-  description String
-  teamSize    Int
-  role        String[]
-  techStacks  Skill[]
-  startAt     DateTime
-  endAt       DateTime?
-  company     Company   @relation(fields: [companyId], references: [id])
-  refeUrls    String[]  @default([])
-  thumbnail   File?     @relation(fields: [thumbnailId], references: [id])
-  thumbnailId String?
-  companyId   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
-  user        User      @relation(fields: [userId], references: [id])
-  userId      String
-  Resume      Resume?   @relation(fields: [resumeId], references: [id])
-  resumeId    String?
-}
-
-model WorkExperience {
   id           String    @id @default(uuid())
-  jobTitle     JobTitle  @relation(fields: [jobTitleId], references: [id])
-  user         User      @relation(fields: [userId], references: [id])
-  company      Company?  @relation(fields: [companyId], references: [id])
+  title        String
+  description  String
+  teamSize     Int
+  role         WorkPosition
+  techStacks   Skill[]
+  startAt      DateTime
+  endAt        DateTime?
   isFreelancer Boolean?  @default(false)
+  company      Company   @relation(fields: [companyId], references: [id])
+  refeUrls     String[]  @default([])
+  thumbnail    File?     @relation(fields: [thumbnailId], references: [id])
+  thumbnailId  String?
+  companyId    String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
-  jobTitleId   String
+  user         User      @relation(fields: [userId], references: [id])
   userId       String
-  resume       Resume?   @relation(fields: [resumeId], references: [id])
+  Resume       Resume?   @relation(fields: [resumeId], references: [id])
   resumeId     String?
-  companyId    String?
-  address      City?     @relation(fields: [cityId], references: [id])
-  cityId       Int?
-  startAt      DateTime
-  endAt        DateTime?
-  description  String
+}
+
+model WorkExperience {
+  id                  String    @id @default(uuid())
+  jobTitle            JobTitle  @relation(fields: [jobTitleId], references: [id])
+  user                User      @relation(fields: [userId], references: [id])
+  company             Company?  @relation(fields: [companyId], references: [id])
+  isFreelancer        Boolean?  @default(false)
+  isCurrentlyWorkHere Boolean?  @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+  jobTitleId          String
+  userId              String
+  resume              Resume?   @relation(fields: [resumeId], references: [id])
+  resumeId            String?
+  companyId           String?
+  address             City?     @relation(fields: [cityId], references: [id])
+  cityId              Int?
+  startAt             DateTime
+  endAt               DateTime?
+  description         String
 }
 
 model Education {
   id                  String        @id @default(uuid())
   type                EducationType @default(university)
-  major               String
+  major               Skill?        @relation(fields: [skillId], references: [id])
+  skillId             String?
   degree              Degree        @default(other)
   graduationAt        DateTime?
   gpa                 Int?
   awards              String[]
-  relevantCourseworks String[]
+  relevantCourseWorks String[]
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   deletedAt           DateTime?
@@ -342,7 +342,6 @@ model Language {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   deletedAt     DateTime?
-  resumes       Resume[]
   languageSkill LanguageSkill[]
 }
 
@@ -356,8 +355,7 @@ model LanguageSkill {
   deletedAt        DateTime?
   language         Language         @relation(fields: [languageId], references: [id])
   languageId       String
-  resume           Resume?          @relation(fields: [resumeId], references: [id])
-  resumeId         String?
+  resume           Resume[]
 }
 
 model Activity {
@@ -365,7 +363,7 @@ model Activity {
   name        String
   startAt     DateTime
   endAt       DateTime?
-  descriotion String
+  description String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -553,17 +551,17 @@ model Post {
 }
 
 model ReportPost {
-  id      String  @id @default(uuid())
-  reason  String
-  message String?
-  userId  String?
-  user    User?   @relation(fields: [userId], references: [id])
-  postId  String
-  post    Post    @relation(fields: [postId], references: [id])
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id        String           @id @default(uuid())
+  reason    String
+  message   String?
+  userId    String?
+  user      User?            @relation(fields: [userId], references: [id])
+  postId    String
+  post      Post             @relation(fields: [postId], references: [id])
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
   deletedAt DateTime?
-  status ReportPostStatus  @default(unsolved)
+  status    ReportPostStatus @default(unsolved)
 }
 
 model LikePost {

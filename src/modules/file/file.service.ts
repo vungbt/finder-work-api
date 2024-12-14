@@ -6,6 +6,7 @@ import { Prisma } from '@prisma/client';
 import { CreateFileOptions } from './file.type';
 import { FileType } from '@/types';
 import { pick } from 'lodash';
+import { STORE_FOLDER } from '@/configs/constant';
 
 @Injectable()
 export class FileService implements BaseService {
@@ -76,7 +77,15 @@ export class FileService implements BaseService {
         },
         HttpStatus.NOT_FOUND
       );
-    } catch (error) {}
+    } catch (error) {
+      if (error.http_code === HttpStatus.NOT_FOUND) {
+        const mapping = id.split('/');
+        const mainId = mapping.slice(1, mapping.length).join('/');
+        const newId = `${STORE_FOLDER}/${mainId}`;
+        return this.findFirst({ where: { storageId: newId } });
+      }
+      throw error;
+    }
   }
 
   async createFromStorageIds(ids: string[], options?: CreateFileOptions) {
@@ -91,5 +100,11 @@ export class FileService implements BaseService {
   async createFromUrl(url: string, options?: CreateFileOptions) {
     const storageFile = await this.storageService.download(url);
     return this.createFromStorageId(storageFile.public_id, options);
+  }
+
+  async uploadFile(path: string, folder?: string) {
+    const file = await this.storageService.uploadFile(path);
+    console.log('file====>', file);
+    return this.createFromStorageId(file.public_id, { folder });
   }
 }

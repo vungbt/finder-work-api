@@ -15,5 +15,6 @@
   "email_registered_with": "Email has registered with {provider}",
   "setting_unique_constraint": "Setting must be unique constraint on the fields (`key`, `type`)",
   "skill_error": "This skill is already exist",
-  "job_title_error": "This job title is already exist"
+  "job_title_error": "This job title is already exist",
+  "resume_error": "This resume is already exist"
 }
