@@ -4,13 +4,14 @@ import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import * as path from 'path';
 import { createFolderIfNotExists, formatDate } from '@/utils/helpers';
+import { EResumeTemplate } from './pdf.type';
 
 @Injectable()
 export class PdfService {
   public readonly accessPath = 'public/resumes';
   public readonly resumeTemplatePath = '../../../templates/resumes/';
 
-  async generatePdf(templateName: string, data: any) {
+  async generatePdf(templateName: EResumeTemplate, data: any) {
     // Define the path to your Handlebars templates
     const templatePath = path.join(__dirname, this.resumeTemplatePath, `${templateName}.hbs`);
     const templateSource = fs.readFileSync(templatePath, 'utf-8');
@@ -46,9 +47,27 @@ export class PdfService {
 
     // screenshot
     const screenshotPath = `${commonPath}.jpeg`;
-    await page.setViewport({ width: 795, height: 1100 });
+    await page.setViewport({ width: 1122, height: 1587 });
     await page.screenshot({ path: screenshotPath, type: 'jpeg', optimizeForSpeed: true });
 
     await browser.close();
+
+    const pdfBuffer = fs.readFileSync(pdfPath);
+    const imgBuffer = fs.readFileSync(screenshotPath);
+
+    const pdfBase64 = pdfBuffer.toString('base64');
+    const imgBase64 = imgBuffer.toString('base64');
+    if (fs.existsSync(pdfPath)) {
+      fs.unlinkSync(pdfPath);
+    }
+    if (fs.existsSync(screenshotPath)) {
+      fs.unlinkSync(screenshotPath);
+    }
+    return {
+      pdfOutput: pdfPath,
+      imgOutput: screenshotPath,
+      pdfBase64,
+      imgBase64
+    };
   }
 }

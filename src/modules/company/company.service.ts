@@ -4,8 +4,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentUser } from '@/types';
 import { BaseService } from '@/utils/base/base.service';
 import { genSlug, responseHelper } from '@/utils/helpers';
+import { Company, Prisma, PrismaClient } from '@prisma/client';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 import { HttpException, Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { FileService } from '../file/file.service';
 import { AllCompanyArgs, CreateCompanyArgs, MyCompanyArgs } from './company.type';
 
@@ -130,5 +131,67 @@ export class CompanyService implements BaseService {
     });
     const total = await this.count({ where: whereClause });
     return responseHelper(data, { total, ...pagination });
+  }
+
+  async createIfInvalid(
+    params: {
+      name: string;
+      id?: string;
+      companyTypeId?: string;
+      companySizeId?: string;
+      cityId?: number;
+    },
+    prisma: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >
+  ): Promise<Company> {
+    let newCompany: Company = null;
+    const { name: companyName, id: companyId } = params;
+    if (!companyId) {
+      const companySlug = genSlug(companyName);
+      // company type
+      let companyTypeId = '';
+      if (params.companyTypeId) {
+        companyTypeId = params.companyTypeId;
+      } else {
+        companyTypeId = (await prisma.companyType.findFirst()).id;
+      }
+
+      // company size
+      let companySizeId = '';
+      if (params.companySizeId) {
+        companySizeId = params.companySizeId;
+      } else {
+        companySizeId = (await prisma.companySize.findFirst()).id;
+      }
+
+      // city
+      let cityId = 1;
+      if (params.cityId) {
+        cityId = params.cityId;
+      } else {
+        cityId = (await prisma.city.findFirst()).id;
+      }
+
+      newCompany = await prisma.company.create({
+        data: {
+          name: companyName,
+          slug: companySlug,
+          type: { connect: { id: companyTypeId } },
+          size: {
+            connect: { id: companySizeId }
+          },
+          address: {
+            connect: { id: cityId }
+          },
+          addressDetail: 'Address detail'
+        }
+      });
+    } else {
+      newCompany = await prisma.company.findUnique({ where: { id: companyId } });
+    }
+
+    return newCompany;
   }
 }

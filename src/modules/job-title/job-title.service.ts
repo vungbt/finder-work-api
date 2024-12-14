@@ -1,4 +1,4 @@
-import { FindManyJobTitleArgs } from '@/prisma/graphql';
+import { JobTitleWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BaseService } from '@/utils/base/base.service';
 import { responseHelper } from '@/utils/helpers';
@@ -20,20 +20,25 @@ export class JobTitleService implements BaseService {
     return this.prismaService.jobTitle.findFirst(args);
   }
   async findMany(args: AllJobTitleArgs) {
-    const { searchValue, pagination, ...reset } = args;
+    const { searchValue, pagination, where, ...reset } = args;
 
-    const queries: FindManyJobTitleArgs = {};
+    let whereClause: JobTitleWhereInput = {};
+
     if (searchValue && searchValue.length > 0) {
-      queries.where = {
-        OR: [{ name: { contains: searchValue } }]
+      whereClause.OR = [{ name: { contains: searchValue, mode: 'insensitive' } }];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
       };
     }
     const data = this.prismaService.jobTitle.findMany({
-      orderBy: { createdAt: 'desc' },
-      ...queries,
+      orderBy: { createdAt: 'asc' },
+      where: whereClause,
       ...reset
     });
-    const total = await this.count(queries);
+    const total = await this.count({ where: whereClause });
     return responseHelper(data, { total, ...pagination });
   }
   count(args: Prisma.JobTitleCountArgs) {

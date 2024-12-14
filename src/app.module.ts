@@ -45,6 +45,8 @@ import { VotePostModule } from './modules/vote-post/vote-post.module';
 import { HttpExceptionFilter } from './utils/exception/http-exception.filter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { OpenAiModule } from './modules/open-ai/open-ai.module';
+import { ResumeModule } from './modules/resume/resume.module';
+import { LanguageSkillModule } from './modules/language-skill/language-skill.module';
 
 export const pubSub = new PubSub();
 @Module({
@@ -169,7 +171,9 @@ export const pubSub = new PubSub();
     VotePostModule,
     CommentModule,
     ReportPostModule,
-    OpenAiModule
+    OpenAiModule,
+    ResumeModule,
+    LanguageSkillModule
   ],
   controllers: [],
   providers: [

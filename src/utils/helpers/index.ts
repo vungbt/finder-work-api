@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { readFileSync } from 'fs';
 import * as slug from 'slug';
 import { formatDate } from './formatter';
+import { validate as isValidUUID } from 'uuid';
 export * from './formatter';
 export * from './regex';
 
@@ -142,3 +143,5 @@ export const createFolderIfNotExists = (dir: string) => {
     fs.mkdirSync(dir, { recursive: true });
   }
 };
+
+export const isValidUuid = (id: string) => isValidUUID(id);

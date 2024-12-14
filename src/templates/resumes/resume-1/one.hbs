@@ -1,83 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
 
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
-      :root {
-        --text-body: #000000;
-
-        --label-color: #3c406e;
-        --subtitle: #545454;
-        --background-secondary: #e2e5ec;
-        --background-line: #d8d7d5;
-
-        --green: #74cf93;
-        --white: #ffffff;
-
-        --color-primary: #932839;
-        --color-secondary: #922a3b;
-        --color-tertiary: #942637;
-      }
-
-      * {
-        box-sizing: inherit;
-        font-size: 1.2rem;
-        line-height: 1.6rem;
-        font-weight: 400;
-      }
-
-      html {
-        box-sizing: border-box;
-        font-size: 62.5%;
-      }
-
-      body {
-        /* font-family: 'EB Garamond', serif; */
-        font-family: 'Montserrat', sans-serif;
-        font-optical-sizing: auto;
-        -webkit-text-size-adjust: 100%;
-        margin: 0;
-        padding: 0;
-
-        color: var(--text-body);
-        background-color: var(--white);
-        width: 795px;
-        scrollbar-width: none;
-        margin-bottom: 100%;
-      }
-
-      body::-webkit-scrollbar {
-        display: none;
-      }
-
-      p {
-        margin: 0;
-      }
-
-      a {
-        font-style: italic;
-        color: var(--text-body);
-      }
+      @import
+      url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+      :root { --text-body: #000000; --label-color: #3c406e; --subtitle: #545454;
+      --background-secondary: #e2e5ec; --background-line: #d8d7d5; --green: #74cf93; --white:
+      #ffffff; --color-primary: #932839; --color-secondary: #922a3b; --color-tertiary: #942637; } *
+      { box-sizing: inherit; font-size: 1.2rem; line-height: 1.6rem; font-weight: 400; } html {
+      box-sizing: border-box; font-size: 62.5%; } body { /* font-family: 'EB Garamond', serif; */
+      font-family: 'Montserrat', sans-serif; font-optical-sizing: auto; -webkit-text-size-adjust:
+      100%; margin: 0; padding: 0; color: var(--text-body); background-color: var(--white); width:
+      795px; scrollbar-width: none; margin-bottom: 100%; } body::-webkit-scrollbar { display: none;
+      } p { margin: 0; } a { font-style: italic; color: var(--text-body); }
     </style>
     <title>Document</title>
   </head>
 
   <body>
-    <div style="padding: 50px 40px; position: relative">
+    <div style='padding: 50px 40px; position: relative'>
       <!-- block header -->
-      <div style="position: absolute; top: 0; left: 40px; width: 277px; height: 50px; background: var(--color-tertiary)"></div>
+      <div
+        style='position: absolute; top: 0; left: 40px; width: 277px; height: 50px; background: var(--color-tertiary)'
+      >
+    
+    </div>
 
       <!-- MAIN CONTENT -->
-      <div style="display: flex; align-items: start; justify-content: space-between; gap: 20px">
+      <div style='display: flex; align-items: start; justify-content: space-between; gap: 20px'>
         <!-- LEFT CONTENT -->
-        <div style="flex: 2">
+        <div style='flex: 2'>
           <!-- name -->
           <h1
-            style="
+            style='
               font-size: 36px;
               width: 100%;
               color: var(--color-tertiary);
@@ -86,69 +43,90 @@
               text-transform: uppercase;
               line-height: 36px;
               margin-bottom: 0;
-            "
+            '
           >
-            Aleksandr Smolov
+            {{name}}
           </h1>
-
+          <h1
+            style='
+              font-size: 36px;
+              width: 100%;
+              color: var(--color-secondary);
+              margin-top: 50px;
+              font-weight: 700;
+              text-transform: uppercase;
+              line-height: 36px;
+              margin-bottom: 0;
+            '
+          >
+            {{jobTitle}}
+          </h1>
           <!-- contact info -->
-          <div style="display: flex; flex-wrap: wrap; column-gap: 20px; row-gap: 30px; margin-top: 50px">
+          <div
+            style='display: flex; flex-wrap: wrap; column-gap: 20px; row-gap: 30px; margin-top: 50px'
+          >
             <!-- info item ( phone number ) -->
-            <div style="display: flex; align-items: center; gap: 10px; min-width: calc(50% - 10px)">
+            <div style='display: flex; align-items: center; gap: 10px; min-width: calc(50% - 10px)'>
               <img
-                crossorigin="anonymous"
-                src="https://media-public.canva.com/KrKpY/MAE4-NKrKpY/1/t.png"
-                draggable="false"
-                alt="phone icon"
-                style="object-fit: fill; width: 14.9px; height: 14.9px"
+                crossorigin='anonymous'
+                src='https://media-public.canva.com/KrKpY/MAE4-NKrKpY/1/t.png'
+                draggable='false'
+                alt='phone icon'
+                style='object-fit: fill; width: 14.9px; height: 14.9px'
               />
-              <p>+123-456-7890</p>
+              <p>{{phoneNumber}}</p>
             </div>
 
             <!-- info item ( address ) -->
-            <div style="display: flex; align-items: center; gap: 10px; min-width: calc(50% - 10px)">
+            <div style='display: flex; align-items: center; gap: 10px; min-width: calc(50% - 10px)'>
               <img
-                crossorigin="anonymous"
-                src="https://media-public.canva.com/f2nc4/MAFTTXf2nc4/1/t.png"
-                draggable="false"
-                alt="phone icon"
-                style="object-fit: fill; width: 14.9px; height: 14.9px"
+                crossorigin='anonymous'
+                src='https://media-public.canva.com/f2nc4/MAFTTXf2nc4/1/t.png'
+                draggable='false'
+                alt='phone icon'
+                style='object-fit: fill; width: 14.9px; height: 14.9px'
               />
-              <p>123 Anywhere St., Any City</p>
+              <p>{{address}}</p>
             </div>
 
             <!-- info item ( email ) -->
-            <div style="display: flex; align-items: center; gap: 10px; min-width: calc(50% - 10px)">
+            <div style='display: flex; align-items: center; gap: 10px; min-width: calc(50% - 10px)'>
               <img
-                crossorigin="anonymous"
-                src="https://media-public.canva.com/L_MR0/MAE4-PL_MR0/1/t.png"
-                draggable="false"
-                alt="phone icon"
-                style="object-fit: fill; width: 14.9px; height: 14.9px"
+                crossorigin='anonymous'
+                src='https://media-public.canva.com/L_MR0/MAE4-PL_MR0/1/t.png'
+                draggable='false'
+                alt='phone icon'
+                style='object-fit: fill; width: 14.9px; height: 14.9px'
               />
               <p>{{email}}</p>
             </div>
 
             <!-- info item ( social ) -->
-            <div style="display: flex; align-items: center; gap: 10px; min-width: calc(50% - 10px)">
+            <div style='display: flex; align-items: center; gap: 10px; min-width: calc(50% - 10px)'>
               <img
-                crossorigin="anonymous"
-                src="https://media-public.canva.com/0WmAs/MAFTYz0WmAs/1/t.png"
-                draggable="false"
-                alt="phone icon"
-                style="object-fit: fill; width: 14.9px; height: 14.9px"
+                crossorigin='anonymous'
+                src='https://media-public.canva.com/0WmAs/MAFTYz0WmAs/1/t.png'
+                draggable='false'
+                alt='phone icon'
+                style='object-fit: fill; width: 14.9px; height: 14.9px'
               />
-              <a href="www.jobcadu.com" target="_blank" style="text-decoration: unset; font-style: normal">www.jobcadu.com</a>
+              <a
+                href='www.finder.vung.dev'
+                target='_blank'
+                style='text-decoration: unset; font-style: normal'
+              >www.finder.vung.dev</a>
             </div>
           </div>
 
           <!-- line -->
-          <div style="width: 100%; height: 1px; background: var(--background-line); margin: 35px 0 35px 0"></div>
+          <div
+            style='width: 100%; height: 1px; background: var(--background-line); margin: 35px 0 35px 0'
+          ></div>
 
           <!-- EXPERIENCES -->
           <div>
             <h2
-              style="
+              style='
                 font-size: 20px;
                 line-height: 22px;
                 width: 100%;
@@ -156,83 +134,46 @@
                 margin: 0;
                 font-weight: 700;
                 text-transform: uppercase;
-              "
+              '
             >
               Experience
             </h2>
 
             <!-- list experiences -->
-            <div style="display: flex; align-items: start; justify-content: start; flex-direction: column; margin-top: 30px; gap: 30px">
+            <div
+              style='display: flex; align-items: start; justify-content: start; flex-direction: column; margin-top: 30px; gap: 30px'
+            >
               <!-- item experiences -->
-              <div>
-                <p style="color: var(--label-color); text-transform: uppercase; width: 100%; word-wrap: break-word; font-weight: 700">
-                  Paralegal | July 2019 - Present
-                </p>
-                <span
-                  style="color: var(--subtitle); font-style: italic; margin-top: 4px; width: 100%; word-wrap: break-word; display: block"
-                  >Law Firm Keithston and Partners</span
-                >
+              {{#each workExperiences}}
+                <!-- item experiences -->
+                <div>
+                  <p
+                    style='color: var(--label-color); text-transform: uppercase word-wrap: break-word; font-weight: 700; width: 100%'
+                  >
+                    {{jobTitleId}}
+            
+                  </p>
+                  <span
+                    style='color: var(--subtitle); font-style: italic; margin-top: 4px; width: 100%; word-wrap: break-word; display: block'
+                  >{{companyName}}</span>
 
-                <!-- description -->
-                <ul style="margin-bottom: 0; margin-top: 10px; padding-left: 12px">
-                  <li style="margin-bottom: 4px">
-                    Conduct legal research and prepare comprehensive legal memos, briefs, and documents, contributing to successful case
-                    outcomes.
-                  </li>
-                  <li style="margin-bottom: 4px">
-                    Assist attorneys in trial preparation, including organizing evidence, drafting witness summaries, and preparing trial
-                    exhibits.
-                  </li>
-                  <li style="margin-bottom: 4px">
-                    Manage and maintain client files, ensuring accuracy and compliance with legal regulations and deadlines.
-                  </li>
-                  <li style="margin-bottom: 4px">
-                    Collaborate with clients to gather necessary documentation and information, providing exceptional client service and
-                    support.
-                  </li>
-                  <li style="margin-bottom: 4px">
-                    Conduct initial client interviews, screen potential clients, and assist with client intake processes.
-                  </li>
-                </ul>
-              </div>
-
-              <!-- item experiences -->
-              <div>
-                <p style="color: var(--label-color); text-transform: uppercase; width: 100%; word-wrap: break-word; font-weight: 700">
-                  Legal Assistant | January 2017 - June 2019
-                </p>
-                <span
-                  style="color: var(--subtitle); font-style: italic; margin-top: 4px; width: 100%; word-wrap: break-word; display: block"
-                  >Paucek and Lage</span
-                >
-
-                <!-- description -->
-                <ul style="margin-bottom: 0; margin-top: 10px; padding-left: 12px">
-                  <li style="margin-bottom: 4px">
-                    Drafted and edited legal documents, including contracts, requests, and motions, follow legal standards and guidelines.
-                  </li>
-                  <li style="margin-bottom: 4px">
-                    Scheduled and coordinated court meetings, depositions, and appearances, efficiently managing lawyer calendars.
-                  </li>
-                  <li style="margin-bottom: 4px">Conduct legal research using Paucek and Lage to support lawyers in case preparation.</li>
-                  <li style="margin-bottom: 4px">
-                    Assist with trial preparations by arranging trial binding materials, evidence, and witness lists.
-                  </li>
-                  <li style="margin-bottom: 4px">
-                    Maintain an organized and accurate paper and electronic filing system for legal documents.
-                  </li>
-                </ul>
-              </div>
+                  <!-- description -->
+                  <ul style='margin-bottom: 0; margin-top: 10px; padding-left: 12px'>
+                    <li style='margin-bottom: 4px max-width 350'>
+                      {{description}}
+                    </li>
+                  </ul>
+                </div>
+              {{/each}}
             </div>
           </div>
-
-          <!-- line -->
-          <div style="width: 100%; height: 1px; background: var(--background-line); margin: 40px 0 30px 0"></div>
-
-          <!-- SKILLS -->
-          <div>
-            <h2
-              style="
+            <!-- line -->
+            <div
+            style='width: 100%; height: 1px; background: var(--background-line); margin: 40px 0 30px 0'
+          ></div>
+             <!-- list prroject -->
+               <h2
+              style='
                 font-size: 20px;
                 line-height: 22px;
                 width: 100%;
@@ -240,14 +181,58 @@
                 margin: 0;
                 font-weight: 700;
                 text-transform: uppercase;
-              "
+              '
+            >
+              Projects
+            </h2>
+
+   <div
+              style='display: flex; align-items: start; justify-content: start; flex-direction: column; margin-top: 30px; gap: 30px'
+            >
+              <!-- item experiences -->
+              {{#each projects}}
+                <!-- item experiences -->
+                <div>
+                  <p
+                    style='color: var(--label-color); text-transform: uppercase; width: 50%; word-wrap: break-word; font-weight: 700'
+                  >
+                    {{title}}
+                    -
+                    {{role}}
+                  </p>
+                  <!-- description -->
+                  <ul style='margin-bottom: 0; margin-top: 10px; padding-left: 12px'>
+                    <li style='margin-bottom: 4px max-width 350'>
+                      {{description}}
+                    </li>
+                  </ul>
+                </div>
+              {{/each}}
+            </div>
+          <!-- line -->
+          <div
+            style='width: 100%; height: 1px; background: var(--background-line); margin: 40px 0 30px 0'
+          ></div>
+
+          <!-- SKILLS -->
+          <div>
+            <h2
+              style='
+                font-size: 20px;
+                line-height: 22px;
+                width: 100%;
+                color: var(--color-secondary);
+                margin: 0;
+                font-weight: 700;
+                text-transform: uppercase;
+              '
             >
               Skills
             </h2>
 
             <!-- skill list -->
             <div
-              style="
+              style='
                 display: flex;
                 align-items: start;
                 justify-content: space-between;
@@ -255,153 +240,39 @@
                 row-gap: 30px;
                 flex-wrap: wrap;
                 margin-top: 30px;
-              "
+              '
             >
               <!-- skill items -->
-              <div style="display: flex; align-items: center; gap: 10px; width: calc(50% - 20px)">
-                <!-- checkbox fake -->
-                <div
-                  style="
-                    width: 17px;
-                    height: 12px;
-                    background: var(--green);
-                    border-radius: 50px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: end;
-                    padding: 1px;
-                  "
-                >
-                  <span style="width: 9px; height: 9px; border-radius: 100%; background: var(--white)"></span>
+              {{#each skillContents}}
+                <!-- item skill -->
+                <div>
+                  <p
+                    style='color: var(--label-color); text-transform: uppercase; width: 100%; word-wrap: break-word; font-weight: 700'
+                  >
+                    {{this}}
+                  </p>
                 </div>
-
-                <span style="white-space: pre-wrap">Legal Research and Writing</span>
-              </div>
-
-              <!-- skill items -->
-              <div style="display: flex; align-items: center; gap: 10px; width: calc(50% - 20px)">
-                <!-- checkbox fake -->
-                <div
-                  style="
-                    width: 17px;
-                    height: 12px;
-                    background: var(--green);
-                    border-radius: 50px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: end;
-                    padding: 1px;
-                  "
-                >
-                  <span style="width: 9px; height: 9px; border-radius: 100%; background: var(--white)"></span>
-                </div>
-
-                <span style="white-space: pre-wrap">Case Management</span>
-              </div>
-
-              <!-- skill items -->
-              <div style="display: flex; align-items: center; gap: 10px; width: calc(50% - 20px)">
-                <!-- checkbox fake -->
-                <div
-                  style="
-                    width: 17px;
-                    height: 12px;
-                    background: var(--green);
-                    border-radius: 50px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: end;
-                    padding: 1px;
-                  "
-                >
-                  <span style="width: 9px; height: 9px; border-radius: 100%; background: var(--white)"></span>
-                </div>
-
-                <span style="white-space: pre-wrap">Document Drafting and Review</span>
-              </div>
-
-              <!-- skill items -->
-              <div style="display: flex; align-items: center; gap: 10px; width: calc(50% - 20px)">
-                <!-- checkbox fake -->
-                <div
-                  style="
-                    width: 17px;
-                    height: 12px;
-                    background: var(--green);
-                    border-radius: 50px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: end;
-                    padding: 1px;
-                  "
-                >
-                  <span style="width: 9px; height: 9px; border-radius: 100%; background: var(--white)"></span>
-                </div>
-
-                <span style="white-space: pre-wrap">Legal Software Paucek and Lage</span>
-              </div>
-
-              <!-- skill items -->
-              <div style="display: flex; align-items: center; gap: 10px; width: calc(50% - 20px)">
-                <!-- checkbox fake -->
-                <div
-                  style="
-                    width: 17px;
-                    height: 12px;
-                    background: var(--green);
-                    border-radius: 50px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: end;
-                    padding: 1px;
-                  "
-                >
-                  <span style="width: 9px; height: 9px; border-radius: 100%; background: var(--white)"></span>
-                </div>
-
-                <span style="white-space: pre-wrap">Calendar Management</span>
-              </div>
-
-              <!-- skill items -->
-              <div style="display: flex; align-items: center; gap: 10px; width: calc(50% - 20px)">
-                <!-- checkbox fake -->
-                <div
-                  style="
-                    width: 17px;
-                    height: 12px;
-                    background: var(--green);
-                    border-radius: 50px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: end;
-                    padding: 1px;
-                  "
-                >
-                  <span style="width: 9px; height: 9px; border-radius: 100%; background: var(--white)"></span>
-                </div>
-
-                <span style="white-space: pre-wrap">File Organization</span>
-              </div>
+              {{/each}}
             </div>
           </div>
         </div>
 
         <!-- RIGHT CONTENT -->
-        <div style="flex: 1">
+        <div style='flex: 1'>
           <!-- avatar -->
-          <div style="width: 100%">
+          <div style='width: 100%'>
             <img
-              crossorigin="anonymous"
-              src="https://res.cloudinary.com/dgxciqlts/image/upload/v1709873666/assets/avatar-3_qeigdn.png"
-              draggable="false"
-              style="object-fit: fill; width: 100%; aspect-ratio: 1 / 1"
+              crossorigin='anonymous'
+              src='https://res.cloudinary.com/dgxciqlts/image/upload/v1709873666/assets/avatar-3_qeigdn.png'
+              draggable='false'
+              style='object-fit: fill; width: 100%; aspect-ratio: 1 / 1'
             />
           </div>
 
           <!-- PROFILE -->
-          <div style="width: 100%; margin-top: 30px">
+          <div style='width: 100%; margin-top: 30px'>
             <div
-              style="
+              style='
                 background: var(--color-tertiary);
                 color: var(--white);
                 text-transform: uppercase;
@@ -409,21 +280,28 @@
                 font-weight: bold;
                 line-height: 15px;
                 padding: 15px 20px;
-              "
+              '
             >
               profile summary
             </div>
-            <p style="padding: 15px; background: var(--background-secondary); margin-top: 8px">
-              Dedicated and detail-oriented Paralegal with a strong foundation in legal research, case management, and client support.
-              Seeking a challenging position where my legal expertise and exceptional organizational skills can contribute to the success of
-              a reputable law firm.
+          <div>
+            <p
+              style='
+                padding: 20px 15px;
+                background: var(--background-secondary);
+                margin-top: 8px;
+                color: var(--subtitle);
+                font-style: italic;
+              '
+            >
+              {{profileSummary}}
             </p>
           </div>
 
           <!-- EDUCATION -->
-          <div style="width: 100%; margin-top: 30px">
+          <div style='width: 100%; margin-top: 30px'>
             <div
-              style="
+              style='
                 background: var(--color-tertiary);
                 color: var(--white);
                 text-transform: uppercase;
@@ -431,59 +309,65 @@
                 font-weight: bold;
                 line-height: 15px;
                 padding: 15px 20px;
-              "
+              '
             >
               Education
             </div>
 
             <!-- education list -->
             <div
-              style="
+              style='
                 padding: 20px 15px;
                 background: var(--background-secondary);
                 margin-top: 8px;
                 display: flex;
                 flex-direction: column;
                 gap: 20px;
-              "
-              class="educations"
+              '
+              class='educations'
             >
-              <!-- education item -->
-              <div class="edutcation-item">
-                <p style="color: var(--label-color); text-transform: uppercase; font-weight: bold">Associate of Applied Science</p>
-                <p style="text-transform: capitalize; color: var(--subtitle); margin-top: 2px">Paralegal Studies</p>
-                <p style="text-transform: capitalize; color: var(--subtitle); font-style: italic">Graduated: May 2016</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">GPA: 3.5</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">Awards: Best Student of Year</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">Coursework: Research about AI</p>
-              </div>
 
               <!-- education item -->
-              <div class="edutcation-item">
-                <p style="color: var(--label-color); text-transform: uppercase; font-weight: bold">Associate of Applied Science</p>
-                <p style="text-transform: capitalize; color: var(--subtitle); margin-top: 2px">Paralegal Studies</p>
-                <p style="text-transform: capitalize; color: var(--subtitle); font-style: italic">Graduated: May 2016</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">GPA: 3.5</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">Awards: Best Student of Year</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">Coursework: Research about AI</p>
-              </div>
+              <div class='edutcation-item'>
+                {{#each educations}}
+                  <!-- item education -->
+                  <div>
+                    <p
+                      style='color: var(--label-color); text-transform: uppercase; width: 100%; word-wrap: break-word; font-weight: 700'
+                    >
+                      {{degree}}
+                      |
+                      {{graduationAt}}
+                    </p>
+                    <span
+                      style='color: var(--subtitle); font-style: italic; margin-top: 4px; width: 100%; word-wrap: break-word; display: block'
+                    >{{major}}</span>
 
-              <!-- education item -->
-              <div class="edutcation-item">
-                <p style="color: var(--label-color); text-transform: uppercase; font-weight: bold">Associate of Applied Science</p>
-                <p style="text-transform: capitalize; color: var(--subtitle); margin-top: 2px">Paralegal Studies</p>
-                <p style="text-transform: capitalize; color: var(--subtitle); font-style: italic">Graduated: May 2016</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">GPA: 3.5</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">Awards: Best Student of Year</p>
-                <p style="text-transform: capitalize; color: var(--subtitle)">Coursework: Research about AI</p>
+                    <!-- description -->
+                    <ul style='margin-bottom: 0; margin-top: 10px; padding-left: 12px'>
+                      <li style='margin-bottom: 4px'>
+                        GPA:
+                        {{gpa}}
+                      </li>
+                      <li style='margin-bottom: 4px'>
+                        Awards:
+                        {{#each awards}}<span>{{this}}</span>{{/each}}
+                      </li>
+                      <li style='margin-bottom: 4px'>
+                        Relevant Course Works:
+                        {{#each relevantCourseWorks}}<span>{{this}}</span>{{/each}}
+                      </li>
+                    </ul>
+                  </div>
+                {{/each}}
               </div>
             </div>
           </div>
 
           <!-- CERTIFICATE -->
-          <div style="width: 100%; margin-top: 30px">
+          <div style='width: 100%; margin-top: 30px'>
             <div
-              style="
+              style='
                 background: var(--color-tertiary);
                 color: var(--white);
                 text-transform: uppercase;
@@ -491,29 +375,31 @@
                 font-weight: bold;
                 line-height: 15px;
                 padding: 15px 20px;
-              "
+              '
             >
               Certifications
             </div>
 
             <!-- certificate list -->
             <div
-              style="
+              style='
                 padding: 20px 15px;
                 background: var(--background-secondary);
                 margin-top: 8px;
                 display: flex;
                 flex-direction: column;
                 gap: 20px;
-              "
-              class="educations"
+              '
+              class='educations'
             >
               <!-- certification item -->
-              <div class="edutcation-item">
-                <p style="color: var(--label-color); text-transform: uppercase; font-weight: bold">Certified Paralegal (CP)</p>
-                <span style="text-transform: capitalize; color: var(--subtitle); font-style: italic"
-                  >National Association of Legal Assistants (NALA)</span
-                >
+              <div class='edutcation-item'>
+                <p
+                  style='color: var(--label-color); text-transform: uppercase; font-weight: bold'
+                >Certified Paralegal (CP)</p>
+                <span
+                  style='text-transform: capitalize; color: var(--subtitle); font-style: italic'
+                >National Association of Legal Assistants (NALA)</span>
               </div>
 
               <!-- certification item -->

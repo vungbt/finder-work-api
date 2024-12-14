@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { FileService } from '../file/file.service';
 import { AllPostArgs, CreatePostArgs } from './post.type';
+import { cloneDeep } from 'lodash';
 
 @Injectable()
 export class PostService implements BaseService {
@@ -64,7 +65,7 @@ export class PostService implements BaseService {
   }
   async create(args: CreatePostArgs, user: CurrentUser) {
     const data = args.data;
-    const thumbnailsIds = data.thumbnailIds;
+    const thumbnailsIds = cloneDeep(data.thumbnailIds);
     delete data.thumbnailIds;
     const files = await this.fileService.createFromStorageIds(thumbnailsIds, {
       folder: STORE_FOLDER

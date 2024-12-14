@@ -58,4 +58,17 @@ export class CloudinaryService extends StorageService {
     } catch (error) {}
     return false;
   }
+
+  async uploadFile(path?: string, folder?: string): Promise<FileType> {
+    try {
+      const res = await cloudinary.v2.uploader.upload(path, {
+        public_id: `${folder ?? 'temp'}/${this.getName()}`,
+        resource_type: 'auto',
+        access_mode: 'public'
+      });
+      return res as FileType;
+    } catch (error) {
+      return null;
+    }
+  }
 }
