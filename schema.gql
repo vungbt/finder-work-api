@@ -964,6 +964,8 @@ type Invoice {
 
 type JobAvgAggregate {
   cityId: Float
+  minSalary: Float
+  maxSalary: Float
   numberOfRecruits: Float
 }
 
@@ -978,6 +980,8 @@ type JobCountAggregate {
   companyId: Int!
   cityId: Int!
   salary: Int!
+  minSalary: Int!
+  maxSalary: Int!
   salaryMetadata: Int!
   description: Int!
   isBoot: Int!
@@ -987,6 +991,8 @@ type JobCountAggregate {
   updatedAt: Int!
   deletedAt: Int!
   userId: Int!
+  status: Int!
+  coverLetterRequired: Int!
   _all: Int!
 }
 
@@ -1008,6 +1014,8 @@ type JobMaxAggregate {
   companyId: String
   cityId: Int
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   description: String
   isBoot: Boolean
   numberOfRecruits: Int
@@ -1016,6 +1024,8 @@ type JobMaxAggregate {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  status: JobStatus
+  coverLetterRequired: Boolean
 }
 
 enum JobType {
@@ -1045,6 +1055,13 @@ enum JobSalary {
   begin
 }
 
+enum JobStatus {
+  published
+  scheduling
+  expired
+  draft
+}
+
 type JobMinAggregate {
   id: String
   type: JobType
@@ -1056,6 +1073,8 @@ type JobMinAggregate {
   companyId: String
   cityId: Int
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   description: String
   isBoot: Boolean
   numberOfRecruits: Int
@@ -1064,10 +1083,14 @@ type JobMinAggregate {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  status: JobStatus
+  coverLetterRequired: Boolean
 }
 
 type JobSumAggregate {
   cityId: Int
+  minSalary: Int
+  maxSalary: Int
   numberOfRecruits: Int
 }
 
@@ -1082,6 +1105,8 @@ type Job {
   companyId: String
   cityId: Int!
   salary: JobSalary!
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -1091,6 +1116,8 @@ type Job {
   updatedAt: DateTime!
   deletedAt: DateTime
   userId: String
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: City
   jobTitle: JobTitle
   jobCategory: JobCategory
@@ -1481,7 +1508,7 @@ type Post {
   id: ID!
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -2047,6 +2074,8 @@ enum SocialType {
   youtube
   instagram
   glosbe
+  twitter
+  tiktok
   other
 }
 
@@ -2653,7 +2682,7 @@ type PostItem {
   id: ID!
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -2810,6 +2839,10 @@ type Query {
   one_resume(where: ResumeWhereInput, orderBy: [ResumeOrderByWithRelationInput!], cursor: ResumeWhereUniqueInput, take: Int, skip: Int, distinct: [ResumeScalarFieldEnum!]): Resume!
   my_resume(pagination: PaginationInput, searchValue: String, where: ResumeWhereInput, orderBy: [ResumeOrderByWithRelationInput!], cursor: ResumeWhereUniqueInput, take: Int, skip: Int, distinct: [ResumeScalarFieldEnum!], userId: String): AllResumeResult!
   all_language_skill(where: LanguageSkillWhereInput, orderBy: [LanguageSkillOrderByWithRelationInput!], cursor: LanguageSkillWhereUniqueInput, take: Int, skip: Int, distinct: [LanguageSkillScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllLanguageSkillResult!
+  dev_company_dumb: Float!
+  stg_company_dumb: Float!
+  dev_job_dumb: Float!
+  dev_post_dumb: Float!
 }
 
 input CityWhereInput {
@@ -3393,6 +3426,8 @@ input JobWhereInput {
   companyId: StringNullableFilter
   cityId: IntFilter
   salary: EnumJobSalaryFilter
+  minSalary: IntNullableFilter
+  maxSalary: IntNullableFilter
   salaryMetadata: JsonNullableFilter
   description: StringNullableFilter
   isBoot: BoolNullableFilter
@@ -3402,6 +3437,8 @@ input JobWhereInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
+  status: EnumJobStatusNullableFilter
+  coverLetterRequired: BoolNullableFilter
   address: CityNullableRelationFilter
   jobTitle: JobTitleNullableRelationFilter
   jobCategory: JobCategoryNullableRelationFilter
@@ -3453,6 +3490,20 @@ input NestedEnumJobSalaryFilter {
   in: [JobSalary!]
   notIn: [JobSalary!]
   not: NestedEnumJobSalaryFilter
+}
+
+input EnumJobStatusNullableFilter {
+  equals: JobStatus
+  in: [JobStatus!]
+  notIn: [JobStatus!]
+  not: NestedEnumJobStatusNullableFilter
+}
+
+input NestedEnumJobStatusNullableFilter {
+  equals: JobStatus
+  in: [JobStatus!]
+  notIn: [JobStatus!]
+  not: NestedEnumJobStatusNullableFilter
 }
 
 input JobTitleNullableRelationFilter {
@@ -3969,7 +4020,7 @@ input PostWhereInput {
   id: StringFilter
   title: StringFilter
   content: StringFilter
-  shareUrl: StringFilter
+  shareUrl: StringNullableFilter
   metadata: JsonNullableFilter
   slug: StringFilter
   minRead: IntNullableFilter
@@ -4921,7 +4972,7 @@ input PostOrderByWithRelationInput {
   id: SortOrder
   title: SortOrder
   content: SortOrder
-  shareUrl: SortOrder
+  shareUrl: SortOrderInput
   metadata: SortOrderInput
   slug: SortOrder
   minRead: SortOrderInput
@@ -4961,7 +5012,7 @@ input PostWhereUniqueInput {
   NOT: [PostWhereInput!]
   title: StringFilter
   content: StringFilter
-  shareUrl: StringFilter
+  shareUrl: StringNullableFilter
   metadata: JsonNullableFilter
   slug: StringFilter
   minRead: IntNullableFilter
@@ -5210,6 +5261,8 @@ input JobOrderByWithRelationInput {
   companyId: SortOrderInput
   cityId: SortOrder
   salary: SortOrder
+  minSalary: SortOrderInput
+  maxSalary: SortOrderInput
   salaryMetadata: SortOrderInput
   description: SortOrderInput
   isBoot: SortOrderInput
@@ -5219,6 +5272,8 @@ input JobOrderByWithRelationInput {
   updatedAt: SortOrder
   deletedAt: SortOrderInput
   userId: SortOrderInput
+  status: SortOrderInput
+  coverLetterRequired: SortOrderInput
   address: CityOrderByWithRelationInput
   jobTitle: JobTitleOrderByWithRelationInput
   jobCategory: JobCategoryOrderByWithRelationInput
@@ -5248,6 +5303,8 @@ input JobWhereUniqueInput {
   companyId: StringNullableFilter
   cityId: IntFilter
   salary: EnumJobSalaryFilter
+  minSalary: IntNullableFilter
+  maxSalary: IntNullableFilter
   salaryMetadata: JsonNullableFilter
   description: StringNullableFilter
   isBoot: BoolNullableFilter
@@ -5257,6 +5314,8 @@ input JobWhereUniqueInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
+  status: EnumJobStatusNullableFilter
+  coverLetterRequired: BoolNullableFilter
   address: CityNullableRelationFilter
   jobTitle: JobTitleNullableRelationFilter
   jobCategory: JobCategoryNullableRelationFilter
@@ -5279,6 +5338,8 @@ enum JobScalarFieldEnum {
   companyId
   cityId
   salary
+  minSalary
+  maxSalary
   salaryMetadata
   description
   isBoot
@@ -5288,6 +5349,8 @@ enum JobScalarFieldEnum {
   updatedAt
   deletedAt
   userId
+  status
+  coverLetterRequired
 }
 
 input SkillOrderByWithRelationInput {
@@ -5613,6 +5676,8 @@ input JobCreateWithoutTagsInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -5621,6 +5686,8 @@ input JobCreateWithoutTagsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
@@ -6371,6 +6438,8 @@ input JobCreateWithoutJobTitleInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -6379,6 +6448,8 @@ input JobCreateWithoutJobTitleInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
   company: CompanyCreateNestedOneWithoutJobsInput
@@ -6475,6 +6546,8 @@ input JobCreateWithoutAddressInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -6483,6 +6556,8 @@ input JobCreateWithoutAddressInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
   company: CompanyCreateNestedOneWithoutJobsInput
@@ -6580,7 +6655,7 @@ input PostCreateWithoutThumbnailsInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -6632,6 +6707,8 @@ input JobCreateWithoutJobCategoryInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -6640,6 +6717,8 @@ input JobCreateWithoutJobCategoryInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   company: CompanyCreateNestedOneWithoutJobsInput
@@ -6710,7 +6789,7 @@ input PostCreateWithoutJobCategoryInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -7045,6 +7124,8 @@ input JobCreateWithoutCompanyInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -7053,6 +7134,8 @@ input JobCreateWithoutCompanyInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
@@ -7092,7 +7175,7 @@ input PostCreateWithoutTagsInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -7760,6 +7843,8 @@ input JobCreateWithoutApplicationsInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -7768,6 +7853,8 @@ input JobCreateWithoutApplicationsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
@@ -7881,6 +7968,8 @@ input JobCreateWithoutSkillsInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -7889,6 +7978,8 @@ input JobCreateWithoutSkillsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
@@ -7975,7 +8066,7 @@ input PostCreateWithoutAuthorInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -8128,7 +8219,7 @@ input PostCreateWithoutReportsInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -8235,7 +8326,7 @@ input PostCreateWithoutLikesInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -8347,7 +8438,7 @@ input PostCreateWithoutDislikesInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -8458,7 +8549,7 @@ input PostCreateWithoutCommentsInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -8566,7 +8657,7 @@ input PostCreateWithoutBookmarksInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -8649,6 +8740,8 @@ input JobCreateWithoutSaveJobsInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -8657,6 +8750,8 @@ input JobCreateWithoutSaveJobsInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
@@ -9139,6 +9234,8 @@ input JobCreateWithoutUserInput {
   slug: String
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -9147,6 +9244,8 @@ input JobCreateWithoutUserInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
@@ -9463,6 +9562,8 @@ input JobCreateManyUserInput {
   companyId: String
   cityId: Int!
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -9471,6 +9572,8 @@ input JobCreateManyUserInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
 }
 
 input UserCreateOrConnectWithoutEducationsInput {
@@ -10521,7 +10624,7 @@ input PostCreateManyAuthorInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -11109,6 +11212,8 @@ input JobCreateManyCompanyInput {
   jobCategoryId: String!
   cityId: Int!
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -11118,6 +11223,8 @@ input JobCreateManyCompanyInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  status: JobStatus
+  coverLetterRequired: Boolean
 }
 
 input CompanyCreateOrConnectWithoutProjectsInput {
@@ -11304,7 +11411,7 @@ input PostCreateManyJobCategoryInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -11344,6 +11451,8 @@ input JobCreateManyJobCategoryInput {
   companyId: String
   cityId: Int!
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -11353,6 +11462,8 @@ input JobCreateManyJobCategoryInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  status: JobStatus
+  coverLetterRequired: Boolean
 }
 
 input JobCategoryCreateOrConnectWithoutPostsInput {
@@ -11424,6 +11535,8 @@ input JobCreateManyAddressInput {
   jobCategoryId: String!
   companyId: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -11433,6 +11546,8 @@ input JobCreateManyAddressInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  status: JobStatus
+  coverLetterRequired: Boolean
 }
 
 input CityCreateOrConnectWithoutCompaniesInput {
@@ -11470,6 +11585,8 @@ input JobCreateManyJobTitleInput {
   companyId: String
   cityId: Int!
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -11479,6 +11596,8 @@ input JobCreateManyJobTitleInput {
   updatedAt: DateTime
   deletedAt: DateTime
   userId: String
+  status: JobStatus
+  coverLetterRequired: Boolean
 }
 
 input JobTitleCreateOrConnectWithoutWorkExperiencesInput {
@@ -11865,6 +11984,8 @@ input JobUpdateWithoutTagsInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -11873,6 +11994,8 @@ input JobUpdateWithoutTagsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
@@ -11895,12 +12018,24 @@ input EnumJobSalaryFieldUpdateOperationsInput {
   set: JobSalary
 }
 
+input NullableIntFieldUpdateOperationsInput {
+  set: Int
+  increment: Int
+  decrement: Int
+  multiply: Int
+  divide: Int
+}
+
 input IntFieldUpdateOperationsInput {
   set: Int
   increment: Int
   decrement: Int
   multiply: Int
   divide: Int
+}
+
+input NullableEnumJobStatusFieldUpdateOperationsInput {
+  set: JobStatus
 }
 
 input CityUpdateOneWithoutJobsNestedInput {
@@ -12982,6 +13117,8 @@ input JobUpdateWithoutJobTitleInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -12990,6 +13127,8 @@ input JobUpdateWithoutJobTitleInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
   company: CompanyUpdateOneWithoutJobsNestedInput
@@ -13132,6 +13271,8 @@ input JobUpdateWithoutAddressInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -13140,6 +13281,8 @@ input JobUpdateWithoutAddressInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
   company: CompanyUpdateOneWithoutJobsNestedInput
@@ -13283,7 +13426,7 @@ input PostUpdateWithoutThumbnailsInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -13299,14 +13442,6 @@ input PostUpdateWithoutThumbnailsInput {
   comments: CommentUpdateManyWithoutPostNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutPostNestedInput
   reports: ReportPostUpdateManyWithoutPostNestedInput
-}
-
-input NullableIntFieldUpdateOperationsInput {
-  set: Int
-  increment: Int
-  decrement: Int
-  multiply: Int
-  divide: Int
 }
 
 input JobCategoryUpdateOneWithoutPostsNestedInput {
@@ -13366,6 +13501,8 @@ input JobUpdateWithoutJobCategoryInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -13374,6 +13511,8 @@ input JobUpdateWithoutJobCategoryInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   company: CompanyUpdateOneWithoutJobsNestedInput
@@ -13480,7 +13619,7 @@ input PostUpdateWithoutJobCategoryInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -13949,6 +14088,8 @@ input JobUpdateWithoutCompanyInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -13957,6 +14098,8 @@ input JobUpdateWithoutCompanyInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
@@ -14022,7 +14165,7 @@ input PostUpdateWithoutTagsInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -14967,6 +15110,8 @@ input JobUpdateWithoutApplicationsInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -14975,6 +15120,8 @@ input JobUpdateWithoutApplicationsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
@@ -15150,6 +15297,8 @@ input JobUpdateWithoutSkillsInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -15158,6 +15307,8 @@ input JobUpdateWithoutSkillsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
@@ -15278,7 +15429,7 @@ input PostUpdateWithoutAuthorInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -15563,7 +15714,7 @@ input PostUpdateWithoutReportsInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -15714,7 +15865,7 @@ input PostUpdateWithoutLikesInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -15870,7 +16021,7 @@ input PostUpdateWithoutDislikesInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -16023,7 +16174,7 @@ input PostUpdateWithoutCommentsInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -16175,7 +16326,7 @@ input PostUpdateWithoutBookmarksInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -16276,6 +16427,8 @@ input JobUpdateWithoutSaveJobsInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -16284,6 +16437,8 @@ input JobUpdateWithoutSaveJobsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
@@ -16927,6 +17082,8 @@ input JobUpdateWithoutUserInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -16935,6 +17092,8 @@ input JobUpdateWithoutUserInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
@@ -17322,6 +17481,8 @@ input JobScalarWhereInput {
   companyId: StringNullableFilter
   cityId: IntFilter
   salary: EnumJobSalaryFilter
+  minSalary: IntNullableFilter
+  maxSalary: IntNullableFilter
   salaryMetadata: JsonNullableFilter
   description: StringNullableFilter
   isBoot: BoolNullableFilter
@@ -17331,6 +17492,8 @@ input JobScalarWhereInput {
   updatedAt: DateTimeFilter
   deletedAt: DateTimeNullableFilter
   userId: StringNullableFilter
+  status: EnumJobStatusNullableFilter
+  coverLetterRequired: BoolNullableFilter
 }
 
 input JobUpdateManyMutationInput {
@@ -17340,6 +17503,8 @@ input JobUpdateManyMutationInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -17348,6 +17513,8 @@ input JobUpdateManyMutationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
 }
 
 input UserUpdateToOneWithWhereWithoutEducationsInput {
@@ -18473,7 +18640,7 @@ input PostScalarWhereInput {
   id: StringFilter
   title: StringFilter
   content: StringFilter
-  shareUrl: StringFilter
+  shareUrl: StringNullableFilter
   metadata: JsonNullableFilter
   slug: StringFilter
   minRead: IntNullableFilter
@@ -18488,7 +18655,7 @@ input PostUpdateManyMutationInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -19527,7 +19694,7 @@ input PostCreateWithoutCategoriesInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   slug: String!
   minRead: Int
@@ -19583,7 +19750,7 @@ input PostUpdateWithoutCategoriesInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -19735,7 +19902,7 @@ input CreatePostInput {
   id: String
   title: String!
   content: String!
-  shareUrl: String!
+  shareUrl: String
   metadata: JSON
   createdAt: DateTime
   updatedAt: DateTime
@@ -19756,7 +19923,7 @@ input PostUpdateInput {
   id: StringFieldUpdateOperationsInput
   title: StringFieldUpdateOperationsInput
   content: StringFieldUpdateOperationsInput
-  shareUrl: StringFieldUpdateOperationsInput
+  shareUrl: NullableStringFieldUpdateOperationsInput
   metadata: JSON
   slug: StringFieldUpdateOperationsInput
   minRead: NullableIntFieldUpdateOperationsInput
@@ -19889,6 +20056,8 @@ input CreateJobInput {
   level: JobLevel
   addressDetail: String
   salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
   salaryMetadata: JSON
   description: String
   isBoot: Boolean
@@ -19897,6 +20066,8 @@ input CreateJobInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
   address: CityCreateNestedOneWithoutJobsInput
   jobTitle: JobTitleCreateNestedOneWithoutJobsInput
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
@@ -19918,6 +20089,8 @@ input JobUpdateInput {
   slug: NullableStringFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
   salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
   salaryMetadata: JSON
   description: NullableStringFieldUpdateOperationsInput
   isBoot: NullableBoolFieldUpdateOperationsInput
@@ -19926,6 +20099,8 @@ input JobUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
   address: CityUpdateOneWithoutJobsNestedInput
   jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
@@ -20307,7 +20482,7 @@ input ResumeEducation {
   type: EducationType! = university
   majorId: String!
   degree: Degree! = high_school_diploma
-  graduationAt: DateTime! = "2024-12-14T07:06:39.797Z"
+  graduationAt: DateTime! = "2024-12-14T15:14:33.842Z"
   gpa: Float! = 1
   awards: [String!] = []
   relevantCourseWorks: [String!] = []
