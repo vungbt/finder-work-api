@@ -88,156 +88,156 @@ const importingSkill = async (data) => {
 };
 
 async function main() {
-  // console.log('---> importing countries <---');
-  // for (const iterator of countries) {
-  //   const {
-  //     numeric_code,
-  //     phone_code,
-  //     currency_name,
-  //     currency_symbol,
-  //     region_id,
-  //     subregion_id,
-  //     ...country
-  //   } = iterator;
+  console.log('---> importing countries <---');
+  for (const iterator of countries) {
+    const {
+      numeric_code,
+      phone_code,
+      currency_name,
+      currency_symbol,
+      region_id,
+      subregion_id,
+      ...country
+    } = iterator;
 
-  //   const data = {
-  //     ...country,
-  //     numericCode: numeric_code,
-  //     phoneCode: phone_code,
-  //     currencyName: currency_name,
-  //     currencySymbol: currency_symbol,
-  //     regionId: region_id,
-  //     subregionId: subregion_id
-  //   };
-  //   await prisma.country.create({
-  //     data
-  //   });
-  // }
+    const data = {
+      ...country,
+      numericCode: numeric_code,
+      phoneCode: phone_code,
+      currencyName: currency_name,
+      currencySymbol: currency_symbol,
+      regionId: region_id,
+      subregionId: subregion_id
+    };
+    await prisma.country.create({
+      data
+    });
+  }
 
-  // console.log('---> importing states <---');
-  // for (const iterator of states) {
-  //   const { country_id, country_code, country_name, state_code, id, ...state } = iterator;
-  //   const data = {
-  //     id: Number(id),
-  //     name: String(state.name),
-  //     type: String(state.type),
-  //     countryId: Number(country_id),
-  //     countryCode: String(country_code),
-  //     countryName: String(country_name),
-  //     stateCode: String(state_code),
-  //     latitude: String(state.latitude),
-  //     longitude: String(state.longitude)
-  //   };
-  //   await prisma.state.create({
-  //     data
-  //   });
-  // }
+  console.log('---> importing states <---');
+  for (const iterator of states) {
+    const { country_id, country_code, country_name, state_code, id, ...state } = iterator;
+    const data = {
+      id: Number(id),
+      name: String(state.name),
+      type: String(state.type),
+      countryId: Number(country_id),
+      countryCode: String(country_code),
+      countryName: String(country_name),
+      stateCode: String(state_code),
+      latitude: String(state.latitude),
+      longitude: String(state.longitude)
+    };
+    await prisma.state.create({
+      data
+    });
+  }
 
-  // console.log('---> importing cities <---');
-  // await Promise.all([
-  //   importingCities(cities),
-  //   importingCities(cities1),
-  //   importingCities(cities2),
-  //   importingCities(cities3),
-  //   importingCities(cities4),
-  //   importingCities(cities5),
-  //   importingCities(cities6),
-  //   importingCities(cities7)
-  // ]);
+  console.log('---> importing cities <---');
+  await Promise.all([
+    importingCities(cities),
+    importingCities(cities1),
+    importingCities(cities2),
+    importingCities(cities3),
+    importingCities(cities4),
+    importingCities(cities5),
+    importingCities(cities6),
+    importingCities(cities7)
+  ]);
 
-  // console.log('---> importing skill <---');
-  // importingSkill(skill);
+  console.log('---> importing skill <---');
+  importingSkill(skill);
 
-  // console.log('---> importing languages <---');
-  // const languagesResult = await Promise.all(
-  //   languages.map((item) =>
-  //     prisma.language.create({
-  //       data: {
-  //         name: item.name,
-  //         locale: item.code
-  //       }
-  //     })
-  //   )
-  // );
+  console.log('---> importing languages <---');
+  const languagesResult = await Promise.all(
+    languages.map((item) =>
+      prisma.language.create({
+        data: {
+          name: item.name,
+          locale: item.code
+        }
+      })
+    )
+  );
 
-  // console.log('---> importing languages skill <---');
-  // const proficiencyLevel = [
-  //   ProficiencyLevel.beginner,
-  //   ProficiencyLevel.intermediate,
-  //   ProficiencyLevel.fluent,
-  //   ProficiencyLevel.professional,
-  //   ProficiencyLevel.native
-  // ];
-  // for (const iterator of languagesResult) {
-  //   await Promise.all(
-  //     proficiencyLevel.map((level) =>
-  //       prisma.languageSkill.create({
-  //         data: {
-  //           name: iterator.name,
-  //           locale: iterator.locale,
-  //           proficiencyLevel: level,
-  //           languageId: iterator.id
-  //         }
-  //       })
-  //     )
-  //   );
-  // }
+  console.log('---> importing languages skill <---');
+  const proficiencyLevel = [
+    ProficiencyLevel.beginner,
+    ProficiencyLevel.intermediate,
+    ProficiencyLevel.fluent,
+    ProficiencyLevel.professional,
+    ProficiencyLevel.native
+  ];
+  for (const iterator of languagesResult) {
+    await Promise.all(
+      proficiencyLevel.map((level) =>
+        prisma.languageSkill.create({
+          data: {
+            name: iterator.name,
+            locale: iterator.locale,
+            proficiencyLevel: level,
+            languageId: iterator.id
+          }
+        })
+      )
+    );
+  }
 
-  // console.log('---> importing post categories <---');
-  // for (const iterator of postCategories) {
-  //   await prisma.postCategory.create({
-  //     data: {
-  //       name: iterator,
-  //       slug: slug(iterator)
-  //     }
-  //   });
-  // }
+  console.log('---> importing post categories <---');
+  for (const iterator of postCategories) {
+    await prisma.postCategory.create({
+      data: {
+        name: iterator,
+        slug: slug(iterator)
+      }
+    });
+  }
 
-  // console.log('---> importing tag <---');
-  // for (const iterator of tagCategories) {
-  //   await prisma.tag.create({
-  //     data: {
-  //       name: iterator,
-  //       type: TagType.post,
-  //       color: faker.color.rgb(),
-  //       isPostDefault: true
-  //     }
-  //   });
-  // }
+  console.log('---> importing tag <---');
+  for (const iterator of tagCategories) {
+    await prisma.tag.create({
+      data: {
+        name: iterator,
+        type: TagType.post,
+        color: faker.color.rgb(),
+        isPostDefault: true
+      }
+    });
+  }
 
-  // console.log('---> importing job categories <---');
-  // for (const iterator of jobCategories) {
-  //   await prisma.jobCategory.create({
-  //     data: {
-  //       name: iterator.value,
-  //       slug: slug(iterator.value),
-  //       isFeature: iterator.isFeature,
-  //       isTheFive: iterator.isTheFive
-  //     }
-  //   });
-  // }
+  console.log('---> importing job categories <---');
+  for (const iterator of jobCategories) {
+    await prisma.jobCategory.create({
+      data: {
+        name: iterator.value,
+        slug: slug(iterator.value),
+        isFeature: iterator.isFeature,
+        isTheFive: iterator.isTheFive
+      }
+    });
+  }
 
-  // console.log('---> importing company size <---');
-  // for (const iterator of companySizes) {
-  //   await prisma.companySize.create({
-  //     data: {
-  //       key: iterator,
-  //       value: slug(iterator),
-  //       isDefault: true
-  //     }
-  //   });
-  // }
+  console.log('---> importing company size <---');
+  for (const iterator of companySizes) {
+    await prisma.companySize.create({
+      data: {
+        key: iterator,
+        value: slug(iterator),
+        isDefault: true
+      }
+    });
+  }
 
-  // console.log('---> importing company type <---');
-  // for (const iterator of companyTypes) {
-  //   await prisma.companyType.create({
-  //     data: {
-  //       key: iterator,
-  //       value: slug(iterator),
-  //       isDefault: true
-  //     }
-  //   });
-  // }
+  console.log('---> importing company type <---');
+  for (const iterator of companyTypes) {
+    await prisma.companyType.create({
+      data: {
+        key: iterator,
+        value: slug(iterator),
+        isDefault: true
+      }
+    });
+  }
 
   console.log('---> importing job title <---');
   for (const iterator of jobTitles) {

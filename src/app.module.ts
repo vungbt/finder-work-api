@@ -47,6 +47,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { OpenAiModule } from './modules/open-ai/open-ai.module';
 import { ResumeModule } from './modules/resume/resume.module';
 import { LanguageSkillModule } from './modules/language-skill/language-skill.module';
+import { TestModule } from './modules/test/test.module';
 
 export const pubSub = new PubSub();
 @Module({
@@ -173,7 +174,8 @@ export const pubSub = new PubSub();
     ReportPostModule,
     OpenAiModule,
     ResumeModule,
-    LanguageSkillModule
+    LanguageSkillModule,
+    TestModule
   ],
   controllers: [],
   providers: [
