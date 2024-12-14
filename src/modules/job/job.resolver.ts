@@ -9,7 +9,7 @@ import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserRole } from '@prisma/client';
 import { AuthRoles } from '../auth/passport/jwt/jwt.decorator';
 import { JobService } from './job.service';
-import { AllJobArgs, CreateJobArgs } from './job.type';
+import { AllJobArgs, AllJobResult, CreateJobArgs } from './job.type';
 import { ContextType } from '@/types';
 import { TakeLimit } from '@/utils/pipes/take-limit.decorator';
 
@@ -42,7 +42,9 @@ export class JobResolver {
   findOne(@Args() args: FindFirstJobArgs) {
     return this.jobService.findFirst(args);
   }
-  myJob(@Args(new TakeLimit()) args: AllJobArgs) {
+
+  @Query(() => AllJobResult, { name: 'my_job' })
+  myCompany(@Args(new TakeLimit()) args: AllJobArgs) {
     return this.jobService.myJob(args);
   }
 }
