@@ -29,7 +29,7 @@ import {
   ResumeProject,
   ResumeSocial,
   ResumeWorkExperience
-} from './Resume.type';
+} from './resume-type.type';
 import { PdfService } from '../common/pdf/pdf.service';
 
 @Injectable()

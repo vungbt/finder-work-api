@@ -16,7 +16,7 @@ import {
   CreateResumeArgs,
   MyResumeArgs,
   ResumePreviewResult
-} from './resume.type';
+} from './resume-type.type';
 
 @Resolver(() => Resume)
 export class ResumeResolver {
