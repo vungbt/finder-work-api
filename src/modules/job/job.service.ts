@@ -1,4 +1,3 @@
-import { JobTitleService } from '@/modules/job-title/job-title.service';
 import { JobWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentUser } from '@/types';
@@ -6,14 +5,11 @@ import { BaseService } from '@/utils/base/base.service';
 import { genSlug, responseHelper } from '@/utils/helpers';
 import { Injectable } from '@nestjs/common';
 import { JobType, Prisma } from '@prisma/client';
-import { CreateJobArgs, MyJobArgs } from './job.type';
+import { AllJobArgs, CreateJobArgs, MyJobArgs } from './job.type';
 
 @Injectable()
 export class JobService implements BaseService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly jobTitleService: JobTitleService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
   async create(args: CreateJobArgs, user: CurrentUser) {
     const data = args.data;
     const createdJob = await this.prismaService.job.create({
@@ -50,7 +46,11 @@ export class JobService implements BaseService {
       ...args,
       include: {
         jobTitle: true,
-        company: true,
+        company: {
+          include: {
+            avatar: true
+          }
+        },
         address: true,
         jobCategory: true,
         skills: true
@@ -86,10 +86,44 @@ export class JobService implements BaseService {
 
     const data = this.prismaService.job.findMany({
       orderBy: { createdAt: 'desc' },
-      where: { userId: userId, ...whereClause },
+      where: { userId },
       include: {
         jobTitle: true,
         company: true,
+        address: true,
+        jobCategory: true,
+        skills: true
+      },
+      ...reset
+    });
+    const total = await this.count({ where: whereClause });
+    return responseHelper(data, { total, ...pagination });
+  }
+
+  async AllJob(args: AllJobArgs) {
+    const { searchValue, pagination, where, ...reset } = args;
+    let whereClause: JobWhereInput = {};
+
+    if (searchValue && searchValue.length > 0) {
+      whereClause.OR = [];
+    }
+
+    if (where) {
+      whereClause = {
+        AND: [whereClause, where]
+      };
+    }
+
+    const data = this.prismaService.job.findMany({
+      orderBy: [{ isBoot: 'desc' }, { createdAt: 'desc' }],
+      where: { ...whereClause },
+      include: {
+        jobTitle: true,
+        company: {
+          include: {
+            avatar: true
+          }
+        },
         address: true,
         jobCategory: true,
         skills: true

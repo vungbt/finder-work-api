@@ -5,7 +5,7 @@ import { FileType } from '@/types';
 import * as slug from 'slug';
 import { formatDate, strGenerate } from '@/utils/helpers';
 import { stringify } from 'querystring';
-
+import * as fs from 'fs';
 @Injectable()
 export class CloudinaryService extends StorageService {
   private config: cloudinary.ConfigOptions;
@@ -59,15 +59,20 @@ export class CloudinaryService extends StorageService {
     return false;
   }
 
-  async uploadFile(path?: string, folder?: string): Promise<FileType> {
+  async uploadFile(path: string, folder?: string): Promise<FileType> {
     try {
+      if (!fs.existsSync(path)) {
+        throw new Error(`File not found at path: ${path}`);
+      }
       const res = await cloudinary.v2.uploader.upload(path, {
         public_id: `${folder ?? 'temp'}/${this.getName()}`,
         resource_type: 'auto',
         access_mode: 'public'
       });
+
       return res as FileType;
     } catch (error) {
+      console.error('Error uploading file:', error);
       return null;
     }
   }

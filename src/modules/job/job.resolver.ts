@@ -1,17 +1,11 @@
-import {
-  DeleteOneJobArgs,
-  FindFirstJobArgs,
-  FindManyJobArgs,
-  Job,
-  UpdateOneJobArgs
-} from '@/prisma/graphql';
+import { DeleteOneJobArgs, FindFirstJobArgs, Job, UpdateOneJobArgs } from '@/prisma/graphql';
+import { ContextType } from '@/types';
+import { TakeLimit } from '@/utils/pipes/take-limit.decorator';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserRole } from '@prisma/client';
 import { AuthRoles } from '../auth/passport/jwt/jwt.decorator';
 import { JobService } from './job.service';
-import { AllJobArgs, AllJobResult, CreateJobArgs } from './job.type';
-import { ContextType } from '@/types';
-import { TakeLimit } from '@/utils/pipes/take-limit.decorator';
+import { AllJobArgs, AllJobResult, CreateJobArgs, MyJobArgs } from './job.type';
 
 @Resolver(() => Job)
 export class JobResolver {
@@ -33,9 +27,9 @@ export class JobResolver {
     return this.jobService.delete(args);
   }
 
-  @Query(() => [Job], { name: 'all_job' })
-  all(@Args() args: FindManyJobArgs) {
-    return this.jobService.findMany(args);
+  @Query(() => AllJobResult, { name: 'all_job' })
+  AllJob(@Args(new TakeLimit()) args: AllJobArgs) {
+    return this.jobService.AllJob(args);
   }
 
   @Query(() => Job, { name: 'one_job' })
@@ -44,7 +38,7 @@ export class JobResolver {
   }
 
   @Query(() => AllJobResult, { name: 'my_job' })
-  myCompany(@Args(new TakeLimit()) args: AllJobArgs) {
+  myJob(@Args(new TakeLimit()) args: MyJobArgs) {
     return this.jobService.myJob(args);
   }
 }
