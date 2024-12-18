@@ -1,11 +1,9 @@
-import { UserService } from '@/modules/user/user.service';
 import { STORE_FOLDER } from '@/configs/constant';
 import { ResumeWhereInput } from '@/prisma/graphql';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BaseService } from '@/utils/base/base.service';
 import { isValidUuid, responseHelper } from '@/utils/helpers';
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
 import {
   Activity,
   Certificate,
@@ -17,6 +15,7 @@ import {
   WorkExperience
 } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import { PdfService } from '../common/pdf/pdf.service';
 import { CompanyService } from '../company/company.service';
 import { FileService } from '../file/file.service';
 import {
@@ -30,7 +29,6 @@ import {
   ResumeSocial,
   ResumeWorkExperience
 } from './resume-type.type';
-import { PdfService } from '../common/pdf/pdf.service';
 
 @Injectable()
 export class ResumeService implements BaseService {
@@ -38,8 +36,7 @@ export class ResumeService implements BaseService {
     private readonly prismaService: PrismaService,
     private readonly fileService: FileService,
     private readonly companyService: CompanyService,
-    private readonly pdfService: PdfService,
-    private readonly userService: UserService
+    private readonly pdfService: PdfService
   ) {}
   create(args: Prisma.ResumeCreateArgs) {
     return this.prismaService.resume.create(args);
@@ -234,12 +231,6 @@ export class ResumeService implements BaseService {
             }
           });
 
-          if (fs.existsSync(pdfOutput)) {
-            fs.unlinkSync(pdfOutput);
-          }
-          if (fs.existsSync(imgOutput)) {
-            fs.unlinkSync(imgOutput);
-          }
           return resume;
         },
         {

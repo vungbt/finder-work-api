@@ -1,4 +1,10 @@
-import { CompanyCreateInput, FindManyJobArgs, Job, JobCreateInput } from '@/prisma/graphql';
+import {
+  CompanyCreateInput,
+  FindManyJobArgs,
+  Job,
+  JobCreateInput,
+  UpdateOneJobArgs
+} from '@/prisma/graphql';
 import { Metadata, PaginationInput } from '@/types';
 import { ArgsType, Field, InputType, ObjectType, OmitType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
@@ -53,6 +59,12 @@ export class AllJobResult {
 }
 @ArgsType()
 export class MyJobArgs extends AllJobArgs {
+  @Field(() => String, { nullable: false })
+  userId: string;
+}
+
+@ArgsType()
+export class JobResumeArgs extends UpdateOneJobArgs {
   @Field(() => String, { nullable: true })
-  userId?: string;
+  resumeId?: string;
 }

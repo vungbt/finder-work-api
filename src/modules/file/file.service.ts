@@ -7,7 +7,7 @@ import { CreateFileOptions } from './file.type';
 import { FileType } from '@/types';
 import { pick } from 'lodash';
 import { STORE_FOLDER } from '@/configs/constant';
-
+import * as fs from 'fs';
 @Injectable()
 export class FileService implements BaseService {
   constructor(
@@ -104,7 +104,7 @@ export class FileService implements BaseService {
 
   async uploadFile(path: string, folder?: string) {
     const file = await this.storageService.uploadFile(path);
-    console.log('file====>', file);
+    fs.unlinkSync(path);
     return this.createFromStorageId(file.public_id, { folder });
   }
 }

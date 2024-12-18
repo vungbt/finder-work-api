@@ -63,6 +63,7 @@ export class PdfService {
     if (fs.existsSync(screenshotPath)) {
       fs.unlinkSync(screenshotPath);
     }
+
     return {
       pdfOutput: pdfPath,
       imgOutput: screenshotPath,

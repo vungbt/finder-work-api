@@ -117,9 +117,8 @@ type Application {
   resumeId: String!
   jobId: String!
   userId: String!
-  resume: Resume!
-  job: Job!
-  candidate: User!
+  resume: Resume
+  candidate: User
 }
 
 type BookmarkPostCountAggregate {
@@ -999,8 +998,8 @@ type JobCountAggregate {
 type JobCount {
   tags: Int!
   skills: Int!
-  applications: Int!
   saveJobs: Int!
+  resumes: Int!
 }
 
 type JobMaxAggregate {
@@ -1124,9 +1123,9 @@ type Job {
   company: Company
   tags: [Tag!]
   skills: [Skill!]
-  applications: [Application!]
   saveJobs: [SaveJob!]
   user: User
+  resumes: [Resume!]
   _count: JobCount!
 }
 
@@ -1817,6 +1816,7 @@ type ResumeCount {
   certificates: Int!
   languageSkills: Int!
   activities: Int!
+  job: Int!
 }
 
 type ResumeMaxAggregate {
@@ -1896,6 +1896,7 @@ type Resume {
   certificates: [Certificate!]
   languageSkills: [LanguageSkill!]
   activities: [Activity!]
+  job: [Job!]
   _count: ResumeCount!
 }
 
@@ -2826,15 +2827,16 @@ type Query {
   all_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
   one_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!]): Company!
   my_company(where: CompanyWhereInput, orderBy: [CompanyOrderByWithRelationInput!], cursor: CompanyWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyResult!
-  all_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): [Job!]!
+  all_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllJobResult!
   one_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!]): Job!
-  my_job(where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllJobResult!
+  my_job(searchValue: String, pagination: PaginationInput, where: JobWhereInput, orderBy: [JobOrderByWithRelationInput!], cursor: JobWhereUniqueInput, take: Int, skip: Int, distinct: [JobScalarFieldEnum!], userId: String!): AllJobResult!
   all_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllSkillResult!
   one_skill(where: SkillWhereInput, orderBy: [SkillOrderByWithRelationInput!], cursor: SkillWhereUniqueInput, take: Int, skip: Int, distinct: [SkillScalarFieldEnum!]): Skill!
   all_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanyTypeResult!
   one_company_type(where: CompanyTypeWhereInput, orderBy: [CompanyTypeOrderByWithRelationInput!], cursor: CompanyTypeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanyTypeScalarFieldEnum!]): CompanyType!
   all_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!], searchValue: String, pagination: PaginationInput): AllCompanySizeResult!
   one_company_size(where: CompanySizeWhereInput, orderBy: [CompanySizeOrderByWithRelationInput!], cursor: CompanySizeWhereUniqueInput, take: Int, skip: Int, distinct: [CompanySizeScalarFieldEnum!]): CompanySize!
+  find_application(id: String!): Application!
   all_resume(where: ResumeWhereInput, orderBy: [ResumeOrderByWithRelationInput!], cursor: ResumeWhereUniqueInput, take: Int, skip: Int, distinct: [ResumeScalarFieldEnum!], pagination: PaginationInput, searchValue: String): AllResumeResult!
   one_resume(where: ResumeWhereInput, orderBy: [ResumeOrderByWithRelationInput!], cursor: ResumeWhereUniqueInput, take: Int, skip: Int, distinct: [ResumeScalarFieldEnum!]): Resume!
   my_resume(pagination: PaginationInput, searchValue: String, where: ResumeWhereInput, orderBy: [ResumeOrderByWithRelationInput!], cursor: ResumeWhereUniqueInput, take: Int, skip: Int, distinct: [ResumeScalarFieldEnum!], userId: String): AllResumeResult!
@@ -3445,9 +3447,9 @@ input JobWhereInput {
   company: CompanyNullableRelationFilter
   tags: TagListRelationFilter
   skills: SkillListRelationFilter
-  applications: ApplicationListRelationFilter
   saveJobs: SaveJobListRelationFilter
   user: UserNullableRelationFilter
+  resumes: ResumeListRelationFilter
 }
 
 input EnumJobTypeFilter {
@@ -3568,6 +3570,7 @@ input ResumeWhereInput {
   certificates: CertificateListRelationFilter
   languageSkills: LanguageSkillListRelationFilter
   activities: ActivityListRelationFilter
+  job: JobListRelationFilter
 }
 
 input UserRelationFilter {
@@ -3599,9 +3602,8 @@ input ApplicationWhereInput {
   resumeId: StringFilter
   jobId: StringFilter
   userId: StringFilter
-  resume: ResumeRelationFilter
-  job: JobRelationFilter
-  candidate: UserRelationFilter
+  resume: ResumeNullableRelationFilter
+  candidate: UserNullableRelationFilter
 }
 
 input EnumApplicationStatusNullableFilter {
@@ -3632,14 +3634,14 @@ input NestedEnumApplicationTypeFilter {
   not: NestedEnumApplicationTypeFilter
 }
 
-input ResumeRelationFilter {
+input ResumeNullableRelationFilter {
   is: ResumeWhereInput
   isNot: ResumeWhereInput
 }
 
-input JobRelationFilter {
-  is: JobWhereInput
-  isNot: JobWhereInput
+input UserNullableRelationFilter {
+  is: UserWhereInput
+  isNot: UserWhereInput
 }
 
 input WorkExperienceListRelationFilter {
@@ -3676,11 +3678,6 @@ input WorkExperienceWhereInput {
 input CompanyNullableRelationFilter {
   is: CompanyWhereInput
   isNot: CompanyWhereInput
-}
-
-input ResumeNullableRelationFilter {
-  is: ResumeWhereInput
-  isNot: ResumeWhereInput
 }
 
 input EducationListRelationFilter {
@@ -3861,11 +3858,6 @@ input NestedEnumSocialTypeNullableFilter {
   in: [SocialType!]
   notIn: [SocialType!]
   not: NestedEnumSocialTypeNullableFilter
-}
-
-input UserNullableRelationFilter {
-  is: UserWhereInput
-  isNot: UserWhereInput
 }
 
 input CertificateListRelationFilter {
@@ -4216,6 +4208,11 @@ input SaveJobWhereInput {
   jobId: StringFilter
   user: UserRelationFilter
   job: JobRelationFilter
+}
+
+input JobRelationFilter {
+  is: JobWhereInput
+  isNot: JobWhereInput
 }
 
 input ReferenceListRelationFilter {
@@ -5280,9 +5277,9 @@ input JobOrderByWithRelationInput {
   company: CompanyOrderByWithRelationInput
   tags: TagOrderByRelationAggregateInput
   skills: SkillOrderByRelationAggregateInput
-  applications: ApplicationOrderByRelationAggregateInput
   saveJobs: SaveJobOrderByRelationAggregateInput
   user: UserOrderByWithRelationInput
+  resumes: ResumeOrderByRelationAggregateInput
 }
 
 input SkillOrderByRelationAggregateInput {
@@ -5322,9 +5319,9 @@ input JobWhereUniqueInput {
   company: CompanyNullableRelationFilter
   tags: TagListRelationFilter
   skills: SkillListRelationFilter
-  applications: ApplicationListRelationFilter
   saveJobs: SaveJobListRelationFilter
   user: UserNullableRelationFilter
+  resumes: ResumeListRelationFilter
 }
 
 enum JobScalarFieldEnum {
@@ -5469,6 +5466,7 @@ input ResumeOrderByWithRelationInput {
   certificates: CertificateOrderByRelationAggregateInput
   languageSkills: LanguageSkillOrderByRelationAggregateInput
   activities: ActivityOrderByRelationAggregateInput
+  job: JobOrderByRelationAggregateInput
 }
 
 input LanguageSkillOrderByRelationAggregateInput {
@@ -5515,6 +5513,7 @@ input ResumeWhereUniqueInput {
   certificates: CertificateListRelationFilter
   languageSkills: LanguageSkillListRelationFilter
   activities: ActivityListRelationFilter
+  job: JobListRelationFilter
 }
 
 enum ResumeScalarFieldEnum {
@@ -5640,6 +5639,7 @@ type Mutation {
   create_company_size(data: CompanySizeCreateInput!): CompanySize!
   update_company_size(data: CompanySizeUpdateInput!, where: CompanySizeWhereUniqueInput!): CompanySize!
   delete_company_size(where: CompanySizeWhereUniqueInput!): CompanySize!
+  create_application(data: ApplicationCreateInput!): Application!
   openai_job_description(args: GenerateJDParams!, potentialCV: String): OpenAIGenResult!
   openai_resume_description(args: GenerateResumeParams!): OpenAIGenResult!
   openai_resume_keyword(args: GenerateResumeParams!): OpenAIGenResult!
@@ -5693,9 +5693,9 @@ input JobCreateWithoutTagsInput {
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
   company: CompanyCreateNestedOneWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
   user: UserCreateNestedOneWithoutJobsInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
 }
 
 input CityCreateNestedOneWithoutJobsInput {
@@ -6335,6 +6335,7 @@ input ResumeCreateWithoutSkillsInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input UserCreateNestedOneWithoutResumesInput {
@@ -6455,9 +6456,9 @@ input JobCreateWithoutJobTitleInput {
   company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
   user: UserCreateNestedOneWithoutJobsInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
 }
 
 input JobCategoryCreateNestedOneWithoutJobsInput {
@@ -6563,9 +6564,9 @@ input JobCreateWithoutAddressInput {
   company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
   user: UserCreateNestedOneWithoutJobsInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
 }
 
 input JobTitleCreateNestedOneWithoutJobsInput {
@@ -6618,6 +6619,7 @@ input ResumeCreateWithoutJobTitleInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input FileCreateNestedOneWithoutResumeAvatarInput {
@@ -6724,9 +6726,9 @@ input JobCreateWithoutJobCategoryInput {
   company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
   user: UserCreateNestedOneWithoutJobsInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
 }
 
 input CompanyCreateNestedOneWithoutJobsInput {
@@ -6887,6 +6889,7 @@ input ResumeCreateWithoutUserInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input FileCreateNestedOneWithoutResumeThumbnailInput {
@@ -7141,9 +7144,9 @@ input JobCreateWithoutCompanyInput {
   jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
   user: UserCreateNestedOneWithoutJobsInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
 }
 
 input TagCreateNestedManyWithoutJobsInput {
@@ -7266,6 +7269,7 @@ input ResumeCreateWithoutCertificatesInput {
   socials: SocialCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input FileCreateNestedOneWithoutResumePdfInput {
@@ -7326,6 +7330,7 @@ input ResumeCreateWithoutAvatarInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input CityCreateNestedOneWithoutResumesInput {
@@ -7535,6 +7540,7 @@ input ResumeCreateWithoutThumbnailInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input JobTitleCreateNestedOneWithoutResumesInput {
@@ -7693,8 +7699,8 @@ input ApplicationCreateWithoutCandidateInput {
   type: ApplicationType
   updatedAt: DateTime
   deletedAt: DateTime
-  resume: ResumeCreateNestedOneWithoutApplicationsInput!
-  job: JobCreateNestedOneWithoutApplicationsInput!
+  jobId: String!
+  resume: ResumeCreateNestedOneWithoutApplicationsInput
 }
 
 input ResumeCreateNestedOneWithoutApplicationsInput {
@@ -7729,6 +7735,7 @@ input ResumeCreateWithoutApplicationsInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input WorkExperienceCreateNestedManyWithoutResumeInput {
@@ -7810,6 +7817,7 @@ input ResumeCreateWithoutAddressInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input ApplicationCreateNestedManyWithoutResumeInput {
@@ -7826,186 +7834,8 @@ input ApplicationCreateWithoutResumeInput {
   type: ApplicationType
   updatedAt: DateTime
   deletedAt: DateTime
-  job: JobCreateNestedOneWithoutApplicationsInput!
-  candidate: UserCreateNestedOneWithoutApplicationsInput!
-}
-
-input JobCreateNestedOneWithoutApplicationsInput {
-  create: JobCreateWithoutApplicationsInput
-  connectOrCreate: JobCreateOrConnectWithoutApplicationsInput
-  connect: JobWhereUniqueInput
-}
-
-input JobCreateWithoutApplicationsInput {
-  id: String
-  type: JobType
-  level: JobLevel
-  slug: String
-  addressDetail: String
-  salary: JobSalary
-  minSalary: Int
-  maxSalary: Int
-  salaryMetadata: JSON
-  description: String
-  isBoot: Boolean
-  numberOfRecruits: Int
-  applicationDeadline: DateTime
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  status: JobStatus
-  coverLetterRequired: Boolean
-  address: CityCreateNestedOneWithoutJobsInput
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
-  company: CompanyCreateNestedOneWithoutJobsInput
-  tags: TagCreateNestedManyWithoutJobsInput
-  skills: SkillCreateNestedManyWithoutJobsInput
-  saveJobs: SaveJobCreateNestedManyWithoutJobInput
-  user: UserCreateNestedOneWithoutJobsInput
-}
-
-input SkillCreateNestedManyWithoutJobsInput {
-  create: [SkillCreateWithoutJobsInput!]
-  connectOrCreate: [SkillCreateOrConnectWithoutJobsInput!]
-  connect: [SkillWhereUniqueInput!]
-}
-
-input SkillCreateWithoutJobsInput {
-  id: String
-  content: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  resumes: ResumeCreateNestedManyWithoutSkillsInput
-  projects: ProjectCreateNestedManyWithoutTechStacksInput
-  educations: EducationCreateNestedManyWithoutMajorInput
-}
-
-input EducationCreateNestedManyWithoutMajorInput {
-  create: [EducationCreateWithoutMajorInput!]
-  connectOrCreate: [EducationCreateOrConnectWithoutMajorInput!]
-  createMany: EducationCreateManyMajorInputEnvelope
-  connect: [EducationWhereUniqueInput!]
-}
-
-input EducationCreateWithoutMajorInput {
-  id: String
-  type: EducationType
-  degree: Degree
-  graduationAt: DateTime
-  gpa: Int
-  awards: EducationCreateawardsInput
-  relevantCourseWorks: EducationCreaterelevantCourseWorksInput
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  resume: ResumeCreateNestedOneWithoutEducationsInput
-  user: UserCreateNestedOneWithoutEducationsInput!
-}
-
-input ResumeCreateNestedOneWithoutEducationsInput {
-  create: ResumeCreateWithoutEducationsInput
-  connectOrCreate: ResumeCreateOrConnectWithoutEducationsInput
-  connect: ResumeWhereUniqueInput
-}
-
-input ResumeCreateWithoutEducationsInput {
-  id: String
-  name: String!
-  fullName: String
-  email: String
-  phoneNumber: String
-  addressDetail: String
-  description: String!
-  isSummary: Boolean
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  user: UserCreateNestedOneWithoutResumesInput!
-  avatar: FileCreateNestedOneWithoutResumeAvatarInput
-  thumbnail: FileCreateNestedOneWithoutResumeThumbnailInput
-  pdf: FileCreateNestedOneWithoutResumePdfInput
-  address: CityCreateNestedOneWithoutResumesInput
-  jobTitle: JobTitleCreateNestedOneWithoutResumesInput!
-  applications: ApplicationCreateNestedManyWithoutResumeInput
-  workExperiences: WorkExperienceCreateNestedManyWithoutResumeInput
-  skills: SkillCreateNestedManyWithoutResumesInput
-  projects: ProjectCreateNestedManyWithoutResumeInput
-  socials: SocialCreateNestedManyWithoutResumeInput
-  certificates: CertificateCreateNestedManyWithoutResumeInput
-  languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
-  activities: ActivityCreateNestedManyWithoutResumeInput
-}
-
-input SkillCreateNestedManyWithoutResumesInput {
-  create: [SkillCreateWithoutResumesInput!]
-  connectOrCreate: [SkillCreateOrConnectWithoutResumesInput!]
-  connect: [SkillWhereUniqueInput!]
-}
-
-input SkillCreateWithoutResumesInput {
-  id: String
-  content: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  projects: ProjectCreateNestedManyWithoutTechStacksInput
-  jobs: JobCreateNestedManyWithoutSkillsInput
-  educations: EducationCreateNestedManyWithoutMajorInput
-}
-
-input JobCreateNestedManyWithoutSkillsInput {
-  create: [JobCreateWithoutSkillsInput!]
-  connectOrCreate: [JobCreateOrConnectWithoutSkillsInput!]
-  connect: [JobWhereUniqueInput!]
-}
-
-input JobCreateWithoutSkillsInput {
-  id: String
-  type: JobType
-  level: JobLevel
-  slug: String
-  addressDetail: String
-  salary: JobSalary
-  minSalary: Int
-  maxSalary: Int
-  salaryMetadata: JSON
-  description: String
-  isBoot: Boolean
-  numberOfRecruits: Int
-  applicationDeadline: DateTime
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  status: JobStatus
-  coverLetterRequired: Boolean
-  address: CityCreateNestedOneWithoutJobsInput
-  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
-  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
-  company: CompanyCreateNestedOneWithoutJobsInput
-  tags: TagCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
-  saveJobs: SaveJobCreateNestedManyWithoutJobInput
-  user: UserCreateNestedOneWithoutJobsInput
-}
-
-input ApplicationCreateNestedManyWithoutJobInput {
-  create: [ApplicationCreateWithoutJobInput!]
-  connectOrCreate: [ApplicationCreateOrConnectWithoutJobInput!]
-  createMany: ApplicationCreateManyJobInputEnvelope
-  connect: [ApplicationWhereUniqueInput!]
-}
-
-input ApplicationCreateWithoutJobInput {
-  id: String
-  createdAt: DateTime
-  status: ApplicationStatus
-  type: ApplicationType
-  updatedAt: DateTime
-  deletedAt: DateTime
-  resume: ResumeCreateNestedOneWithoutApplicationsInput!
-  candidate: UserCreateNestedOneWithoutApplicationsInput!
+  jobId: String!
+  candidate: UserCreateNestedOneWithoutApplicationsInput
 }
 
 input UserCreateNestedOneWithoutApplicationsInput {
@@ -8758,17 +8588,158 @@ input JobCreateWithoutSaveJobsInput {
   company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
   user: UserCreateNestedOneWithoutJobsInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
 }
 
-input UserCreateNestedOneWithoutJobsInput {
-  create: UserCreateWithoutJobsInput
-  connectOrCreate: UserCreateOrConnectWithoutJobsInput
+input SkillCreateNestedManyWithoutJobsInput {
+  create: [SkillCreateWithoutJobsInput!]
+  connectOrCreate: [SkillCreateOrConnectWithoutJobsInput!]
+  connect: [SkillWhereUniqueInput!]
+}
+
+input SkillCreateWithoutJobsInput {
+  id: String
+  content: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  resumes: ResumeCreateNestedManyWithoutSkillsInput
+  projects: ProjectCreateNestedManyWithoutTechStacksInput
+  educations: EducationCreateNestedManyWithoutMajorInput
+}
+
+input EducationCreateNestedManyWithoutMajorInput {
+  create: [EducationCreateWithoutMajorInput!]
+  connectOrCreate: [EducationCreateOrConnectWithoutMajorInput!]
+  createMany: EducationCreateManyMajorInputEnvelope
+  connect: [EducationWhereUniqueInput!]
+}
+
+input EducationCreateWithoutMajorInput {
+  id: String
+  type: EducationType
+  degree: Degree
+  graduationAt: DateTime
+  gpa: Int
+  awards: EducationCreateawardsInput
+  relevantCourseWorks: EducationCreaterelevantCourseWorksInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  resume: ResumeCreateNestedOneWithoutEducationsInput
+  user: UserCreateNestedOneWithoutEducationsInput!
+}
+
+input ResumeCreateNestedOneWithoutEducationsInput {
+  create: ResumeCreateWithoutEducationsInput
+  connectOrCreate: ResumeCreateOrConnectWithoutEducationsInput
+  connect: ResumeWhereUniqueInput
+}
+
+input ResumeCreateWithoutEducationsInput {
+  id: String
+  name: String!
+  fullName: String
+  email: String
+  phoneNumber: String
+  addressDetail: String
+  description: String!
+  isSummary: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  user: UserCreateNestedOneWithoutResumesInput!
+  avatar: FileCreateNestedOneWithoutResumeAvatarInput
+  thumbnail: FileCreateNestedOneWithoutResumeThumbnailInput
+  pdf: FileCreateNestedOneWithoutResumePdfInput
+  address: CityCreateNestedOneWithoutResumesInput
+  jobTitle: JobTitleCreateNestedOneWithoutResumesInput!
+  applications: ApplicationCreateNestedManyWithoutResumeInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutResumeInput
+  skills: SkillCreateNestedManyWithoutResumesInput
+  projects: ProjectCreateNestedManyWithoutResumeInput
+  socials: SocialCreateNestedManyWithoutResumeInput
+  certificates: CertificateCreateNestedManyWithoutResumeInput
+  languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
+  activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
+}
+
+input SkillCreateNestedManyWithoutResumesInput {
+  create: [SkillCreateWithoutResumesInput!]
+  connectOrCreate: [SkillCreateOrConnectWithoutResumesInput!]
+  connect: [SkillWhereUniqueInput!]
+}
+
+input SkillCreateWithoutResumesInput {
+  id: String
+  content: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  projects: ProjectCreateNestedManyWithoutTechStacksInput
+  jobs: JobCreateNestedManyWithoutSkillsInput
+  educations: EducationCreateNestedManyWithoutMajorInput
+}
+
+input JobCreateNestedManyWithoutSkillsInput {
+  create: [JobCreateWithoutSkillsInput!]
+  connectOrCreate: [JobCreateOrConnectWithoutSkillsInput!]
+  connect: [JobWhereUniqueInput!]
+}
+
+input JobCreateWithoutSkillsInput {
+  id: String
+  type: JobType
+  level: JobLevel
+  slug: String
+  addressDetail: String
+  salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
+  salaryMetadata: JSON
+  description: String
+  isBoot: Boolean
+  numberOfRecruits: Int
+  applicationDeadline: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
+  tags: TagCreateNestedManyWithoutJobsInput
+  saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
+}
+
+input SaveJobCreateNestedManyWithoutJobInput {
+  create: [SaveJobCreateWithoutJobInput!]
+  connectOrCreate: [SaveJobCreateOrConnectWithoutJobInput!]
+  createMany: SaveJobCreateManyJobInputEnvelope
+  connect: [SaveJobWhereUniqueInput!]
+}
+
+input SaveJobCreateWithoutJobInput {
+  id: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  user: UserCreateNestedOneWithoutSaveJobsInput!
+}
+
+input UserCreateNestedOneWithoutSaveJobsInput {
+  create: UserCreateWithoutSaveJobsInput
+  connectOrCreate: UserCreateOrConnectWithoutSaveJobsInput
   connect: UserWhereUniqueInput
 }
 
-input UserCreateWithoutJobsInput {
+input UserCreateWithoutSaveJobsInput {
   id: String
   avatarUrl: String
   firstName: String!
@@ -8801,10 +8772,10 @@ input UserCreateWithoutJobsInput {
   dislikes: DislikePostCreateNestedManyWithoutUserInput
   comments: CommentCreateNestedManyWithoutUserInput
   bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
-  saveJobs: SaveJobCreateNestedManyWithoutUserInput
   payments: PaymentCreateNestedManyWithoutUserInput
   address: UsersOnCityCreateNestedManyWithoutUserInput
   companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
   authorSettings: SettingCreateNestedManyWithoutAuthorInput
   updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
 }
@@ -9038,6 +9009,7 @@ input ResumeCreateWithoutWorkExperiencesInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input EducationCreateNestedManyWithoutResumeInput {
@@ -9252,380 +9224,43 @@ input JobCreateWithoutUserInput {
   company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
 }
 
-input SaveJobCreateNestedManyWithoutJobInput {
-  create: [SaveJobCreateWithoutJobInput!]
-  connectOrCreate: [SaveJobCreateOrConnectWithoutJobInput!]
-  createMany: SaveJobCreateManyJobInputEnvelope
-  connect: [SaveJobWhereUniqueInput!]
+input ResumeCreateNestedManyWithoutJobInput {
+  create: [ResumeCreateWithoutJobInput!]
+  connectOrCreate: [ResumeCreateOrConnectWithoutJobInput!]
+  connect: [ResumeWhereUniqueInput!]
 }
 
-input SaveJobCreateWithoutJobInput {
+input ResumeCreateWithoutJobInput {
   id: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  user: UserCreateNestedOneWithoutSaveJobsInput!
-}
-
-input UserCreateNestedOneWithoutSaveJobsInput {
-  create: UserCreateWithoutSaveJobsInput
-  connectOrCreate: UserCreateOrConnectWithoutSaveJobsInput
-  connect: UserWhereUniqueInput
-}
-
-input UserCreateWithoutSaveJobsInput {
-  id: String
-  avatarUrl: String
-  firstName: String!
-  lastName: String!
-  email: String!
-  emailVerified: Boolean
-  password: String!
+  name: String!
+  fullName: String
+  email: String
   phoneNumber: String
-  workingPosition: WorkPosition
-  status: UserStatus
-  signInProvider: SignInProvider
-  color: String
-  role: UserRole
   addressDetail: String
-  verifyCode: String
+  description: String!
+  isSummary: Boolean
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
-  avatar: FileCreateNestedOneWithoutUsersInput
-  country: CountryCreateNestedOneWithoutUsersInput
-  social: SocialCreateNestedManyWithoutUserInput
-  resumes: ResumeCreateNestedManyWithoutUserInput
-  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
-  educations: EducationCreateNestedManyWithoutUserInput
-  projects: ProjectCreateNestedManyWithoutUserInput
-  applications: ApplicationCreateNestedManyWithoutCandidateInput
-  posts: PostCreateNestedManyWithoutAuthorInput
-  postReports: ReportPostCreateNestedManyWithoutUserInput
-  likes: LikePostCreateNestedManyWithoutUserInput
-  dislikes: DislikePostCreateNestedManyWithoutUserInput
-  comments: CommentCreateNestedManyWithoutUserInput
-  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
-  payments: PaymentCreateNestedManyWithoutUserInput
-  address: UsersOnCityCreateNestedManyWithoutUserInput
-  companies: CompanyCreateNestedManyWithoutUserInput
-  jobs: JobCreateNestedManyWithoutUserInput
-  authorSettings: SettingCreateNestedManyWithoutAuthorInput
-  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
-}
-
-input SettingCreateNestedManyWithoutAuthorInput {
-  create: [SettingCreateWithoutAuthorInput!]
-  connectOrCreate: [SettingCreateOrConnectWithoutAuthorInput!]
-  createMany: SettingCreateManyAuthorInputEnvelope
-  connect: [SettingWhereUniqueInput!]
-}
-
-input SettingCreateWithoutAuthorInput {
-  key: String!
-  type: String!
-  value: JSON!
-  showWith: SettingCreateshowWithInput
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  updatedBy: UserCreateNestedOneWithoutUpdatedBySettingsInput
-}
-
-input SettingCreateshowWithInput {
-  set: [UserRole!]!
-}
-
-input UserCreateNestedOneWithoutUpdatedBySettingsInput {
-  create: UserCreateWithoutUpdatedBySettingsInput
-  connectOrCreate: UserCreateOrConnectWithoutUpdatedBySettingsInput
-  connect: UserWhereUniqueInput
-}
-
-input UserCreateWithoutUpdatedBySettingsInput {
-  id: String
-  avatarUrl: String
-  firstName: String!
-  lastName: String!
-  email: String!
-  emailVerified: Boolean
-  password: String!
-  phoneNumber: String
-  workingPosition: WorkPosition
-  status: UserStatus
-  signInProvider: SignInProvider
-  color: String
-  role: UserRole
-  addressDetail: String
-  verifyCode: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  avatar: FileCreateNestedOneWithoutUsersInput
-  country: CountryCreateNestedOneWithoutUsersInput
-  social: SocialCreateNestedManyWithoutUserInput
-  resumes: ResumeCreateNestedManyWithoutUserInput
-  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
-  educations: EducationCreateNestedManyWithoutUserInput
-  projects: ProjectCreateNestedManyWithoutUserInput
-  applications: ApplicationCreateNestedManyWithoutCandidateInput
-  posts: PostCreateNestedManyWithoutAuthorInput
-  postReports: ReportPostCreateNestedManyWithoutUserInput
-  likes: LikePostCreateNestedManyWithoutUserInput
-  dislikes: DislikePostCreateNestedManyWithoutUserInput
-  comments: CommentCreateNestedManyWithoutUserInput
-  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
-  saveJobs: SaveJobCreateNestedManyWithoutUserInput
-  payments: PaymentCreateNestedManyWithoutUserInput
-  address: UsersOnCityCreateNestedManyWithoutUserInput
-  companies: CompanyCreateNestedManyWithoutUserInput
-  jobs: JobCreateNestedManyWithoutUserInput
-  authorSettings: SettingCreateNestedManyWithoutAuthorInput
-}
-
-input UserCreateOrConnectWithoutUpdatedBySettingsInput {
-  where: UserWhereUniqueInput!
-  create: UserCreateWithoutUpdatedBySettingsInput!
-}
-
-input SettingCreateOrConnectWithoutAuthorInput {
-  where: SettingWhereUniqueInput!
-  create: SettingCreateWithoutAuthorInput!
-}
-
-input SettingCreateManyAuthorInputEnvelope {
-  data: [SettingCreateManyAuthorInput!]!
-  skipDuplicates: Boolean
-}
-
-input SettingCreateManyAuthorInput {
-  key: String!
-  type: String!
-  value: JSON!
-  showWith: SettingCreateshowWithInput
-  updatedById: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-input SettingCreateNestedManyWithoutUpdatedByInput {
-  create: [SettingCreateWithoutUpdatedByInput!]
-  connectOrCreate: [SettingCreateOrConnectWithoutUpdatedByInput!]
-  createMany: SettingCreateManyUpdatedByInputEnvelope
-  connect: [SettingWhereUniqueInput!]
-}
-
-input SettingCreateWithoutUpdatedByInput {
-  key: String!
-  type: String!
-  value: JSON!
-  showWith: SettingCreateshowWithInput
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  author: UserCreateNestedOneWithoutAuthorSettingsInput
-}
-
-input UserCreateNestedOneWithoutAuthorSettingsInput {
-  create: UserCreateWithoutAuthorSettingsInput
-  connectOrCreate: UserCreateOrConnectWithoutAuthorSettingsInput
-  connect: UserWhereUniqueInput
-}
-
-input UserCreateWithoutAuthorSettingsInput {
-  id: String
-  avatarUrl: String
-  firstName: String!
-  lastName: String!
-  email: String!
-  emailVerified: Boolean
-  password: String!
-  phoneNumber: String
-  workingPosition: WorkPosition
-  status: UserStatus
-  signInProvider: SignInProvider
-  color: String
-  role: UserRole
-  addressDetail: String
-  verifyCode: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  avatar: FileCreateNestedOneWithoutUsersInput
-  country: CountryCreateNestedOneWithoutUsersInput
-  social: SocialCreateNestedManyWithoutUserInput
-  resumes: ResumeCreateNestedManyWithoutUserInput
-  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
-  educations: EducationCreateNestedManyWithoutUserInput
-  projects: ProjectCreateNestedManyWithoutUserInput
-  applications: ApplicationCreateNestedManyWithoutCandidateInput
-  posts: PostCreateNestedManyWithoutAuthorInput
-  postReports: ReportPostCreateNestedManyWithoutUserInput
-  likes: LikePostCreateNestedManyWithoutUserInput
-  dislikes: DislikePostCreateNestedManyWithoutUserInput
-  comments: CommentCreateNestedManyWithoutUserInput
-  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
-  saveJobs: SaveJobCreateNestedManyWithoutUserInput
-  payments: PaymentCreateNestedManyWithoutUserInput
-  address: UsersOnCityCreateNestedManyWithoutUserInput
-  companies: CompanyCreateNestedManyWithoutUserInput
-  jobs: JobCreateNestedManyWithoutUserInput
-  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
-}
-
-input UserCreateOrConnectWithoutAuthorSettingsInput {
-  where: UserWhereUniqueInput!
-  create: UserCreateWithoutAuthorSettingsInput!
-}
-
-input SettingCreateOrConnectWithoutUpdatedByInput {
-  where: SettingWhereUniqueInput!
-  create: SettingCreateWithoutUpdatedByInput!
-}
-
-input SettingCreateManyUpdatedByInputEnvelope {
-  data: [SettingCreateManyUpdatedByInput!]!
-  skipDuplicates: Boolean
-}
-
-input SettingCreateManyUpdatedByInput {
-  key: String!
-  type: String!
-  value: JSON!
-  authorId: String
-  showWith: SettingCreateshowWithInput
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-input UserCreateOrConnectWithoutSaveJobsInput {
-  where: UserWhereUniqueInput!
-  create: UserCreateWithoutSaveJobsInput!
-}
-
-input SaveJobCreateOrConnectWithoutJobInput {
-  where: SaveJobWhereUniqueInput!
-  create: SaveJobCreateWithoutJobInput!
-}
-
-input SaveJobWhereUniqueInput {
-  id: String
-  AND: [SaveJobWhereInput!]
-  OR: [SaveJobWhereInput!]
-  NOT: [SaveJobWhereInput!]
-  userId: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  jobId: StringFilter
-  user: UserRelationFilter
-  job: JobRelationFilter
-}
-
-input SaveJobCreateManyJobInputEnvelope {
-  data: [SaveJobCreateManyJobInput!]!
-  skipDuplicates: Boolean
-}
-
-input SaveJobCreateManyJobInput {
-  id: String
-  userId: String!
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-input JobCreateOrConnectWithoutUserInput {
-  where: JobWhereUniqueInput!
-  create: JobCreateWithoutUserInput!
-}
-
-input JobCreateManyUserInputEnvelope {
-  data: [JobCreateManyUserInput!]!
-  skipDuplicates: Boolean
-}
-
-input JobCreateManyUserInput {
-  id: String
-  type: JobType
-  level: JobLevel
-  slug: String
-  addressDetail: String
-  jobTitleId: String
-  jobCategoryId: String!
-  companyId: String
-  cityId: Int!
-  salary: JobSalary
-  minSalary: Int
-  maxSalary: Int
-  salaryMetadata: JSON
-  description: String
-  isBoot: Boolean
-  numberOfRecruits: Int
-  applicationDeadline: DateTime
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  status: JobStatus
-  coverLetterRequired: Boolean
-}
-
-input UserCreateOrConnectWithoutEducationsInput {
-  where: UserWhereUniqueInput!
-  create: UserCreateWithoutEducationsInput!
-}
-
-input EducationCreateOrConnectWithoutResumeInput {
-  where: EducationWhereUniqueInput!
-  create: EducationCreateWithoutResumeInput!
-}
-
-input EducationWhereUniqueInput {
-  id: String
-  AND: [EducationWhereInput!]
-  OR: [EducationWhereInput!]
-  NOT: [EducationWhereInput!]
-  type: EnumEducationTypeFilter
-  skillId: StringNullableFilter
-  degree: EnumDegreeFilter
-  graduationAt: DateTimeNullableFilter
-  gpa: IntNullableFilter
-  awards: StringNullableListFilter
-  relevantCourseWorks: StringNullableListFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  resumeId: StringNullableFilter
-  userId: StringFilter
-  major: SkillNullableRelationFilter
-  resume: ResumeNullableRelationFilter
-  user: UserRelationFilter
-}
-
-input EducationCreateManyResumeInputEnvelope {
-  data: [EducationCreateManyResumeInput!]!
-  skipDuplicates: Boolean
-}
-
-input EducationCreateManyResumeInput {
-  id: String
-  type: EducationType
-  skillId: String
-  degree: Degree
-  graduationAt: DateTime
-  gpa: Int
-  awards: EducationCreateawardsInput
-  relevantCourseWorks: EducationCreaterelevantCourseWorksInput
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  userId: String!
+  user: UserCreateNestedOneWithoutResumesInput!
+  avatar: FileCreateNestedOneWithoutResumeAvatarInput
+  thumbnail: FileCreateNestedOneWithoutResumeThumbnailInput
+  pdf: FileCreateNestedOneWithoutResumePdfInput
+  address: CityCreateNestedOneWithoutResumesInput
+  jobTitle: JobTitleCreateNestedOneWithoutResumesInput!
+  applications: ApplicationCreateNestedManyWithoutResumeInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutResumeInput
+  educations: EducationCreateNestedManyWithoutResumeInput
+  skills: SkillCreateNestedManyWithoutResumesInput
+  projects: ProjectCreateNestedManyWithoutResumeInput
+  socials: SocialCreateNestedManyWithoutResumeInput
+  certificates: CertificateCreateNestedManyWithoutResumeInput
+  languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
+  activities: ActivityCreateNestedManyWithoutResumeInput
 }
 
 input ProjectCreateNestedManyWithoutResumeInput {
@@ -9840,6 +9475,7 @@ input ResumeCreateWithoutPdfInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input LanguageSkillCreateNestedManyWithoutResumeInput {
@@ -9952,6 +9588,284 @@ input ActivityCreateManyResumeInput {
   deletedAt: DateTime
 }
 
+input JobCreateNestedManyWithoutResumesInput {
+  create: [JobCreateWithoutResumesInput!]
+  connectOrCreate: [JobCreateOrConnectWithoutResumesInput!]
+  connect: [JobWhereUniqueInput!]
+}
+
+input JobCreateWithoutResumesInput {
+  id: String
+  type: JobType
+  level: JobLevel
+  slug: String
+  addressDetail: String
+  salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
+  salaryMetadata: JSON
+  description: String
+  isBoot: Boolean
+  numberOfRecruits: Int
+  applicationDeadline: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
+  address: CityCreateNestedOneWithoutJobsInput
+  jobTitle: JobTitleCreateNestedOneWithoutJobsInput
+  jobCategory: JobCategoryCreateNestedOneWithoutJobsInput
+  company: CompanyCreateNestedOneWithoutJobsInput
+  tags: TagCreateNestedManyWithoutJobsInput
+  skills: SkillCreateNestedManyWithoutJobsInput
+  saveJobs: SaveJobCreateNestedManyWithoutJobInput
+  user: UserCreateNestedOneWithoutJobsInput
+}
+
+input UserCreateNestedOneWithoutJobsInput {
+  create: UserCreateWithoutJobsInput
+  connectOrCreate: UserCreateOrConnectWithoutJobsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutJobsInput {
+  id: String
+  avatarUrl: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean
+  password: String!
+  phoneNumber: String
+  workingPosition: WorkPosition
+  status: UserStatus
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole
+  addressDetail: String
+  verifyCode: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  avatar: FileCreateNestedOneWithoutUsersInput
+  country: CountryCreateNestedOneWithoutUsersInput
+  social: SocialCreateNestedManyWithoutUserInput
+  resumes: ResumeCreateNestedManyWithoutUserInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
+  educations: EducationCreateNestedManyWithoutUserInput
+  projects: ProjectCreateNestedManyWithoutUserInput
+  applications: ApplicationCreateNestedManyWithoutCandidateInput
+  posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
+  likes: LikePostCreateNestedManyWithoutUserInput
+  dislikes: DislikePostCreateNestedManyWithoutUserInput
+  comments: CommentCreateNestedManyWithoutUserInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
+  saveJobs: SaveJobCreateNestedManyWithoutUserInput
+  payments: PaymentCreateNestedManyWithoutUserInput
+  address: UsersOnCityCreateNestedManyWithoutUserInput
+  companies: CompanyCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
+}
+
+input SettingCreateNestedManyWithoutAuthorInput {
+  create: [SettingCreateWithoutAuthorInput!]
+  connectOrCreate: [SettingCreateOrConnectWithoutAuthorInput!]
+  createMany: SettingCreateManyAuthorInputEnvelope
+  connect: [SettingWhereUniqueInput!]
+}
+
+input SettingCreateWithoutAuthorInput {
+  key: String!
+  type: String!
+  value: JSON!
+  showWith: SettingCreateshowWithInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  updatedBy: UserCreateNestedOneWithoutUpdatedBySettingsInput
+}
+
+input SettingCreateshowWithInput {
+  set: [UserRole!]!
+}
+
+input UserCreateNestedOneWithoutUpdatedBySettingsInput {
+  create: UserCreateWithoutUpdatedBySettingsInput
+  connectOrCreate: UserCreateOrConnectWithoutUpdatedBySettingsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutUpdatedBySettingsInput {
+  id: String
+  avatarUrl: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean
+  password: String!
+  phoneNumber: String
+  workingPosition: WorkPosition
+  status: UserStatus
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole
+  addressDetail: String
+  verifyCode: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  avatar: FileCreateNestedOneWithoutUsersInput
+  country: CountryCreateNestedOneWithoutUsersInput
+  social: SocialCreateNestedManyWithoutUserInput
+  resumes: ResumeCreateNestedManyWithoutUserInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
+  educations: EducationCreateNestedManyWithoutUserInput
+  projects: ProjectCreateNestedManyWithoutUserInput
+  applications: ApplicationCreateNestedManyWithoutCandidateInput
+  posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
+  likes: LikePostCreateNestedManyWithoutUserInput
+  dislikes: DislikePostCreateNestedManyWithoutUserInput
+  comments: CommentCreateNestedManyWithoutUserInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
+  saveJobs: SaveJobCreateNestedManyWithoutUserInput
+  payments: PaymentCreateNestedManyWithoutUserInput
+  address: UsersOnCityCreateNestedManyWithoutUserInput
+  companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
+  authorSettings: SettingCreateNestedManyWithoutAuthorInput
+}
+
+input UserCreateOrConnectWithoutUpdatedBySettingsInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutUpdatedBySettingsInput!
+}
+
+input SettingCreateOrConnectWithoutAuthorInput {
+  where: SettingWhereUniqueInput!
+  create: SettingCreateWithoutAuthorInput!
+}
+
+input SettingCreateManyAuthorInputEnvelope {
+  data: [SettingCreateManyAuthorInput!]!
+  skipDuplicates: Boolean
+}
+
+input SettingCreateManyAuthorInput {
+  key: String!
+  type: String!
+  value: JSON!
+  showWith: SettingCreateshowWithInput
+  updatedById: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input SettingCreateNestedManyWithoutUpdatedByInput {
+  create: [SettingCreateWithoutUpdatedByInput!]
+  connectOrCreate: [SettingCreateOrConnectWithoutUpdatedByInput!]
+  createMany: SettingCreateManyUpdatedByInputEnvelope
+  connect: [SettingWhereUniqueInput!]
+}
+
+input SettingCreateWithoutUpdatedByInput {
+  key: String!
+  type: String!
+  value: JSON!
+  showWith: SettingCreateshowWithInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  author: UserCreateNestedOneWithoutAuthorSettingsInput
+}
+
+input UserCreateNestedOneWithoutAuthorSettingsInput {
+  create: UserCreateWithoutAuthorSettingsInput
+  connectOrCreate: UserCreateOrConnectWithoutAuthorSettingsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutAuthorSettingsInput {
+  id: String
+  avatarUrl: String
+  firstName: String!
+  lastName: String!
+  email: String!
+  emailVerified: Boolean
+  password: String!
+  phoneNumber: String
+  workingPosition: WorkPosition
+  status: UserStatus
+  signInProvider: SignInProvider
+  color: String
+  role: UserRole
+  addressDetail: String
+  verifyCode: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  avatar: FileCreateNestedOneWithoutUsersInput
+  country: CountryCreateNestedOneWithoutUsersInput
+  social: SocialCreateNestedManyWithoutUserInput
+  resumes: ResumeCreateNestedManyWithoutUserInput
+  workExperiences: WorkExperienceCreateNestedManyWithoutUserInput
+  educations: EducationCreateNestedManyWithoutUserInput
+  projects: ProjectCreateNestedManyWithoutUserInput
+  applications: ApplicationCreateNestedManyWithoutCandidateInput
+  posts: PostCreateNestedManyWithoutAuthorInput
+  postReports: ReportPostCreateNestedManyWithoutUserInput
+  likes: LikePostCreateNestedManyWithoutUserInput
+  dislikes: DislikePostCreateNestedManyWithoutUserInput
+  comments: CommentCreateNestedManyWithoutUserInput
+  bookmarks: BookmarkPostCreateNestedManyWithoutUserInput
+  saveJobs: SaveJobCreateNestedManyWithoutUserInput
+  payments: PaymentCreateNestedManyWithoutUserInput
+  address: UsersOnCityCreateNestedManyWithoutUserInput
+  companies: CompanyCreateNestedManyWithoutUserInput
+  jobs: JobCreateNestedManyWithoutUserInput
+  updatedBySettings: SettingCreateNestedManyWithoutUpdatedByInput
+}
+
+input UserCreateOrConnectWithoutAuthorSettingsInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutAuthorSettingsInput!
+}
+
+input SettingCreateOrConnectWithoutUpdatedByInput {
+  where: SettingWhereUniqueInput!
+  create: SettingCreateWithoutUpdatedByInput!
+}
+
+input SettingCreateManyUpdatedByInputEnvelope {
+  data: [SettingCreateManyUpdatedByInput!]!
+  skipDuplicates: Boolean
+}
+
+input SettingCreateManyUpdatedByInput {
+  key: String!
+  type: String!
+  value: JSON!
+  authorId: String
+  showWith: SettingCreateshowWithInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input UserCreateOrConnectWithoutJobsInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutJobsInput!
+}
+
+input JobCreateOrConnectWithoutResumesInput {
+  where: JobWhereUniqueInput!
+  create: JobCreateWithoutResumesInput!
+}
+
 input ResumeCreateOrConnectWithoutPdfInput {
   where: ResumeWhereUniqueInput!
   create: ResumeCreateWithoutPdfInput!
@@ -10041,6 +9955,98 @@ input CertificateCreateManyResumeInput {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+}
+
+input ResumeCreateOrConnectWithoutJobInput {
+  where: ResumeWhereUniqueInput!
+  create: ResumeCreateWithoutJobInput!
+}
+
+input JobCreateOrConnectWithoutUserInput {
+  where: JobWhereUniqueInput!
+  create: JobCreateWithoutUserInput!
+}
+
+input JobCreateManyUserInputEnvelope {
+  data: [JobCreateManyUserInput!]!
+  skipDuplicates: Boolean
+}
+
+input JobCreateManyUserInput {
+  id: String
+  type: JobType
+  level: JobLevel
+  slug: String
+  addressDetail: String
+  jobTitleId: String
+  jobCategoryId: String!
+  companyId: String
+  cityId: Int!
+  salary: JobSalary
+  minSalary: Int
+  maxSalary: Int
+  salaryMetadata: JSON
+  description: String
+  isBoot: Boolean
+  numberOfRecruits: Int
+  applicationDeadline: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  status: JobStatus
+  coverLetterRequired: Boolean
+}
+
+input UserCreateOrConnectWithoutEducationsInput {
+  where: UserWhereUniqueInput!
+  create: UserCreateWithoutEducationsInput!
+}
+
+input EducationCreateOrConnectWithoutResumeInput {
+  where: EducationWhereUniqueInput!
+  create: EducationCreateWithoutResumeInput!
+}
+
+input EducationWhereUniqueInput {
+  id: String
+  AND: [EducationWhereInput!]
+  OR: [EducationWhereInput!]
+  NOT: [EducationWhereInput!]
+  type: EnumEducationTypeFilter
+  skillId: StringNullableFilter
+  degree: EnumDegreeFilter
+  graduationAt: DateTimeNullableFilter
+  gpa: IntNullableFilter
+  awards: StringNullableListFilter
+  relevantCourseWorks: StringNullableListFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  resumeId: StringNullableFilter
+  userId: StringFilter
+  major: SkillNullableRelationFilter
+  resume: ResumeNullableRelationFilter
+  user: UserRelationFilter
+}
+
+input EducationCreateManyResumeInputEnvelope {
+  data: [EducationCreateManyResumeInput!]!
+  skipDuplicates: Boolean
+}
+
+input EducationCreateManyResumeInput {
+  id: String
+  type: EducationType
+  skillId: String
+  degree: Degree
+  graduationAt: DateTime
+  gpa: Int
+  awards: EducationCreateawardsInput
+  relevantCourseWorks: EducationCreaterelevantCourseWorksInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  userId: String!
 }
 
 input ResumeCreateOrConnectWithoutWorkExperiencesInput {
@@ -10140,9 +10146,86 @@ input UsersOnCityCreateManyUserInput {
   deletedAt: DateTime
 }
 
-input UserCreateOrConnectWithoutJobsInput {
+input UserCreateOrConnectWithoutSaveJobsInput {
   where: UserWhereUniqueInput!
-  create: UserCreateWithoutJobsInput!
+  create: UserCreateWithoutSaveJobsInput!
+}
+
+input SaveJobCreateOrConnectWithoutJobInput {
+  where: SaveJobWhereUniqueInput!
+  create: SaveJobCreateWithoutJobInput!
+}
+
+input SaveJobWhereUniqueInput {
+  id: String
+  AND: [SaveJobWhereInput!]
+  OR: [SaveJobWhereInput!]
+  NOT: [SaveJobWhereInput!]
+  userId: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  jobId: StringFilter
+  user: UserRelationFilter
+  job: JobRelationFilter
+}
+
+input SaveJobCreateManyJobInputEnvelope {
+  data: [SaveJobCreateManyJobInput!]!
+  skipDuplicates: Boolean
+}
+
+input SaveJobCreateManyJobInput {
+  id: String
+  userId: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input JobCreateOrConnectWithoutSkillsInput {
+  where: JobWhereUniqueInput!
+  create: JobCreateWithoutSkillsInput!
+}
+
+input SkillCreateOrConnectWithoutResumesInput {
+  where: SkillWhereUniqueInput!
+  create: SkillCreateWithoutResumesInput!
+}
+
+input ResumeCreateOrConnectWithoutEducationsInput {
+  where: ResumeWhereUniqueInput!
+  create: ResumeCreateWithoutEducationsInput!
+}
+
+input EducationCreateOrConnectWithoutMajorInput {
+  where: EducationWhereUniqueInput!
+  create: EducationCreateWithoutMajorInput!
+}
+
+input EducationCreateManyMajorInputEnvelope {
+  data: [EducationCreateManyMajorInput!]!
+  skipDuplicates: Boolean
+}
+
+input EducationCreateManyMajorInput {
+  id: String
+  type: EducationType
+  degree: Degree
+  graduationAt: DateTime
+  gpa: Int
+  awards: EducationCreateawardsInput
+  relevantCourseWorks: EducationCreaterelevantCourseWorksInput
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+  resumeId: String
+  userId: String!
+}
+
+input SkillCreateOrConnectWithoutJobsInput {
+  where: SkillWhereUniqueInput!
+  create: SkillCreateWithoutJobsInput!
 }
 
 input JobCreateOrConnectWithoutSaveJobsInput {
@@ -10639,9 +10722,9 @@ input UserCreateOrConnectWithoutApplicationsInput {
   create: UserCreateWithoutApplicationsInput!
 }
 
-input ApplicationCreateOrConnectWithoutJobInput {
+input ApplicationCreateOrConnectWithoutResumeInput {
   where: ApplicationWhereUniqueInput!
-  create: ApplicationCreateWithoutJobInput!
+  create: ApplicationCreateWithoutResumeInput!
 }
 
 input ApplicationWhereUniqueInput {
@@ -10657,80 +10740,8 @@ input ApplicationWhereUniqueInput {
   resumeId: StringFilter
   jobId: StringFilter
   userId: StringFilter
-  resume: ResumeRelationFilter
-  job: JobRelationFilter
-  candidate: UserRelationFilter
-}
-
-input ApplicationCreateManyJobInputEnvelope {
-  data: [ApplicationCreateManyJobInput!]!
-  skipDuplicates: Boolean
-}
-
-input ApplicationCreateManyJobInput {
-  id: String
-  createdAt: DateTime
-  status: ApplicationStatus
-  type: ApplicationType
-  updatedAt: DateTime
-  deletedAt: DateTime
-  resumeId: String!
-  userId: String!
-}
-
-input JobCreateOrConnectWithoutSkillsInput {
-  where: JobWhereUniqueInput!
-  create: JobCreateWithoutSkillsInput!
-}
-
-input SkillCreateOrConnectWithoutResumesInput {
-  where: SkillWhereUniqueInput!
-  create: SkillCreateWithoutResumesInput!
-}
-
-input ResumeCreateOrConnectWithoutEducationsInput {
-  where: ResumeWhereUniqueInput!
-  create: ResumeCreateWithoutEducationsInput!
-}
-
-input EducationCreateOrConnectWithoutMajorInput {
-  where: EducationWhereUniqueInput!
-  create: EducationCreateWithoutMajorInput!
-}
-
-input EducationCreateManyMajorInputEnvelope {
-  data: [EducationCreateManyMajorInput!]!
-  skipDuplicates: Boolean
-}
-
-input EducationCreateManyMajorInput {
-  id: String
-  type: EducationType
-  degree: Degree
-  graduationAt: DateTime
-  gpa: Int
-  awards: EducationCreateawardsInput
-  relevantCourseWorks: EducationCreaterelevantCourseWorksInput
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-  resumeId: String
-  userId: String!
-}
-
-input SkillCreateOrConnectWithoutJobsInput {
-  where: SkillWhereUniqueInput!
-  create: SkillCreateWithoutJobsInput!
-}
-
-input JobCreateOrConnectWithoutApplicationsInput {
-  where: JobWhereUniqueInput!
-  create: JobCreateWithoutApplicationsInput!
-}
-
-input ApplicationCreateOrConnectWithoutResumeInput {
-  where: ApplicationWhereUniqueInput!
-  create: ApplicationCreateWithoutResumeInput!
+  resume: ResumeNullableRelationFilter
+  candidate: UserNullableRelationFilter
 }
 
 input ApplicationCreateManyResumeInputEnvelope {
@@ -10872,6 +10883,7 @@ input ResumeCreateWithoutProjectsInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input ResumeCreateOrConnectWithoutProjectsInput {
@@ -11304,6 +11316,7 @@ input ResumeCreateWithoutSocialsInput {
   certificates: CertificateCreateNestedManyWithoutResumeInput
   languageSkills: LanguageSkillCreateNestedManyWithoutResumeInput
   activities: ActivityCreateNestedManyWithoutResumeInput
+  job: JobCreateNestedManyWithoutResumesInput
 }
 
 input ResumeCreateOrConnectWithoutSocialsInput {
@@ -12001,9 +12014,9 @@ input JobUpdateWithoutTagsInput {
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
   company: CompanyUpdateOneWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
   user: UserUpdateOneWithoutJobsNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
 }
 
 input EnumJobTypeFieldUpdateOperationsInput {
@@ -12972,6 +12985,7 @@ input ResumeUpdateWithoutSkillsInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input UserUpdateOneRequiredWithoutResumesNestedInput {
@@ -13134,9 +13148,9 @@ input JobUpdateWithoutJobTitleInput {
   company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
   user: UserUpdateOneWithoutJobsNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
 }
 
 input JobCategoryUpdateOneWithoutJobsNestedInput {
@@ -13288,9 +13302,9 @@ input JobUpdateWithoutAddressInput {
   company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
   user: UserUpdateOneWithoutJobsNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
 }
 
 input JobTitleUpdateOneWithoutJobsNestedInput {
@@ -13366,6 +13380,7 @@ input ResumeUpdateWithoutJobTitleInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input FileUpdateOneWithoutResumeAvatarNestedInput {
@@ -13518,9 +13533,9 @@ input JobUpdateWithoutJobCategoryInput {
   company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
   user: UserUpdateOneWithoutJobsNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
 }
 
 input CompanyUpdateOneWithoutJobsNestedInput {
@@ -13738,6 +13753,7 @@ input ResumeUpdateWithoutUserInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input FileUpdateOneWithoutResumeThumbnailNestedInput {
@@ -14105,9 +14121,9 @@ input JobUpdateWithoutCompanyInput {
   jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
   user: UserUpdateOneWithoutJobsNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
 }
 
 input TagUpdateManyWithoutJobsNestedInput {
@@ -14292,6 +14308,7 @@ input ResumeUpdateWithoutCertificatesInput {
   socials: SocialUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input FileUpdateOneWithoutResumePdfNestedInput {
@@ -14375,6 +14392,7 @@ input ResumeUpdateWithoutAvatarInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input CityUpdateOneWithoutResumesNestedInput {
@@ -14664,6 +14682,7 @@ input ResumeUpdateWithoutThumbnailInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input JobTitleUpdateOneRequiredWithoutResumesNestedInput {
@@ -14887,8 +14906,8 @@ input ApplicationUpdateWithoutCandidateInput {
   type: EnumApplicationTypeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resume: ResumeUpdateOneRequiredWithoutApplicationsNestedInput
-  job: JobUpdateOneRequiredWithoutApplicationsNestedInput
+  jobId: StringFieldUpdateOperationsInput
+  resume: ResumeUpdateOneWithoutApplicationsNestedInput
 }
 
 input NullableEnumApplicationStatusFieldUpdateOperationsInput {
@@ -14899,10 +14918,12 @@ input EnumApplicationTypeFieldUpdateOperationsInput {
   set: ApplicationType
 }
 
-input ResumeUpdateOneRequiredWithoutApplicationsNestedInput {
+input ResumeUpdateOneWithoutApplicationsNestedInput {
   create: ResumeCreateWithoutApplicationsInput
   connectOrCreate: ResumeCreateOrConnectWithoutApplicationsInput
   upsert: ResumeUpsertWithoutApplicationsInput
+  disconnect: ResumeWhereInput
+  delete: ResumeWhereInput
   connect: ResumeWhereUniqueInput
   update: ResumeUpdateToOneWithWhereWithoutApplicationsInput
 }
@@ -14939,6 +14960,7 @@ input ResumeUpdateWithoutApplicationsInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input WorkExperienceUpdateManyWithoutResumeNestedInput {
@@ -15056,6 +15078,7 @@ input ResumeUpdateWithoutAddressInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input ApplicationUpdateManyWithoutResumeNestedInput {
@@ -15085,275 +15108,16 @@ input ApplicationUpdateWithoutResumeInput {
   type: EnumApplicationTypeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  job: JobUpdateOneRequiredWithoutApplicationsNestedInput
-  candidate: UserUpdateOneRequiredWithoutApplicationsNestedInput
+  jobId: StringFieldUpdateOperationsInput
+  candidate: UserUpdateOneWithoutApplicationsNestedInput
 }
 
-input JobUpdateOneRequiredWithoutApplicationsNestedInput {
-  create: JobCreateWithoutApplicationsInput
-  connectOrCreate: JobCreateOrConnectWithoutApplicationsInput
-  upsert: JobUpsertWithoutApplicationsInput
-  connect: JobWhereUniqueInput
-  update: JobUpdateToOneWithWhereWithoutApplicationsInput
-}
-
-input JobUpsertWithoutApplicationsInput {
-  update: JobUpdateWithoutApplicationsInput!
-  create: JobCreateWithoutApplicationsInput!
-  where: JobWhereInput
-}
-
-input JobUpdateWithoutApplicationsInput {
-  id: StringFieldUpdateOperationsInput
-  type: EnumJobTypeFieldUpdateOperationsInput
-  level: EnumJobLevelFieldUpdateOperationsInput
-  slug: NullableStringFieldUpdateOperationsInput
-  addressDetail: NullableStringFieldUpdateOperationsInput
-  salary: EnumJobSalaryFieldUpdateOperationsInput
-  minSalary: NullableIntFieldUpdateOperationsInput
-  maxSalary: NullableIntFieldUpdateOperationsInput
-  salaryMetadata: JSON
-  description: NullableStringFieldUpdateOperationsInput
-  isBoot: NullableBoolFieldUpdateOperationsInput
-  numberOfRecruits: IntFieldUpdateOperationsInput
-  applicationDeadline: DateTimeFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  status: NullableEnumJobStatusFieldUpdateOperationsInput
-  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
-  address: CityUpdateOneWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
-  company: CompanyUpdateOneWithoutJobsNestedInput
-  tags: TagUpdateManyWithoutJobsNestedInput
-  skills: SkillUpdateManyWithoutJobsNestedInput
-  saveJobs: SaveJobUpdateManyWithoutJobNestedInput
-  user: UserUpdateOneWithoutJobsNestedInput
-}
-
-input SkillUpdateManyWithoutJobsNestedInput {
-  create: [SkillCreateWithoutJobsInput!]
-  connectOrCreate: [SkillCreateOrConnectWithoutJobsInput!]
-  upsert: [SkillUpsertWithWhereUniqueWithoutJobsInput!]
-  set: [SkillWhereUniqueInput!]
-  disconnect: [SkillWhereUniqueInput!]
-  delete: [SkillWhereUniqueInput!]
-  connect: [SkillWhereUniqueInput!]
-  update: [SkillUpdateWithWhereUniqueWithoutJobsInput!]
-  updateMany: [SkillUpdateManyWithWhereWithoutJobsInput!]
-  deleteMany: [SkillScalarWhereInput!]
-}
-
-input SkillUpsertWithWhereUniqueWithoutJobsInput {
-  where: SkillWhereUniqueInput!
-  update: SkillUpdateWithoutJobsInput!
-  create: SkillCreateWithoutJobsInput!
-}
-
-input SkillUpdateWithoutJobsInput {
-  id: StringFieldUpdateOperationsInput
-  content: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resumes: ResumeUpdateManyWithoutSkillsNestedInput
-  projects: ProjectUpdateManyWithoutTechStacksNestedInput
-  educations: EducationUpdateManyWithoutMajorNestedInput
-}
-
-input EducationUpdateManyWithoutMajorNestedInput {
-  create: [EducationCreateWithoutMajorInput!]
-  connectOrCreate: [EducationCreateOrConnectWithoutMajorInput!]
-  upsert: [EducationUpsertWithWhereUniqueWithoutMajorInput!]
-  createMany: EducationCreateManyMajorInputEnvelope
-  set: [EducationWhereUniqueInput!]
-  disconnect: [EducationWhereUniqueInput!]
-  delete: [EducationWhereUniqueInput!]
-  connect: [EducationWhereUniqueInput!]
-  update: [EducationUpdateWithWhereUniqueWithoutMajorInput!]
-  updateMany: [EducationUpdateManyWithWhereWithoutMajorInput!]
-  deleteMany: [EducationScalarWhereInput!]
-}
-
-input EducationUpsertWithWhereUniqueWithoutMajorInput {
-  where: EducationWhereUniqueInput!
-  update: EducationUpdateWithoutMajorInput!
-  create: EducationCreateWithoutMajorInput!
-}
-
-input EducationUpdateWithoutMajorInput {
-  id: StringFieldUpdateOperationsInput
-  type: EnumEducationTypeFieldUpdateOperationsInput
-  degree: EnumDegreeFieldUpdateOperationsInput
-  graduationAt: NullableDateTimeFieldUpdateOperationsInput
-  gpa: NullableIntFieldUpdateOperationsInput
-  awards: EducationUpdateawardsInput
-  relevantCourseWorks: EducationUpdaterelevantCourseWorksInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resume: ResumeUpdateOneWithoutEducationsNestedInput
-  user: UserUpdateOneRequiredWithoutEducationsNestedInput
-}
-
-input ResumeUpdateOneWithoutEducationsNestedInput {
-  create: ResumeCreateWithoutEducationsInput
-  connectOrCreate: ResumeCreateOrConnectWithoutEducationsInput
-  upsert: ResumeUpsertWithoutEducationsInput
-  disconnect: ResumeWhereInput
-  delete: ResumeWhereInput
-  connect: ResumeWhereUniqueInput
-  update: ResumeUpdateToOneWithWhereWithoutEducationsInput
-}
-
-input ResumeUpsertWithoutEducationsInput {
-  update: ResumeUpdateWithoutEducationsInput!
-  create: ResumeCreateWithoutEducationsInput!
-  where: ResumeWhereInput
-}
-
-input ResumeUpdateWithoutEducationsInput {
-  id: StringFieldUpdateOperationsInput
-  name: StringFieldUpdateOperationsInput
-  fullName: NullableStringFieldUpdateOperationsInput
-  email: NullableStringFieldUpdateOperationsInput
-  phoneNumber: NullableStringFieldUpdateOperationsInput
-  addressDetail: NullableStringFieldUpdateOperationsInput
-  description: StringFieldUpdateOperationsInput
-  isSummary: NullableBoolFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  user: UserUpdateOneRequiredWithoutResumesNestedInput
-  avatar: FileUpdateOneWithoutResumeAvatarNestedInput
-  thumbnail: FileUpdateOneWithoutResumeThumbnailNestedInput
-  pdf: FileUpdateOneWithoutResumePdfNestedInput
-  address: CityUpdateOneWithoutResumesNestedInput
-  jobTitle: JobTitleUpdateOneRequiredWithoutResumesNestedInput
-  applications: ApplicationUpdateManyWithoutResumeNestedInput
-  workExperiences: WorkExperienceUpdateManyWithoutResumeNestedInput
-  skills: SkillUpdateManyWithoutResumesNestedInput
-  projects: ProjectUpdateManyWithoutResumeNestedInput
-  socials: SocialUpdateManyWithoutResumeNestedInput
-  certificates: CertificateUpdateManyWithoutResumeNestedInput
-  languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
-  activities: ActivityUpdateManyWithoutResumeNestedInput
-}
-
-input SkillUpdateManyWithoutResumesNestedInput {
-  create: [SkillCreateWithoutResumesInput!]
-  connectOrCreate: [SkillCreateOrConnectWithoutResumesInput!]
-  upsert: [SkillUpsertWithWhereUniqueWithoutResumesInput!]
-  set: [SkillWhereUniqueInput!]
-  disconnect: [SkillWhereUniqueInput!]
-  delete: [SkillWhereUniqueInput!]
-  connect: [SkillWhereUniqueInput!]
-  update: [SkillUpdateWithWhereUniqueWithoutResumesInput!]
-  updateMany: [SkillUpdateManyWithWhereWithoutResumesInput!]
-  deleteMany: [SkillScalarWhereInput!]
-}
-
-input SkillUpsertWithWhereUniqueWithoutResumesInput {
-  where: SkillWhereUniqueInput!
-  update: SkillUpdateWithoutResumesInput!
-  create: SkillCreateWithoutResumesInput!
-}
-
-input SkillUpdateWithoutResumesInput {
-  id: StringFieldUpdateOperationsInput
-  content: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  projects: ProjectUpdateManyWithoutTechStacksNestedInput
-  jobs: JobUpdateManyWithoutSkillsNestedInput
-  educations: EducationUpdateManyWithoutMajorNestedInput
-}
-
-input JobUpdateManyWithoutSkillsNestedInput {
-  create: [JobCreateWithoutSkillsInput!]
-  connectOrCreate: [JobCreateOrConnectWithoutSkillsInput!]
-  upsert: [JobUpsertWithWhereUniqueWithoutSkillsInput!]
-  set: [JobWhereUniqueInput!]
-  disconnect: [JobWhereUniqueInput!]
-  delete: [JobWhereUniqueInput!]
-  connect: [JobWhereUniqueInput!]
-  update: [JobUpdateWithWhereUniqueWithoutSkillsInput!]
-  updateMany: [JobUpdateManyWithWhereWithoutSkillsInput!]
-  deleteMany: [JobScalarWhereInput!]
-}
-
-input JobUpsertWithWhereUniqueWithoutSkillsInput {
-  where: JobWhereUniqueInput!
-  update: JobUpdateWithoutSkillsInput!
-  create: JobCreateWithoutSkillsInput!
-}
-
-input JobUpdateWithoutSkillsInput {
-  id: StringFieldUpdateOperationsInput
-  type: EnumJobTypeFieldUpdateOperationsInput
-  level: EnumJobLevelFieldUpdateOperationsInput
-  slug: NullableStringFieldUpdateOperationsInput
-  addressDetail: NullableStringFieldUpdateOperationsInput
-  salary: EnumJobSalaryFieldUpdateOperationsInput
-  minSalary: NullableIntFieldUpdateOperationsInput
-  maxSalary: NullableIntFieldUpdateOperationsInput
-  salaryMetadata: JSON
-  description: NullableStringFieldUpdateOperationsInput
-  isBoot: NullableBoolFieldUpdateOperationsInput
-  numberOfRecruits: IntFieldUpdateOperationsInput
-  applicationDeadline: DateTimeFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  status: NullableEnumJobStatusFieldUpdateOperationsInput
-  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
-  address: CityUpdateOneWithoutJobsNestedInput
-  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
-  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
-  company: CompanyUpdateOneWithoutJobsNestedInput
-  tags: TagUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
-  saveJobs: SaveJobUpdateManyWithoutJobNestedInput
-  user: UserUpdateOneWithoutJobsNestedInput
-}
-
-input ApplicationUpdateManyWithoutJobNestedInput {
-  create: [ApplicationCreateWithoutJobInput!]
-  connectOrCreate: [ApplicationCreateOrConnectWithoutJobInput!]
-  upsert: [ApplicationUpsertWithWhereUniqueWithoutJobInput!]
-  createMany: ApplicationCreateManyJobInputEnvelope
-  set: [ApplicationWhereUniqueInput!]
-  disconnect: [ApplicationWhereUniqueInput!]
-  delete: [ApplicationWhereUniqueInput!]
-  connect: [ApplicationWhereUniqueInput!]
-  update: [ApplicationUpdateWithWhereUniqueWithoutJobInput!]
-  updateMany: [ApplicationUpdateManyWithWhereWithoutJobInput!]
-  deleteMany: [ApplicationScalarWhereInput!]
-}
-
-input ApplicationUpsertWithWhereUniqueWithoutJobInput {
-  where: ApplicationWhereUniqueInput!
-  update: ApplicationUpdateWithoutJobInput!
-  create: ApplicationCreateWithoutJobInput!
-}
-
-input ApplicationUpdateWithoutJobInput {
-  id: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  status: NullableEnumApplicationStatusFieldUpdateOperationsInput
-  type: EnumApplicationTypeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  resume: ResumeUpdateOneRequiredWithoutApplicationsNestedInput
-  candidate: UserUpdateOneRequiredWithoutApplicationsNestedInput
-}
-
-input UserUpdateOneRequiredWithoutApplicationsNestedInput {
+input UserUpdateOneWithoutApplicationsNestedInput {
   create: UserCreateWithoutApplicationsInput
   connectOrCreate: UserCreateOrConnectWithoutApplicationsInput
   upsert: UserUpsertWithoutApplicationsInput
+  disconnect: UserWhereInput
+  delete: UserWhereInput
   connect: UserWhereUniqueInput
   update: UserUpdateToOneWithWhereWithoutApplicationsInput
 }
@@ -16445,27 +16209,241 @@ input JobUpdateWithoutSaveJobsInput {
   company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
   user: UserUpdateOneWithoutJobsNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
 }
 
-input UserUpdateOneWithoutJobsNestedInput {
-  create: UserCreateWithoutJobsInput
-  connectOrCreate: UserCreateOrConnectWithoutJobsInput
-  upsert: UserUpsertWithoutJobsInput
-  disconnect: UserWhereInput
-  delete: UserWhereInput
+input SkillUpdateManyWithoutJobsNestedInput {
+  create: [SkillCreateWithoutJobsInput!]
+  connectOrCreate: [SkillCreateOrConnectWithoutJobsInput!]
+  upsert: [SkillUpsertWithWhereUniqueWithoutJobsInput!]
+  set: [SkillWhereUniqueInput!]
+  disconnect: [SkillWhereUniqueInput!]
+  delete: [SkillWhereUniqueInput!]
+  connect: [SkillWhereUniqueInput!]
+  update: [SkillUpdateWithWhereUniqueWithoutJobsInput!]
+  updateMany: [SkillUpdateManyWithWhereWithoutJobsInput!]
+  deleteMany: [SkillScalarWhereInput!]
+}
+
+input SkillUpsertWithWhereUniqueWithoutJobsInput {
+  where: SkillWhereUniqueInput!
+  update: SkillUpdateWithoutJobsInput!
+  create: SkillCreateWithoutJobsInput!
+}
+
+input SkillUpdateWithoutJobsInput {
+  id: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resumes: ResumeUpdateManyWithoutSkillsNestedInput
+  projects: ProjectUpdateManyWithoutTechStacksNestedInput
+  educations: EducationUpdateManyWithoutMajorNestedInput
+}
+
+input EducationUpdateManyWithoutMajorNestedInput {
+  create: [EducationCreateWithoutMajorInput!]
+  connectOrCreate: [EducationCreateOrConnectWithoutMajorInput!]
+  upsert: [EducationUpsertWithWhereUniqueWithoutMajorInput!]
+  createMany: EducationCreateManyMajorInputEnvelope
+  set: [EducationWhereUniqueInput!]
+  disconnect: [EducationWhereUniqueInput!]
+  delete: [EducationWhereUniqueInput!]
+  connect: [EducationWhereUniqueInput!]
+  update: [EducationUpdateWithWhereUniqueWithoutMajorInput!]
+  updateMany: [EducationUpdateManyWithWhereWithoutMajorInput!]
+  deleteMany: [EducationScalarWhereInput!]
+}
+
+input EducationUpsertWithWhereUniqueWithoutMajorInput {
+  where: EducationWhereUniqueInput!
+  update: EducationUpdateWithoutMajorInput!
+  create: EducationCreateWithoutMajorInput!
+}
+
+input EducationUpdateWithoutMajorInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumEducationTypeFieldUpdateOperationsInput
+  degree: EnumDegreeFieldUpdateOperationsInput
+  graduationAt: NullableDateTimeFieldUpdateOperationsInput
+  gpa: NullableIntFieldUpdateOperationsInput
+  awards: EducationUpdateawardsInput
+  relevantCourseWorks: EducationUpdaterelevantCourseWorksInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  resume: ResumeUpdateOneWithoutEducationsNestedInput
+  user: UserUpdateOneRequiredWithoutEducationsNestedInput
+}
+
+input ResumeUpdateOneWithoutEducationsNestedInput {
+  create: ResumeCreateWithoutEducationsInput
+  connectOrCreate: ResumeCreateOrConnectWithoutEducationsInput
+  upsert: ResumeUpsertWithoutEducationsInput
+  disconnect: ResumeWhereInput
+  delete: ResumeWhereInput
+  connect: ResumeWhereUniqueInput
+  update: ResumeUpdateToOneWithWhereWithoutEducationsInput
+}
+
+input ResumeUpsertWithoutEducationsInput {
+  update: ResumeUpdateWithoutEducationsInput!
+  create: ResumeCreateWithoutEducationsInput!
+  where: ResumeWhereInput
+}
+
+input ResumeUpdateWithoutEducationsInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  fullName: NullableStringFieldUpdateOperationsInput
+  email: NullableStringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  description: StringFieldUpdateOperationsInput
+  isSummary: NullableBoolFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  user: UserUpdateOneRequiredWithoutResumesNestedInput
+  avatar: FileUpdateOneWithoutResumeAvatarNestedInput
+  thumbnail: FileUpdateOneWithoutResumeThumbnailNestedInput
+  pdf: FileUpdateOneWithoutResumePdfNestedInput
+  address: CityUpdateOneWithoutResumesNestedInput
+  jobTitle: JobTitleUpdateOneRequiredWithoutResumesNestedInput
+  applications: ApplicationUpdateManyWithoutResumeNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutResumeNestedInput
+  skills: SkillUpdateManyWithoutResumesNestedInput
+  projects: ProjectUpdateManyWithoutResumeNestedInput
+  socials: SocialUpdateManyWithoutResumeNestedInput
+  certificates: CertificateUpdateManyWithoutResumeNestedInput
+  languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
+  activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
+}
+
+input SkillUpdateManyWithoutResumesNestedInput {
+  create: [SkillCreateWithoutResumesInput!]
+  connectOrCreate: [SkillCreateOrConnectWithoutResumesInput!]
+  upsert: [SkillUpsertWithWhereUniqueWithoutResumesInput!]
+  set: [SkillWhereUniqueInput!]
+  disconnect: [SkillWhereUniqueInput!]
+  delete: [SkillWhereUniqueInput!]
+  connect: [SkillWhereUniqueInput!]
+  update: [SkillUpdateWithWhereUniqueWithoutResumesInput!]
+  updateMany: [SkillUpdateManyWithWhereWithoutResumesInput!]
+  deleteMany: [SkillScalarWhereInput!]
+}
+
+input SkillUpsertWithWhereUniqueWithoutResumesInput {
+  where: SkillWhereUniqueInput!
+  update: SkillUpdateWithoutResumesInput!
+  create: SkillCreateWithoutResumesInput!
+}
+
+input SkillUpdateWithoutResumesInput {
+  id: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  projects: ProjectUpdateManyWithoutTechStacksNestedInput
+  jobs: JobUpdateManyWithoutSkillsNestedInput
+  educations: EducationUpdateManyWithoutMajorNestedInput
+}
+
+input JobUpdateManyWithoutSkillsNestedInput {
+  create: [JobCreateWithoutSkillsInput!]
+  connectOrCreate: [JobCreateOrConnectWithoutSkillsInput!]
+  upsert: [JobUpsertWithWhereUniqueWithoutSkillsInput!]
+  set: [JobWhereUniqueInput!]
+  disconnect: [JobWhereUniqueInput!]
+  delete: [JobWhereUniqueInput!]
+  connect: [JobWhereUniqueInput!]
+  update: [JobUpdateWithWhereUniqueWithoutSkillsInput!]
+  updateMany: [JobUpdateManyWithWhereWithoutSkillsInput!]
+  deleteMany: [JobScalarWhereInput!]
+}
+
+input JobUpsertWithWhereUniqueWithoutSkillsInput {
+  where: JobWhereUniqueInput!
+  update: JobUpdateWithoutSkillsInput!
+  create: JobCreateWithoutSkillsInput!
+}
+
+input JobUpdateWithoutSkillsInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumJobTypeFieldUpdateOperationsInput
+  level: EnumJobLevelFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
+  salaryMetadata: JSON
+  description: NullableStringFieldUpdateOperationsInput
+  isBoot: NullableBoolFieldUpdateOperationsInput
+  numberOfRecruits: IntFieldUpdateOperationsInput
+  applicationDeadline: DateTimeFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
+  tags: TagUpdateManyWithoutJobsNestedInput
+  saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
+}
+
+input SaveJobUpdateManyWithoutJobNestedInput {
+  create: [SaveJobCreateWithoutJobInput!]
+  connectOrCreate: [SaveJobCreateOrConnectWithoutJobInput!]
+  upsert: [SaveJobUpsertWithWhereUniqueWithoutJobInput!]
+  createMany: SaveJobCreateManyJobInputEnvelope
+  set: [SaveJobWhereUniqueInput!]
+  disconnect: [SaveJobWhereUniqueInput!]
+  delete: [SaveJobWhereUniqueInput!]
+  connect: [SaveJobWhereUniqueInput!]
+  update: [SaveJobUpdateWithWhereUniqueWithoutJobInput!]
+  updateMany: [SaveJobUpdateManyWithWhereWithoutJobInput!]
+  deleteMany: [SaveJobScalarWhereInput!]
+}
+
+input SaveJobUpsertWithWhereUniqueWithoutJobInput {
+  where: SaveJobWhereUniqueInput!
+  update: SaveJobUpdateWithoutJobInput!
+  create: SaveJobCreateWithoutJobInput!
+}
+
+input SaveJobUpdateWithoutJobInput {
+  id: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  user: UserUpdateOneRequiredWithoutSaveJobsNestedInput
+}
+
+input UserUpdateOneRequiredWithoutSaveJobsNestedInput {
+  create: UserCreateWithoutSaveJobsInput
+  connectOrCreate: UserCreateOrConnectWithoutSaveJobsInput
+  upsert: UserUpsertWithoutSaveJobsInput
   connect: UserWhereUniqueInput
-  update: UserUpdateToOneWithWhereWithoutJobsInput
+  update: UserUpdateToOneWithWhereWithoutSaveJobsInput
 }
 
-input UserUpsertWithoutJobsInput {
-  update: UserUpdateWithoutJobsInput!
-  create: UserCreateWithoutJobsInput!
+input UserUpsertWithoutSaveJobsInput {
+  update: UserUpdateWithoutSaveJobsInput!
+  create: UserCreateWithoutSaveJobsInput!
   where: UserWhereInput
 }
 
-input UserUpdateWithoutJobsInput {
+input UserUpdateWithoutSaveJobsInput {
   id: StringFieldUpdateOperationsInput
   avatarUrl: NullableStringFieldUpdateOperationsInput
   firstName: StringFieldUpdateOperationsInput
@@ -16498,10 +16476,10 @@ input UserUpdateWithoutJobsInput {
   dislikes: DislikePostUpdateManyWithoutUserNestedInput
   comments: CommentUpdateManyWithoutUserNestedInput
   bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
-  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
   payments: PaymentUpdateManyWithoutUserNestedInput
   address: UsersOnCityUpdateManyWithoutUserNestedInput
   companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
   authorSettings: SettingUpdateManyWithoutAuthorNestedInput
   updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
 }
@@ -16811,6 +16789,7 @@ input ResumeUpdateWithoutWorkExperiencesInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input EducationUpdateManyWithoutResumeNestedInput {
@@ -17100,468 +17079,56 @@ input JobUpdateWithoutUserInput {
   company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
 }
 
-input SaveJobUpdateManyWithoutJobNestedInput {
-  create: [SaveJobCreateWithoutJobInput!]
-  connectOrCreate: [SaveJobCreateOrConnectWithoutJobInput!]
-  upsert: [SaveJobUpsertWithWhereUniqueWithoutJobInput!]
-  createMany: SaveJobCreateManyJobInputEnvelope
-  set: [SaveJobWhereUniqueInput!]
-  disconnect: [SaveJobWhereUniqueInput!]
-  delete: [SaveJobWhereUniqueInput!]
-  connect: [SaveJobWhereUniqueInput!]
-  update: [SaveJobUpdateWithWhereUniqueWithoutJobInput!]
-  updateMany: [SaveJobUpdateManyWithWhereWithoutJobInput!]
-  deleteMany: [SaveJobScalarWhereInput!]
+input ResumeUpdateManyWithoutJobNestedInput {
+  create: [ResumeCreateWithoutJobInput!]
+  connectOrCreate: [ResumeCreateOrConnectWithoutJobInput!]
+  upsert: [ResumeUpsertWithWhereUniqueWithoutJobInput!]
+  set: [ResumeWhereUniqueInput!]
+  disconnect: [ResumeWhereUniqueInput!]
+  delete: [ResumeWhereUniqueInput!]
+  connect: [ResumeWhereUniqueInput!]
+  update: [ResumeUpdateWithWhereUniqueWithoutJobInput!]
+  updateMany: [ResumeUpdateManyWithWhereWithoutJobInput!]
+  deleteMany: [ResumeScalarWhereInput!]
 }
 
-input SaveJobUpsertWithWhereUniqueWithoutJobInput {
-  where: SaveJobWhereUniqueInput!
-  update: SaveJobUpdateWithoutJobInput!
-  create: SaveJobCreateWithoutJobInput!
+input ResumeUpsertWithWhereUniqueWithoutJobInput {
+  where: ResumeWhereUniqueInput!
+  update: ResumeUpdateWithoutJobInput!
+  create: ResumeCreateWithoutJobInput!
 }
 
-input SaveJobUpdateWithoutJobInput {
+input ResumeUpdateWithoutJobInput {
   id: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  user: UserUpdateOneRequiredWithoutSaveJobsNestedInput
-}
-
-input UserUpdateOneRequiredWithoutSaveJobsNestedInput {
-  create: UserCreateWithoutSaveJobsInput
-  connectOrCreate: UserCreateOrConnectWithoutSaveJobsInput
-  upsert: UserUpsertWithoutSaveJobsInput
-  connect: UserWhereUniqueInput
-  update: UserUpdateToOneWithWhereWithoutSaveJobsInput
-}
-
-input UserUpsertWithoutSaveJobsInput {
-  update: UserUpdateWithoutSaveJobsInput!
-  create: UserCreateWithoutSaveJobsInput!
-  where: UserWhereInput
-}
-
-input UserUpdateWithoutSaveJobsInput {
-  id: StringFieldUpdateOperationsInput
-  avatarUrl: NullableStringFieldUpdateOperationsInput
-  firstName: StringFieldUpdateOperationsInput
-  lastName: StringFieldUpdateOperationsInput
-  email: StringFieldUpdateOperationsInput
-  emailVerified: BoolFieldUpdateOperationsInput
-  password: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  fullName: NullableStringFieldUpdateOperationsInput
+  email: NullableStringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
-  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
-  status: EnumUserStatusFieldUpdateOperationsInput
-  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
-  color: NullableStringFieldUpdateOperationsInput
-  role: EnumUserRoleFieldUpdateOperationsInput
   addressDetail: NullableStringFieldUpdateOperationsInput
-  verifyCode: NullableStringFieldUpdateOperationsInput
+  description: StringFieldUpdateOperationsInput
+  isSummary: NullableBoolFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  avatar: FileUpdateOneWithoutUsersNestedInput
-  country: CountryUpdateOneWithoutUsersNestedInput
-  social: SocialUpdateManyWithoutUserNestedInput
-  resumes: ResumeUpdateManyWithoutUserNestedInput
-  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
-  educations: EducationUpdateManyWithoutUserNestedInput
-  projects: ProjectUpdateManyWithoutUserNestedInput
-  applications: ApplicationUpdateManyWithoutCandidateNestedInput
-  posts: PostUpdateManyWithoutAuthorNestedInput
-  postReports: ReportPostUpdateManyWithoutUserNestedInput
-  likes: LikePostUpdateManyWithoutUserNestedInput
-  dislikes: DislikePostUpdateManyWithoutUserNestedInput
-  comments: CommentUpdateManyWithoutUserNestedInput
-  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
-  payments: PaymentUpdateManyWithoutUserNestedInput
-  address: UsersOnCityUpdateManyWithoutUserNestedInput
-  companies: CompanyUpdateManyWithoutUserNestedInput
-  jobs: JobUpdateManyWithoutUserNestedInput
-  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
-  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
-}
-
-input SettingUpdateManyWithoutAuthorNestedInput {
-  create: [SettingCreateWithoutAuthorInput!]
-  connectOrCreate: [SettingCreateOrConnectWithoutAuthorInput!]
-  upsert: [SettingUpsertWithWhereUniqueWithoutAuthorInput!]
-  createMany: SettingCreateManyAuthorInputEnvelope
-  set: [SettingWhereUniqueInput!]
-  disconnect: [SettingWhereUniqueInput!]
-  delete: [SettingWhereUniqueInput!]
-  connect: [SettingWhereUniqueInput!]
-  update: [SettingUpdateWithWhereUniqueWithoutAuthorInput!]
-  updateMany: [SettingUpdateManyWithWhereWithoutAuthorInput!]
-  deleteMany: [SettingScalarWhereInput!]
-}
-
-input SettingUpsertWithWhereUniqueWithoutAuthorInput {
-  where: SettingWhereUniqueInput!
-  update: SettingUpdateWithoutAuthorInput!
-  create: SettingCreateWithoutAuthorInput!
-}
-
-input SettingUpdateWithoutAuthorInput {
-  key: StringFieldUpdateOperationsInput
-  type: StringFieldUpdateOperationsInput
-  value: JSON
-  showWith: SettingUpdateshowWithInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  updatedBy: UserUpdateOneWithoutUpdatedBySettingsNestedInput
-}
-
-input SettingUpdateshowWithInput {
-  set: [UserRole!]
-  push: [UserRole!]
-}
-
-input UserUpdateOneWithoutUpdatedBySettingsNestedInput {
-  create: UserCreateWithoutUpdatedBySettingsInput
-  connectOrCreate: UserCreateOrConnectWithoutUpdatedBySettingsInput
-  upsert: UserUpsertWithoutUpdatedBySettingsInput
-  disconnect: UserWhereInput
-  delete: UserWhereInput
-  connect: UserWhereUniqueInput
-  update: UserUpdateToOneWithWhereWithoutUpdatedBySettingsInput
-}
-
-input UserUpsertWithoutUpdatedBySettingsInput {
-  update: UserUpdateWithoutUpdatedBySettingsInput!
-  create: UserCreateWithoutUpdatedBySettingsInput!
-  where: UserWhereInput
-}
-
-input UserUpdateWithoutUpdatedBySettingsInput {
-  id: StringFieldUpdateOperationsInput
-  avatarUrl: NullableStringFieldUpdateOperationsInput
-  firstName: StringFieldUpdateOperationsInput
-  lastName: StringFieldUpdateOperationsInput
-  email: StringFieldUpdateOperationsInput
-  emailVerified: BoolFieldUpdateOperationsInput
-  password: StringFieldUpdateOperationsInput
-  phoneNumber: NullableStringFieldUpdateOperationsInput
-  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
-  status: EnumUserStatusFieldUpdateOperationsInput
-  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
-  color: NullableStringFieldUpdateOperationsInput
-  role: EnumUserRoleFieldUpdateOperationsInput
-  addressDetail: NullableStringFieldUpdateOperationsInput
-  verifyCode: NullableStringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  avatar: FileUpdateOneWithoutUsersNestedInput
-  country: CountryUpdateOneWithoutUsersNestedInput
-  social: SocialUpdateManyWithoutUserNestedInput
-  resumes: ResumeUpdateManyWithoutUserNestedInput
-  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
-  educations: EducationUpdateManyWithoutUserNestedInput
-  projects: ProjectUpdateManyWithoutUserNestedInput
-  applications: ApplicationUpdateManyWithoutCandidateNestedInput
-  posts: PostUpdateManyWithoutAuthorNestedInput
-  postReports: ReportPostUpdateManyWithoutUserNestedInput
-  likes: LikePostUpdateManyWithoutUserNestedInput
-  dislikes: DislikePostUpdateManyWithoutUserNestedInput
-  comments: CommentUpdateManyWithoutUserNestedInput
-  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
-  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
-  payments: PaymentUpdateManyWithoutUserNestedInput
-  address: UsersOnCityUpdateManyWithoutUserNestedInput
-  companies: CompanyUpdateManyWithoutUserNestedInput
-  jobs: JobUpdateManyWithoutUserNestedInput
-  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
-}
-
-input UserUpdateToOneWithWhereWithoutUpdatedBySettingsInput {
-  where: UserWhereInput
-  data: UserUpdateWithoutUpdatedBySettingsInput!
-}
-
-input SettingUpdateWithWhereUniqueWithoutAuthorInput {
-  where: SettingWhereUniqueInput!
-  data: SettingUpdateWithoutAuthorInput!
-}
-
-input SettingUpdateManyWithWhereWithoutAuthorInput {
-  where: SettingScalarWhereInput!
-  data: SettingUpdateManyMutationInput!
-}
-
-input SettingScalarWhereInput {
-  AND: [SettingScalarWhereInput!]
-  OR: [SettingScalarWhereInput!]
-  NOT: [SettingScalarWhereInput!]
-  key: StringFilter
-  type: StringFilter
-  value: JsonFilter
-  authorId: StringNullableFilter
-  showWith: EnumUserRoleNullableListFilter
-  updatedById: StringNullableFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-}
-
-input SettingUpdateManyMutationInput {
-  key: StringFieldUpdateOperationsInput
-  type: StringFieldUpdateOperationsInput
-  value: JSON
-  showWith: SettingUpdateshowWithInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-}
-
-input SettingUpdateManyWithoutUpdatedByNestedInput {
-  create: [SettingCreateWithoutUpdatedByInput!]
-  connectOrCreate: [SettingCreateOrConnectWithoutUpdatedByInput!]
-  upsert: [SettingUpsertWithWhereUniqueWithoutUpdatedByInput!]
-  createMany: SettingCreateManyUpdatedByInputEnvelope
-  set: [SettingWhereUniqueInput!]
-  disconnect: [SettingWhereUniqueInput!]
-  delete: [SettingWhereUniqueInput!]
-  connect: [SettingWhereUniqueInput!]
-  update: [SettingUpdateWithWhereUniqueWithoutUpdatedByInput!]
-  updateMany: [SettingUpdateManyWithWhereWithoutUpdatedByInput!]
-  deleteMany: [SettingScalarWhereInput!]
-}
-
-input SettingUpsertWithWhereUniqueWithoutUpdatedByInput {
-  where: SettingWhereUniqueInput!
-  update: SettingUpdateWithoutUpdatedByInput!
-  create: SettingCreateWithoutUpdatedByInput!
-}
-
-input SettingUpdateWithoutUpdatedByInput {
-  key: StringFieldUpdateOperationsInput
-  type: StringFieldUpdateOperationsInput
-  value: JSON
-  showWith: SettingUpdateshowWithInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  author: UserUpdateOneWithoutAuthorSettingsNestedInput
-}
-
-input UserUpdateOneWithoutAuthorSettingsNestedInput {
-  create: UserCreateWithoutAuthorSettingsInput
-  connectOrCreate: UserCreateOrConnectWithoutAuthorSettingsInput
-  upsert: UserUpsertWithoutAuthorSettingsInput
-  disconnect: UserWhereInput
-  delete: UserWhereInput
-  connect: UserWhereUniqueInput
-  update: UserUpdateToOneWithWhereWithoutAuthorSettingsInput
-}
-
-input UserUpsertWithoutAuthorSettingsInput {
-  update: UserUpdateWithoutAuthorSettingsInput!
-  create: UserCreateWithoutAuthorSettingsInput!
-  where: UserWhereInput
-}
-
-input UserUpdateWithoutAuthorSettingsInput {
-  id: StringFieldUpdateOperationsInput
-  avatarUrl: NullableStringFieldUpdateOperationsInput
-  firstName: StringFieldUpdateOperationsInput
-  lastName: StringFieldUpdateOperationsInput
-  email: StringFieldUpdateOperationsInput
-  emailVerified: BoolFieldUpdateOperationsInput
-  password: StringFieldUpdateOperationsInput
-  phoneNumber: NullableStringFieldUpdateOperationsInput
-  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
-  status: EnumUserStatusFieldUpdateOperationsInput
-  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
-  color: NullableStringFieldUpdateOperationsInput
-  role: EnumUserRoleFieldUpdateOperationsInput
-  addressDetail: NullableStringFieldUpdateOperationsInput
-  verifyCode: NullableStringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  avatar: FileUpdateOneWithoutUsersNestedInput
-  country: CountryUpdateOneWithoutUsersNestedInput
-  social: SocialUpdateManyWithoutUserNestedInput
-  resumes: ResumeUpdateManyWithoutUserNestedInput
-  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
-  educations: EducationUpdateManyWithoutUserNestedInput
-  projects: ProjectUpdateManyWithoutUserNestedInput
-  applications: ApplicationUpdateManyWithoutCandidateNestedInput
-  posts: PostUpdateManyWithoutAuthorNestedInput
-  postReports: ReportPostUpdateManyWithoutUserNestedInput
-  likes: LikePostUpdateManyWithoutUserNestedInput
-  dislikes: DislikePostUpdateManyWithoutUserNestedInput
-  comments: CommentUpdateManyWithoutUserNestedInput
-  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
-  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
-  payments: PaymentUpdateManyWithoutUserNestedInput
-  address: UsersOnCityUpdateManyWithoutUserNestedInput
-  companies: CompanyUpdateManyWithoutUserNestedInput
-  jobs: JobUpdateManyWithoutUserNestedInput
-  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
-}
-
-input UserUpdateToOneWithWhereWithoutAuthorSettingsInput {
-  where: UserWhereInput
-  data: UserUpdateWithoutAuthorSettingsInput!
-}
-
-input SettingUpdateWithWhereUniqueWithoutUpdatedByInput {
-  where: SettingWhereUniqueInput!
-  data: SettingUpdateWithoutUpdatedByInput!
-}
-
-input SettingUpdateManyWithWhereWithoutUpdatedByInput {
-  where: SettingScalarWhereInput!
-  data: SettingUpdateManyMutationInput!
-}
-
-input UserUpdateToOneWithWhereWithoutSaveJobsInput {
-  where: UserWhereInput
-  data: UserUpdateWithoutSaveJobsInput!
-}
-
-input SaveJobUpdateWithWhereUniqueWithoutJobInput {
-  where: SaveJobWhereUniqueInput!
-  data: SaveJobUpdateWithoutJobInput!
-}
-
-input SaveJobUpdateManyWithWhereWithoutJobInput {
-  where: SaveJobScalarWhereInput!
-  data: SaveJobUpdateManyMutationInput!
-}
-
-input SaveJobScalarWhereInput {
-  AND: [SaveJobScalarWhereInput!]
-  OR: [SaveJobScalarWhereInput!]
-  NOT: [SaveJobScalarWhereInput!]
-  id: StringFilter
-  userId: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  jobId: StringFilter
-}
-
-input SaveJobUpdateManyMutationInput {
-  id: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-}
-
-input JobUpdateWithWhereUniqueWithoutUserInput {
-  where: JobWhereUniqueInput!
-  data: JobUpdateWithoutUserInput!
-}
-
-input JobUpdateManyWithWhereWithoutUserInput {
-  where: JobScalarWhereInput!
-  data: JobUpdateManyMutationInput!
-}
-
-input JobScalarWhereInput {
-  AND: [JobScalarWhereInput!]
-  OR: [JobScalarWhereInput!]
-  NOT: [JobScalarWhereInput!]
-  id: StringFilter
-  type: EnumJobTypeFilter
-  level: EnumJobLevelFilter
-  slug: StringNullableFilter
-  addressDetail: StringNullableFilter
-  jobTitleId: StringNullableFilter
-  jobCategoryId: StringFilter
-  companyId: StringNullableFilter
-  cityId: IntFilter
-  salary: EnumJobSalaryFilter
-  minSalary: IntNullableFilter
-  maxSalary: IntNullableFilter
-  salaryMetadata: JsonNullableFilter
-  description: StringNullableFilter
-  isBoot: BoolNullableFilter
-  numberOfRecruits: IntFilter
-  applicationDeadline: DateTimeFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  userId: StringNullableFilter
-  status: EnumJobStatusNullableFilter
-  coverLetterRequired: BoolNullableFilter
-}
-
-input JobUpdateManyMutationInput {
-  id: StringFieldUpdateOperationsInput
-  type: EnumJobTypeFieldUpdateOperationsInput
-  level: EnumJobLevelFieldUpdateOperationsInput
-  slug: NullableStringFieldUpdateOperationsInput
-  addressDetail: NullableStringFieldUpdateOperationsInput
-  salary: EnumJobSalaryFieldUpdateOperationsInput
-  minSalary: NullableIntFieldUpdateOperationsInput
-  maxSalary: NullableIntFieldUpdateOperationsInput
-  salaryMetadata: JSON
-  description: NullableStringFieldUpdateOperationsInput
-  isBoot: NullableBoolFieldUpdateOperationsInput
-  numberOfRecruits: IntFieldUpdateOperationsInput
-  applicationDeadline: DateTimeFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-  status: NullableEnumJobStatusFieldUpdateOperationsInput
-  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
-}
-
-input UserUpdateToOneWithWhereWithoutEducationsInput {
-  where: UserWhereInput
-  data: UserUpdateWithoutEducationsInput!
-}
-
-input EducationUpdateWithWhereUniqueWithoutResumeInput {
-  where: EducationWhereUniqueInput!
-  data: EducationUpdateWithoutResumeInput!
-}
-
-input EducationUpdateManyWithWhereWithoutResumeInput {
-  where: EducationScalarWhereInput!
-  data: EducationUpdateManyMutationInput!
-}
-
-input EducationScalarWhereInput {
-  AND: [EducationScalarWhereInput!]
-  OR: [EducationScalarWhereInput!]
-  NOT: [EducationScalarWhereInput!]
-  id: StringFilter
-  type: EnumEducationTypeFilter
-  skillId: StringNullableFilter
-  degree: EnumDegreeFilter
-  graduationAt: DateTimeNullableFilter
-  gpa: IntNullableFilter
-  awards: StringNullableListFilter
-  relevantCourseWorks: StringNullableListFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-  resumeId: StringNullableFilter
-  userId: StringFilter
-}
-
-input EducationUpdateManyMutationInput {
-  id: StringFieldUpdateOperationsInput
-  type: EnumEducationTypeFieldUpdateOperationsInput
-  degree: EnumDegreeFieldUpdateOperationsInput
-  graduationAt: NullableDateTimeFieldUpdateOperationsInput
-  gpa: NullableIntFieldUpdateOperationsInput
-  awards: EducationUpdateawardsInput
-  relevantCourseWorks: EducationUpdaterelevantCourseWorksInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  user: UserUpdateOneRequiredWithoutResumesNestedInput
+  avatar: FileUpdateOneWithoutResumeAvatarNestedInput
+  thumbnail: FileUpdateOneWithoutResumeThumbnailNestedInput
+  pdf: FileUpdateOneWithoutResumePdfNestedInput
+  address: CityUpdateOneWithoutResumesNestedInput
+  jobTitle: JobTitleUpdateOneRequiredWithoutResumesNestedInput
+  applications: ApplicationUpdateManyWithoutResumeNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutResumeNestedInput
+  educations: EducationUpdateManyWithoutResumeNestedInput
+  skills: SkillUpdateManyWithoutResumesNestedInput
+  projects: ProjectUpdateManyWithoutResumeNestedInput
+  socials: SocialUpdateManyWithoutResumeNestedInput
+  certificates: CertificateUpdateManyWithoutResumeNestedInput
+  languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
+  activities: ActivityUpdateManyWithoutResumeNestedInput
 }
 
 input ProjectUpdateManyWithoutResumeNestedInput {
@@ -17825,6 +17392,7 @@ input ResumeUpdateWithoutPdfInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input LanguageSkillUpdateManyWithoutResumeNestedInput {
@@ -17990,6 +17558,412 @@ input ActivityUpdateManyMutationInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
 }
 
+input JobUpdateManyWithoutResumesNestedInput {
+  create: [JobCreateWithoutResumesInput!]
+  connectOrCreate: [JobCreateOrConnectWithoutResumesInput!]
+  upsert: [JobUpsertWithWhereUniqueWithoutResumesInput!]
+  set: [JobWhereUniqueInput!]
+  disconnect: [JobWhereUniqueInput!]
+  delete: [JobWhereUniqueInput!]
+  connect: [JobWhereUniqueInput!]
+  update: [JobUpdateWithWhereUniqueWithoutResumesInput!]
+  updateMany: [JobUpdateManyWithWhereWithoutResumesInput!]
+  deleteMany: [JobScalarWhereInput!]
+}
+
+input JobUpsertWithWhereUniqueWithoutResumesInput {
+  where: JobWhereUniqueInput!
+  update: JobUpdateWithoutResumesInput!
+  create: JobCreateWithoutResumesInput!
+}
+
+input JobUpdateWithoutResumesInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumJobTypeFieldUpdateOperationsInput
+  level: EnumJobLevelFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
+  salaryMetadata: JSON
+  description: NullableStringFieldUpdateOperationsInput
+  isBoot: NullableBoolFieldUpdateOperationsInput
+  numberOfRecruits: IntFieldUpdateOperationsInput
+  applicationDeadline: DateTimeFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
+  address: CityUpdateOneWithoutJobsNestedInput
+  jobTitle: JobTitleUpdateOneWithoutJobsNestedInput
+  jobCategory: JobCategoryUpdateOneWithoutJobsNestedInput
+  company: CompanyUpdateOneWithoutJobsNestedInput
+  tags: TagUpdateManyWithoutJobsNestedInput
+  skills: SkillUpdateManyWithoutJobsNestedInput
+  saveJobs: SaveJobUpdateManyWithoutJobNestedInput
+  user: UserUpdateOneWithoutJobsNestedInput
+}
+
+input UserUpdateOneWithoutJobsNestedInput {
+  create: UserCreateWithoutJobsInput
+  connectOrCreate: UserCreateOrConnectWithoutJobsInput
+  upsert: UserUpsertWithoutJobsInput
+  disconnect: UserWhereInput
+  delete: UserWhereInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateToOneWithWhereWithoutJobsInput
+}
+
+input UserUpsertWithoutJobsInput {
+  update: UserUpdateWithoutJobsInput!
+  create: UserCreateWithoutJobsInput!
+  where: UserWhereInput
+}
+
+input UserUpdateWithoutJobsInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+input SettingUpdateManyWithoutAuthorNestedInput {
+  create: [SettingCreateWithoutAuthorInput!]
+  connectOrCreate: [SettingCreateOrConnectWithoutAuthorInput!]
+  upsert: [SettingUpsertWithWhereUniqueWithoutAuthorInput!]
+  createMany: SettingCreateManyAuthorInputEnvelope
+  set: [SettingWhereUniqueInput!]
+  disconnect: [SettingWhereUniqueInput!]
+  delete: [SettingWhereUniqueInput!]
+  connect: [SettingWhereUniqueInput!]
+  update: [SettingUpdateWithWhereUniqueWithoutAuthorInput!]
+  updateMany: [SettingUpdateManyWithWhereWithoutAuthorInput!]
+  deleteMany: [SettingScalarWhereInput!]
+}
+
+input SettingUpsertWithWhereUniqueWithoutAuthorInput {
+  where: SettingWhereUniqueInput!
+  update: SettingUpdateWithoutAuthorInput!
+  create: SettingCreateWithoutAuthorInput!
+}
+
+input SettingUpdateWithoutAuthorInput {
+  key: StringFieldUpdateOperationsInput
+  type: StringFieldUpdateOperationsInput
+  value: JSON
+  showWith: SettingUpdateshowWithInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  updatedBy: UserUpdateOneWithoutUpdatedBySettingsNestedInput
+}
+
+input SettingUpdateshowWithInput {
+  set: [UserRole!]
+  push: [UserRole!]
+}
+
+input UserUpdateOneWithoutUpdatedBySettingsNestedInput {
+  create: UserCreateWithoutUpdatedBySettingsInput
+  connectOrCreate: UserCreateOrConnectWithoutUpdatedBySettingsInput
+  upsert: UserUpsertWithoutUpdatedBySettingsInput
+  disconnect: UserWhereInput
+  delete: UserWhereInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateToOneWithWhereWithoutUpdatedBySettingsInput
+}
+
+input UserUpsertWithoutUpdatedBySettingsInput {
+  update: UserUpdateWithoutUpdatedBySettingsInput!
+  create: UserCreateWithoutUpdatedBySettingsInput!
+  where: UserWhereInput
+}
+
+input UserUpdateWithoutUpdatedBySettingsInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
+  authorSettings: SettingUpdateManyWithoutAuthorNestedInput
+}
+
+input UserUpdateToOneWithWhereWithoutUpdatedBySettingsInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutUpdatedBySettingsInput!
+}
+
+input SettingUpdateWithWhereUniqueWithoutAuthorInput {
+  where: SettingWhereUniqueInput!
+  data: SettingUpdateWithoutAuthorInput!
+}
+
+input SettingUpdateManyWithWhereWithoutAuthorInput {
+  where: SettingScalarWhereInput!
+  data: SettingUpdateManyMutationInput!
+}
+
+input SettingScalarWhereInput {
+  AND: [SettingScalarWhereInput!]
+  OR: [SettingScalarWhereInput!]
+  NOT: [SettingScalarWhereInput!]
+  key: StringFilter
+  type: StringFilter
+  value: JsonFilter
+  authorId: StringNullableFilter
+  showWith: EnumUserRoleNullableListFilter
+  updatedById: StringNullableFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+}
+
+input SettingUpdateManyMutationInput {
+  key: StringFieldUpdateOperationsInput
+  type: StringFieldUpdateOperationsInput
+  value: JSON
+  showWith: SettingUpdateshowWithInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input SettingUpdateManyWithoutUpdatedByNestedInput {
+  create: [SettingCreateWithoutUpdatedByInput!]
+  connectOrCreate: [SettingCreateOrConnectWithoutUpdatedByInput!]
+  upsert: [SettingUpsertWithWhereUniqueWithoutUpdatedByInput!]
+  createMany: SettingCreateManyUpdatedByInputEnvelope
+  set: [SettingWhereUniqueInput!]
+  disconnect: [SettingWhereUniqueInput!]
+  delete: [SettingWhereUniqueInput!]
+  connect: [SettingWhereUniqueInput!]
+  update: [SettingUpdateWithWhereUniqueWithoutUpdatedByInput!]
+  updateMany: [SettingUpdateManyWithWhereWithoutUpdatedByInput!]
+  deleteMany: [SettingScalarWhereInput!]
+}
+
+input SettingUpsertWithWhereUniqueWithoutUpdatedByInput {
+  where: SettingWhereUniqueInput!
+  update: SettingUpdateWithoutUpdatedByInput!
+  create: SettingCreateWithoutUpdatedByInput!
+}
+
+input SettingUpdateWithoutUpdatedByInput {
+  key: StringFieldUpdateOperationsInput
+  type: StringFieldUpdateOperationsInput
+  value: JSON
+  showWith: SettingUpdateshowWithInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  author: UserUpdateOneWithoutAuthorSettingsNestedInput
+}
+
+input UserUpdateOneWithoutAuthorSettingsNestedInput {
+  create: UserCreateWithoutAuthorSettingsInput
+  connectOrCreate: UserCreateOrConnectWithoutAuthorSettingsInput
+  upsert: UserUpsertWithoutAuthorSettingsInput
+  disconnect: UserWhereInput
+  delete: UserWhereInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateToOneWithWhereWithoutAuthorSettingsInput
+}
+
+input UserUpsertWithoutAuthorSettingsInput {
+  update: UserUpdateWithoutAuthorSettingsInput!
+  create: UserCreateWithoutAuthorSettingsInput!
+  where: UserWhereInput
+}
+
+input UserUpdateWithoutAuthorSettingsInput {
+  id: StringFieldUpdateOperationsInput
+  avatarUrl: NullableStringFieldUpdateOperationsInput
+  firstName: StringFieldUpdateOperationsInput
+  lastName: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  password: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  workingPosition: NullableEnumWorkPositionFieldUpdateOperationsInput
+  status: EnumUserStatusFieldUpdateOperationsInput
+  signInProvider: NullableEnumSignInProviderFieldUpdateOperationsInput
+  color: NullableStringFieldUpdateOperationsInput
+  role: EnumUserRoleFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  verifyCode: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  avatar: FileUpdateOneWithoutUsersNestedInput
+  country: CountryUpdateOneWithoutUsersNestedInput
+  social: SocialUpdateManyWithoutUserNestedInput
+  resumes: ResumeUpdateManyWithoutUserNestedInput
+  workExperiences: WorkExperienceUpdateManyWithoutUserNestedInput
+  educations: EducationUpdateManyWithoutUserNestedInput
+  projects: ProjectUpdateManyWithoutUserNestedInput
+  applications: ApplicationUpdateManyWithoutCandidateNestedInput
+  posts: PostUpdateManyWithoutAuthorNestedInput
+  postReports: ReportPostUpdateManyWithoutUserNestedInput
+  likes: LikePostUpdateManyWithoutUserNestedInput
+  dislikes: DislikePostUpdateManyWithoutUserNestedInput
+  comments: CommentUpdateManyWithoutUserNestedInput
+  bookmarks: BookmarkPostUpdateManyWithoutUserNestedInput
+  saveJobs: SaveJobUpdateManyWithoutUserNestedInput
+  payments: PaymentUpdateManyWithoutUserNestedInput
+  address: UsersOnCityUpdateManyWithoutUserNestedInput
+  companies: CompanyUpdateManyWithoutUserNestedInput
+  jobs: JobUpdateManyWithoutUserNestedInput
+  updatedBySettings: SettingUpdateManyWithoutUpdatedByNestedInput
+}
+
+input UserUpdateToOneWithWhereWithoutAuthorSettingsInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutAuthorSettingsInput!
+}
+
+input SettingUpdateWithWhereUniqueWithoutUpdatedByInput {
+  where: SettingWhereUniqueInput!
+  data: SettingUpdateWithoutUpdatedByInput!
+}
+
+input SettingUpdateManyWithWhereWithoutUpdatedByInput {
+  where: SettingScalarWhereInput!
+  data: SettingUpdateManyMutationInput!
+}
+
+input UserUpdateToOneWithWhereWithoutJobsInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutJobsInput!
+}
+
+input JobUpdateWithWhereUniqueWithoutResumesInput {
+  where: JobWhereUniqueInput!
+  data: JobUpdateWithoutResumesInput!
+}
+
+input JobUpdateManyWithWhereWithoutResumesInput {
+  where: JobScalarWhereInput!
+  data: JobUpdateManyMutationInput!
+}
+
+input JobScalarWhereInput {
+  AND: [JobScalarWhereInput!]
+  OR: [JobScalarWhereInput!]
+  NOT: [JobScalarWhereInput!]
+  id: StringFilter
+  type: EnumJobTypeFilter
+  level: EnumJobLevelFilter
+  slug: StringNullableFilter
+  addressDetail: StringNullableFilter
+  jobTitleId: StringNullableFilter
+  jobCategoryId: StringFilter
+  companyId: StringNullableFilter
+  cityId: IntFilter
+  salary: EnumJobSalaryFilter
+  minSalary: IntNullableFilter
+  maxSalary: IntNullableFilter
+  salaryMetadata: JsonNullableFilter
+  description: StringNullableFilter
+  isBoot: BoolNullableFilter
+  numberOfRecruits: IntFilter
+  applicationDeadline: DateTimeFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  userId: StringNullableFilter
+  status: EnumJobStatusNullableFilter
+  coverLetterRequired: BoolNullableFilter
+}
+
+input JobUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumJobTypeFieldUpdateOperationsInput
+  level: EnumJobLevelFieldUpdateOperationsInput
+  slug: NullableStringFieldUpdateOperationsInput
+  addressDetail: NullableStringFieldUpdateOperationsInput
+  salary: EnumJobSalaryFieldUpdateOperationsInput
+  minSalary: NullableIntFieldUpdateOperationsInput
+  maxSalary: NullableIntFieldUpdateOperationsInput
+  salaryMetadata: JSON
+  description: NullableStringFieldUpdateOperationsInput
+  isBoot: NullableBoolFieldUpdateOperationsInput
+  numberOfRecruits: IntFieldUpdateOperationsInput
+  applicationDeadline: DateTimeFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+  status: NullableEnumJobStatusFieldUpdateOperationsInput
+  coverLetterRequired: NullableBoolFieldUpdateOperationsInput
+}
+
 input ResumeUpdateWithWhereUniqueWithoutPdfInput {
   where: ResumeWhereUniqueInput!
   data: ResumeUpdateWithoutPdfInput!
@@ -18068,6 +18042,73 @@ input CertificateScalarWhereInput {
 input CertificateUpdateManyMutationInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input ResumeUpdateWithWhereUniqueWithoutJobInput {
+  where: ResumeWhereUniqueInput!
+  data: ResumeUpdateWithoutJobInput!
+}
+
+input ResumeUpdateManyWithWhereWithoutJobInput {
+  where: ResumeScalarWhereInput!
+  data: ResumeUpdateManyMutationInput!
+}
+
+input JobUpdateWithWhereUniqueWithoutUserInput {
+  where: JobWhereUniqueInput!
+  data: JobUpdateWithoutUserInput!
+}
+
+input JobUpdateManyWithWhereWithoutUserInput {
+  where: JobScalarWhereInput!
+  data: JobUpdateManyMutationInput!
+}
+
+input UserUpdateToOneWithWhereWithoutEducationsInput {
+  where: UserWhereInput
+  data: UserUpdateWithoutEducationsInput!
+}
+
+input EducationUpdateWithWhereUniqueWithoutResumeInput {
+  where: EducationWhereUniqueInput!
+  data: EducationUpdateWithoutResumeInput!
+}
+
+input EducationUpdateManyWithWhereWithoutResumeInput {
+  where: EducationScalarWhereInput!
+  data: EducationUpdateManyMutationInput!
+}
+
+input EducationScalarWhereInput {
+  AND: [EducationScalarWhereInput!]
+  OR: [EducationScalarWhereInput!]
+  NOT: [EducationScalarWhereInput!]
+  id: StringFilter
+  type: EnumEducationTypeFilter
+  skillId: StringNullableFilter
+  degree: EnumDegreeFilter
+  graduationAt: DateTimeNullableFilter
+  gpa: IntNullableFilter
+  awards: StringNullableListFilter
+  relevantCourseWorks: StringNullableListFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  resumeId: StringNullableFilter
+  userId: StringFilter
+}
+
+input EducationUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumEducationTypeFieldUpdateOperationsInput
+  degree: EnumDegreeFieldUpdateOperationsInput
+  graduationAt: NullableDateTimeFieldUpdateOperationsInput
+  gpa: NullableIntFieldUpdateOperationsInput
+  awards: EducationUpdateawardsInput
+  relevantCourseWorks: EducationUpdaterelevantCourseWorksInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
@@ -18152,9 +18193,102 @@ input UsersOnCityUpdateManyMutationInput {
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
 }
 
-input UserUpdateToOneWithWhereWithoutJobsInput {
+input UserUpdateToOneWithWhereWithoutSaveJobsInput {
   where: UserWhereInput
-  data: UserUpdateWithoutJobsInput!
+  data: UserUpdateWithoutSaveJobsInput!
+}
+
+input SaveJobUpdateWithWhereUniqueWithoutJobInput {
+  where: SaveJobWhereUniqueInput!
+  data: SaveJobUpdateWithoutJobInput!
+}
+
+input SaveJobUpdateManyWithWhereWithoutJobInput {
+  where: SaveJobScalarWhereInput!
+  data: SaveJobUpdateManyMutationInput!
+}
+
+input SaveJobScalarWhereInput {
+  AND: [SaveJobScalarWhereInput!]
+  OR: [SaveJobScalarWhereInput!]
+  NOT: [SaveJobScalarWhereInput!]
+  id: StringFilter
+  userId: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+  jobId: StringFilter
+}
+
+input SaveJobUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input JobUpdateWithWhereUniqueWithoutSkillsInput {
+  where: JobWhereUniqueInput!
+  data: JobUpdateWithoutSkillsInput!
+}
+
+input JobUpdateManyWithWhereWithoutSkillsInput {
+  where: JobScalarWhereInput!
+  data: JobUpdateManyMutationInput!
+}
+
+input SkillUpdateWithWhereUniqueWithoutResumesInput {
+  where: SkillWhereUniqueInput!
+  data: SkillUpdateWithoutResumesInput!
+}
+
+input SkillUpdateManyWithWhereWithoutResumesInput {
+  where: SkillScalarWhereInput!
+  data: SkillUpdateManyMutationInput!
+}
+
+input SkillScalarWhereInput {
+  AND: [SkillScalarWhereInput!]
+  OR: [SkillScalarWhereInput!]
+  NOT: [SkillScalarWhereInput!]
+  id: StringFilter
+  content: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  deletedAt: DateTimeNullableFilter
+}
+
+input SkillUpdateManyMutationInput {
+  id: StringFieldUpdateOperationsInput
+  content: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deletedAt: NullableDateTimeFieldUpdateOperationsInput
+}
+
+input ResumeUpdateToOneWithWhereWithoutEducationsInput {
+  where: ResumeWhereInput
+  data: ResumeUpdateWithoutEducationsInput!
+}
+
+input EducationUpdateWithWhereUniqueWithoutMajorInput {
+  where: EducationWhereUniqueInput!
+  data: EducationUpdateWithoutMajorInput!
+}
+
+input EducationUpdateManyWithWhereWithoutMajorInput {
+  where: EducationScalarWhereInput!
+  data: EducationUpdateManyMutationInput!
+}
+
+input SkillUpdateWithWhereUniqueWithoutJobsInput {
+  where: SkillWhereUniqueInput!
+  data: SkillUpdateWithoutJobsInput!
+}
+
+input SkillUpdateManyWithWhereWithoutJobsInput {
+  where: SkillScalarWhereInput!
+  data: SkillUpdateManyMutationInput!
 }
 
 input JobUpdateToOneWithWhereWithoutSaveJobsInput {
@@ -18669,12 +18803,12 @@ input UserUpdateToOneWithWhereWithoutApplicationsInput {
   data: UserUpdateWithoutApplicationsInput!
 }
 
-input ApplicationUpdateWithWhereUniqueWithoutJobInput {
+input ApplicationUpdateWithWhereUniqueWithoutResumeInput {
   where: ApplicationWhereUniqueInput!
-  data: ApplicationUpdateWithoutJobInput!
+  data: ApplicationUpdateWithoutResumeInput!
 }
 
-input ApplicationUpdateManyWithWhereWithoutJobInput {
+input ApplicationUpdateManyWithWhereWithoutResumeInput {
   where: ApplicationScalarWhereInput!
   data: ApplicationUpdateManyMutationInput!
 }
@@ -18701,85 +18835,7 @@ input ApplicationUpdateManyMutationInput {
   type: EnumApplicationTypeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   deletedAt: NullableDateTimeFieldUpdateOperationsInput
-}
-
-input JobUpdateWithWhereUniqueWithoutSkillsInput {
-  where: JobWhereUniqueInput!
-  data: JobUpdateWithoutSkillsInput!
-}
-
-input JobUpdateManyWithWhereWithoutSkillsInput {
-  where: JobScalarWhereInput!
-  data: JobUpdateManyMutationInput!
-}
-
-input SkillUpdateWithWhereUniqueWithoutResumesInput {
-  where: SkillWhereUniqueInput!
-  data: SkillUpdateWithoutResumesInput!
-}
-
-input SkillUpdateManyWithWhereWithoutResumesInput {
-  where: SkillScalarWhereInput!
-  data: SkillUpdateManyMutationInput!
-}
-
-input SkillScalarWhereInput {
-  AND: [SkillScalarWhereInput!]
-  OR: [SkillScalarWhereInput!]
-  NOT: [SkillScalarWhereInput!]
-  id: StringFilter
-  content: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  deletedAt: DateTimeNullableFilter
-}
-
-input SkillUpdateManyMutationInput {
-  id: StringFieldUpdateOperationsInput
-  content: StringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deletedAt: NullableDateTimeFieldUpdateOperationsInput
-}
-
-input ResumeUpdateToOneWithWhereWithoutEducationsInput {
-  where: ResumeWhereInput
-  data: ResumeUpdateWithoutEducationsInput!
-}
-
-input EducationUpdateWithWhereUniqueWithoutMajorInput {
-  where: EducationWhereUniqueInput!
-  data: EducationUpdateWithoutMajorInput!
-}
-
-input EducationUpdateManyWithWhereWithoutMajorInput {
-  where: EducationScalarWhereInput!
-  data: EducationUpdateManyMutationInput!
-}
-
-input SkillUpdateWithWhereUniqueWithoutJobsInput {
-  where: SkillWhereUniqueInput!
-  data: SkillUpdateWithoutJobsInput!
-}
-
-input SkillUpdateManyWithWhereWithoutJobsInput {
-  where: SkillScalarWhereInput!
-  data: SkillUpdateManyMutationInput!
-}
-
-input JobUpdateToOneWithWhereWithoutApplicationsInput {
-  where: JobWhereInput
-  data: JobUpdateWithoutApplicationsInput!
-}
-
-input ApplicationUpdateWithWhereUniqueWithoutResumeInput {
-  where: ApplicationWhereUniqueInput!
-  data: ApplicationUpdateWithoutResumeInput!
-}
-
-input ApplicationUpdateManyWithWhereWithoutResumeInput {
-  where: ApplicationScalarWhereInput!
-  data: ApplicationUpdateManyMutationInput!
+  jobId: StringFieldUpdateOperationsInput
 }
 
 input ResumeUpdateWithWhereUniqueWithoutAddressInput {
@@ -18869,6 +18925,7 @@ input ResumeUpdateWithoutProjectsInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input ResumeUpdateToOneWithWhereWithoutProjectsInput {
@@ -19195,6 +19252,7 @@ input ResumeUpdateWithoutSocialsInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 input ResumeUpdateToOneWithWhereWithoutSocialsInput {
@@ -20074,9 +20132,9 @@ input CreateJobInput {
   company: CompanyCreateNestedOneWithoutJobsInput
   tags: TagCreateNestedManyWithoutJobsInput
   skills: SkillCreateNestedManyWithoutJobsInput
-  applications: ApplicationCreateNestedManyWithoutJobInput
   saveJobs: SaveJobCreateNestedManyWithoutJobInput
   user: UserCreateNestedOneWithoutJobsInput
+  resumes: ResumeCreateNestedManyWithoutJobInput
   skillIds: [String!] = []
   companyId: String
   jobTitleName: String
@@ -20107,9 +20165,9 @@ input JobUpdateInput {
   company: CompanyUpdateOneWithoutJobsNestedInput
   tags: TagUpdateManyWithoutJobsNestedInput
   skills: SkillUpdateManyWithoutJobsNestedInput
-  applications: ApplicationUpdateManyWithoutJobNestedInput
   saveJobs: SaveJobUpdateManyWithoutJobNestedInput
   user: UserUpdateOneWithoutJobsNestedInput
+  resumes: ResumeUpdateManyWithoutJobNestedInput
 }
 
 input SkillCreateInput {
@@ -20398,6 +20456,18 @@ input CompanyUpdateManyWithWhereWithoutSizeInput {
   data: CompanyUpdateManyMutationInput!
 }
 
+input ApplicationCreateInput {
+  id: String
+  createdAt: DateTime
+  status: ApplicationStatus
+  type: ApplicationType
+  updatedAt: DateTime
+  deletedAt: DateTime
+  jobId: String!
+  resume: ResumeCreateNestedOneWithoutApplicationsInput
+  candidate: UserCreateNestedOneWithoutApplicationsInput
+}
+
 input GenerateJDParams {
   platform: String
   type: String!
@@ -20482,7 +20552,7 @@ input ResumeEducation {
   type: EducationType! = university
   majorId: String!
   degree: Degree! = high_school_diploma
-  graduationAt: DateTime! = "2024-12-14T15:14:33.842Z"
+  graduationAt: DateTime! = "2024-12-18T09:36:31.814Z"
   gpa: Float! = 1
   awards: [String!] = []
   relevantCourseWorks: [String!] = []
@@ -20533,6 +20603,7 @@ input ResumeUpdateInput {
   certificates: CertificateUpdateManyWithoutResumeNestedInput
   languageSkills: LanguageSkillUpdateManyWithoutResumeNestedInput
   activities: ActivityUpdateManyWithoutResumeNestedInput
+  job: JobUpdateManyWithoutResumesNestedInput
 }
 
 type Subscription {
