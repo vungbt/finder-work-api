@@ -49,6 +49,7 @@ import { ResumeModule } from './modules/resume/resume.module';
 import { LanguageSkillModule } from './modules/language-skill/language-skill.module';
 import { TestModule } from './modules/test/test.module';
 import { ApplicationModule } from './modules/application-job/application.module';
+import { LanguageModule } from './modules/language/language.module';
 
 export const pubSub = new PubSub();
 @Module({
@@ -177,7 +178,8 @@ export const pubSub = new PubSub();
     OpenAiModule,
     ResumeModule,
     LanguageSkillModule,
-    TestModule
+    TestModule,
+    LanguageModule
   ],
   controllers: [],
   providers: [
