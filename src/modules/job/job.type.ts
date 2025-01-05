@@ -1,8 +1,14 @@
 import {
+  City,
+  Company,
   CompanyCreateInput,
   FindManyJobArgs,
   Job,
+  JobCategory,
   JobCreateInput,
+  JobTitle,
+  Skill,
+  Tag,
   UpdateOneJobArgs
 } from '@/prisma/graphql';
 import { Metadata, PaginationInput } from '@/types';
@@ -51,8 +57,8 @@ export class AllJobArgs extends FindManyJobArgs {
 
 @ObjectType()
 export class AllJobResult {
-  @Field(() => [Job])
-  data: Job[];
+  @Field(() => [JobItem])
+  data: JobItem[];
 
   @Field(() => Metadata, { nullable: true })
   metadata?: Metadata;
@@ -67,4 +73,32 @@ export class MyJobArgs extends AllJobArgs {
 export class JobResumeArgs extends UpdateOneJobArgs {
   @Field(() => String, { nullable: true })
   resumeId?: string;
+}
+
+@ObjectType()
+export class JobItem extends OmitType(Job, [
+  'company',
+  'skills',
+  'jobTitle',
+  'address',
+  'jobCategory',
+  'tags'
+]) {
+  @Field(() => Company, { defaultValue: null })
+  company?: Company;
+
+  @Field(() => JobTitle, { defaultValue: null })
+  jobTitle?: JobTitle;
+
+  @Field(() => JobCategory, { nullable: true })
+  jobCategory?: JobCategory;
+
+  @Field(() => [Skill], { defaultValue: [], nullable: true })
+  skills: Skill[];
+
+  @Field(() => City, { defaultValue: null })
+  address?: City;
+
+  @Field(() => [Tag], { defaultValue: [], nullable: true })
+  tags: Tag[];
 }

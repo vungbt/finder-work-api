@@ -41,4 +41,7 @@ export class AddressService {
   findManyCountry(args: Prisma.CountryFindManyArgs) {
     return this.prismaService.country.findMany(args);
   }
+  findFirstCity(args: Prisma.CityFindFirstArgs) {
+    return this.prismaService.city.findFirst(args);
+  }
 }

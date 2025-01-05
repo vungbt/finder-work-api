@@ -6,7 +6,9 @@ import { TagService } from '@/modules/tag/tag.service';
 import { UserService } from '@/modules/user/user.service';
 import { Injectable } from '@nestjs/common';
 import {
+  City,
   Comment,
+  Company,
   Country,
   File,
   JobCategory,
@@ -14,6 +16,7 @@ import {
   Post,
   PostCategory,
   Setting,
+  Skill,
   Tag,
   User
 } from '@prisma/client';
@@ -23,6 +26,8 @@ import { IDataloaders } from './dataloader.type';
 import { JobCategoryService } from '@/modules/job-category/job-category.service';
 import { PostService } from '@/modules/post/post.service';
 import { CommentService } from '@/modules/comment/comment.service';
+import { CompanyService } from '@/modules/company/company.service';
+import { SkillService } from '@/modules/skill/skill.service';
 
 @Injectable()
 export class DataloaderService {
@@ -36,27 +41,34 @@ export class DataloaderService {
     private readonly jobTitleService: JobTitleService,
     private readonly jobCategoryService: JobCategoryService,
     private readonly settingService: SettingService,
-    private readonly commentService: CommentService
+    private readonly commentService: CommentService,
+    private readonly companyService: CompanyService,
+    private readonly skillService: SkillService
   ) {}
 
   getLoaders(): IDataloaders {
     const fileUnique = this._createFileUniqueLoader();
     const userUnique = this._createUserUniqueLoader();
     const countryUnique = this._createCountryUniqueLoader();
+    const cityUnique = this._createCityUniqueLoader();
     const tagUnique = this._createTagUniqueLoader();
     const postCategoryUnique = this._createPostCategoryUniqueLoader();
     const jobTitleUnique = this._createJobTitleUniqueLoader();
     const jobCategoryUnique = this._createJobCategoryUniqueLoader();
     const tagMany = this._createTagManyLoader();
+    const skillMany = this._createSkillManyLoader();
     const postCategoryMany = this._createPostCategoryManyLoader();
     const settingUnique = this._createSettingUniqueLoader();
     const postUnique = this._createPostUniqueLoader();
     const commentUnique = this._createCommentUniqueLoader();
+    const companyUnique = this._createCompanyUniqueLoader();
+    const skillUnique = this._createSkillUniqueLoader();
 
     return {
       fileUnique,
       userUnique,
       countryUnique,
+      cityUnique,
       tagUnique,
       postCategoryUnique,
       jobTitleUnique,
@@ -65,7 +77,10 @@ export class DataloaderService {
       settingUnique,
       jobCategoryUnique,
       postUnique,
-      commentUnique
+      commentUnique,
+      companyUnique,
+      skillUnique,
+      skillMany
     };
   }
 
@@ -99,6 +114,16 @@ export class DataloaderService {
     });
   }
 
+  private _createCityUniqueLoader() {
+    return new DataLoader<number, City>((keys: readonly number[]) => {
+      return Promise.all(
+        keys.map((key) => {
+          return this.addressService.findFirstCity({ where: { id: key } });
+        })
+      );
+    });
+  }
+
   private _createTagUniqueLoader() {
     return new DataLoader<string, Tag>((keys: readonly string[]) => {
       return Promise.all(
@@ -114,6 +139,16 @@ export class DataloaderService {
       return Promise.all(
         keys.map((key) => {
           return this.tagService.findMany({ where: { id: { in: key } } });
+        })
+      );
+    });
+  }
+
+  private _createSkillManyLoader() {
+    return new DataLoader<string[], Skill[]>((keys: readonly string[][]) => {
+      return Promise.all(
+        keys.map((key) => {
+          return this.skillService.findMany({ where: { id: { in: key } } });
         })
       );
     });
@@ -188,6 +223,26 @@ export class DataloaderService {
       return Promise.all(
         keys.map((key) => {
           return this.commentService.findUnique({ where: { id: key } });
+        })
+      );
+    });
+  }
+
+  private _createCompanyUniqueLoader() {
+    return new DataLoader<string, Company>((keys: readonly string[]) => {
+      return Promise.all(
+        keys.map((key) => {
+          return this.companyService.findUnique({ where: { id: key } });
+        })
+      );
+    });
+  }
+
+  private _createSkillUniqueLoader() {
+    return new DataLoader<string, Skill>((keys: readonly string[]) => {
+      return Promise.all(
+        keys.map((key) => {
+          return this.skillService.findUnique({ where: { id: key } });
         })
       );
     });

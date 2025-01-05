@@ -10,6 +10,8 @@ import { DataloaderService } from './dataloader.service';
 import { JobCategoryModule } from '@/modules/job-category/job-category.module';
 import { PostModule } from '@/modules/post/post.module';
 import { CommentModule } from '@/modules/comment/comment.module';
+import { CompanyModule } from '@/modules/company/company.module';
+import { SkillModule } from '@/modules/skill/skill.module';
 
 @Module({
   imports: [
@@ -22,7 +24,9 @@ import { CommentModule } from '@/modules/comment/comment.module';
     UserModule,
     SettingModule,
     PostModule,
-    CommentModule
+    CommentModule,
+    CompanyModule,
+    SkillModule
   ],
   providers: [DataloaderService],
   exports: [DataloaderService]
