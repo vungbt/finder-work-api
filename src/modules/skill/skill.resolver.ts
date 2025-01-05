@@ -54,7 +54,7 @@ export class SkillResolver {
 
   @Query(() => AllSkillResult, { name: 'all_skill' })
   all(@Args(new TakeLimit()) args: AllSkillArgs) {
-    return this.skillService.findMany(args);
+    return this.skillService.findAll(args);
   }
 
   @Query(() => Skill, { name: 'one_skill' })

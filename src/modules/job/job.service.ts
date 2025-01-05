@@ -100,7 +100,7 @@ export class JobService implements BaseService {
     return responseHelper(data, { total, ...pagination });
   }
 
-  async AllJob(args: AllJobArgs) {
+  async allJob(args: AllJobArgs) {
     const { searchValue, pagination, where, ...reset } = args;
     let whereClause: JobWhereInput = {};
 
@@ -113,19 +113,11 @@ export class JobService implements BaseService {
         AND: [whereClause, where]
       };
     }
-
     const data = this.prismaService.job.findMany({
       orderBy: [{ isBoot: 'desc' }, { createdAt: 'desc' }],
       where: { ...whereClause },
       include: {
-        jobTitle: true,
-        company: {
-          include: {
-            avatar: true
-          }
-        },
-        address: true,
-        jobCategory: true,
+        tags: true,
         skills: true
       },
       ...reset

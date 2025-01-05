@@ -18,7 +18,11 @@ export class SkillService implements BaseService {
   findFirst(args: Prisma.SkillFindFirstArgs) {
     return this.prismaService.skill.findFirst(args);
   }
-  async findMany(args: AllSkillArgs) {
+  async findMany(args: Prisma.SkillFindManyArgs) {
+    return this.prismaService.skill.findMany(args);
+  }
+
+  async findAll(args: AllSkillArgs) {
     const { searchValue, pagination, where, ...reset } = args;
     let whereClause: SkillWhereInput = {};
     if (searchValue && searchValue.length > 0) {
